@@ -66,4 +66,4 @@ jobs:
           done
 
       - name: Build
-        run: yarn build`
+        run: yarn build
