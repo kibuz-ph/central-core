@@ -9,6 +9,39 @@
 - Prettier - Code formatter
 - ESLint
 
+## Prerequisites
+
+### Node.js Version
+
+This project requires **Node.js >= 22.0.0**.
+
+**Check your current Node.js version:**
+```bash
+node -v
+```
+
+**Using nvm (recommended):**
+```bash
+# Switch to the version specified in .nvmrc
+nvm use
+```
+
+**Enable strict engine checking:**
+
+For Yarn:
+```bash
+yarn config set --home enableStrictEngine true
+yarn install
+```
+
+For npm:
+```bash
+npm config set engine-strict true
+npm install
+```
+
+This will prevent installation if you're not using the correct Node.js version.
+
 ## Project setup
 
 ### Using Docker (Recommended)
