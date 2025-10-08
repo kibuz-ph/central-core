@@ -42,6 +42,14 @@ export default tseslint.config(
         },
         {
           'selector': 'function',
+          'filter': {
+            'regex': 'Decorator$',
+            'match': true
+          },
+          'format': ['PascalCase']
+        },
+        {
+          'selector': 'function',
           'format': ['camelCase']
         },
         {

@@ -1,3 +1,3 @@
-import { SetMetadata } from "@nestjs/common";
+import { SetMetadata } from '@nestjs/common';
 
-export const AuditLog = (action: string) => SetMetadata("auditAction", action);
+export const AuditLog = (action: string) => SetMetadata('auditAction', action);

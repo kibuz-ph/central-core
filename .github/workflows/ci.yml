@@ -44,22 +44,22 @@ jobs:
           node-version: '22.x'
 
       - name: Install dependencies
-        run: npm install
+        run: yarn install
 
       - name: Code format and Type check
-        run: npm run lint
+        run: yarn lint
 
       - name: Run migrations
-        run: npm run prisma:migrate:deploy
+        run: yarn prisma:migrate:deploy
 
       - name: Start Prisma client
-        run: npm run prisma:generate
+        run: yarn prisma:generate
 
       - name: Start Prisma client and run migrations
-        run: npm run prisma:migrate:deploy
+        run: yarn prisma:migrate:deploy
 
       - name: Prisma status
-        run: npm run prisma:status
+        run: yarn prisma:status
 
       - name: Wait for Postgres
         run: |
@@ -69,4 +69,4 @@ jobs:
           done
 
       - name: Build
-        run: npm run build`
+        run: yarn build`
