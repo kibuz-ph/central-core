@@ -1,0 +1,72 @@
+name: 'Kibuz-Central-Core-Backend CI'
+run-name: Check format code
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+      - staging
+      - qa
+env:
+  PORT: 3000
+  SWAGGER_DOCS_URL: http://127:0:0:1:3000/swagger/docs-json
+  DATABASE_URL: postgres://admin:admin@localhost:5432/kibuz_central_core_local
+jobs:
+  initial-job:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:latest
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: kibuz_central_core_local
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log branch name
+        run: |
+          echo "Running CI for branch: ${{ github.base_ref || github.head_ref }}"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Code format and Type check
+        run: npm run lint
+
+      - name: Run migrations
+        run: npm run prisma:migrate:deploy
+
+      - name: Start Prisma client
+        run: npm run prisma:generate
+
+      - name: Start Prisma client and run migrations
+        run: npm run prisma:migrate:deploy
+
+      - name: Prisma status
+        run: npm run prisma:status
+
+      - name: Wait for Postgres
+        run: |
+          until nc -z localhost 5432; do
+            echo "Waiting for Postgres to start..."
+            sleep 2
+          done
+
+      - name: Build
+        run: npm run build`
