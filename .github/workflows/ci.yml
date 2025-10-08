@@ -52,11 +52,8 @@ jobs:
       - name: Run migrations
         run: yarn prisma:migrate:deploy
 
-      - name: Start Prisma client
+      - name: Generate Prisma client
         run: yarn prisma:generate
-
-      - name: Start Prisma client and run migrations
-        run: yarn prisma:migrate:deploy
 
       - name: Prisma status
         run: yarn prisma:status
