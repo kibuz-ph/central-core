@@ -56,6 +56,10 @@ export class User {
     return this.password;
   }
 
+  async validatePassword(plainPassword: string): Promise<boolean> {
+    return this.password ? bcrypt.compare(plainPassword, this.password) : false;
+  }
+
   // This method looks like it's unused, but it's used for security reason on data convertion
   toJSON(): Omit<UserProps, 'password'> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

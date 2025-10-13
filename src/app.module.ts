@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration, { Config } from './config/config';
-import { MsUserModule } from './ms-user/ms-user.module';
 import { CustomCacheModule } from './modules/cache/cahce.module';
 import { FrobnicatorModule } from './modules/frobnicator/frobnicator.module';
 import { PinoModule } from './modules/pino/pino.module';
+import { MsUserModule } from './ms-user/ms-user.module';
 
 @Module({
   imports: [

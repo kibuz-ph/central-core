@@ -1,13 +1,21 @@
-import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { Public } from '../../../../common/decorators/make-me-public.decorator';
 import { EndpointSwaggerDecorator } from '../../../../common/decorators/swagger.decorator';
+import { User, UserProps } from '../../../user/domain/entities/user.entity';
 import { SignupUseCase } from '../../application/services/signup.use-case';
+import { SignInUseCase } from '../../application/services/singin.use-case';
+import { LocalAuthGuard } from '../security/guards/local-auth.guard';
+import { SignInResponseDto } from './dto/signin-response.dto';
+import { SignInDto } from './dto/signin.dto';
 import { SignupDto } from './dto/signup.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly signupUseCase: SignupUseCase) {}
+  constructor(
+    private readonly signupUseCase: SignupUseCase,
+    private readonly signInUseCase: SignInUseCase,
+  ) {}
 
   @Post('signup')
   @Public()
@@ -25,7 +33,31 @@ export class AuthController {
     ],
     requireAuth: false,
   })
-  async registerUser(@Body() registerUSerData: SignupDto) {
+  async registerUser(@Body() registerUSerData: SignupDto): Promise<User> {
     return this.signupUseCase.execute(registerUSerData);
+  }
+
+  @Post('login')
+  @Public()
+  @UseGuards(LocalAuthGuard)
+  @Throttle({ default: { limit: 5, ttl: 60 } }) // 2 requests per minute
+  @EndpointSwaggerDecorator({
+    summary: 'Login user and return token',
+    responseType: SignInResponseDto,
+    bodyType: SignInDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [
+      {
+        status: HttpStatus.CONFLICT,
+        description: 'Credentials are not valid',
+      },
+    ],
+    requireAuth: false,
+  })
+  @HttpCode(HttpStatus.OK)
+  signIn(
+    @Req() req: Request & { user: Omit<UserProps, 'password'> & { id: string } },
+  ): SignInResponseDto {
+    return this.signInUseCase.execute(req.user);
   }
 }
