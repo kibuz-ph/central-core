@@ -4,8 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Config } from '../../../../../config/config';
 import { UserProps } from '../../../../user/domain/entities/user.entity';
 import { UserRepositoryInterface } from '../../../../user/domain/repositories/user.repository-interface';
+import { SignInDto } from '../../../application/dto/signin.dto';
 import { SecurityServiceInterface } from '../../../domain/repositories/security-service.repository-interface';
-import { SignInDto } from '../../http/dto/signin.dto';
 import { TokenPayloadDto } from '../dto/token-payload.dto';
 
 @Injectable()

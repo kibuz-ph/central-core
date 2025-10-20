@@ -1,16 +1,16 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
-import { Public } from '../../../../common/decorators/make-me-public.decorator';
-import { EndpointSwaggerDecorator } from '../../../../common/decorators/swagger.decorator';
-import { User, UserProps } from '../../../user/domain/entities/user.entity';
-import { CheckAuthStatusUseCase } from '../../application/services/check-auth-status.use-case';
-import { SignupUseCase } from '../../application/services/signup.use-case';
-import { SignInUseCase } from '../../application/services/singin.use-case';
-import { LocalAuthGuard } from '../security/guards/local-auth.guard';
-import { SignInResponseDto } from './dto/signin-response.dto';
-import { SignInDto } from './dto/signin.dto';
-import { SignupDto } from './dto/signup.dto';
+import { Public } from '../../../common/decorators/make-me-public.decorator';
+import { EndpointSwaggerDecorator } from '../../../common/decorators/swagger.decorator';
+import { User, UserProps } from '../../user/domain/entities/user.entity';
+import { SignInResponseDto } from '../application/dto/signin-response.dto';
+import { SignInDto } from '../application/dto/signin.dto';
+import { SignupDto } from '../application/dto/signup.dto';
+import { CheckAuthStatusUseCase } from '../application/services/check-auth-status.use-case';
+import { SignupUseCase } from '../application/services/signup.use-case';
+import { SignInUseCase } from '../application/services/singin.use-case';
+import { LocalAuthGuard } from '../infrastructure/security/guards/local-auth.guard';
 
 @Controller('auth')
 export class AuthController {

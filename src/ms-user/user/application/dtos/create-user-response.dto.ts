@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsEnum, IsOptional } from 'class-validator';
-import { rolesName } from '../../../domain/entities/enums/roles.enum';
+import { RoleNamesTypes, rolesName } from '../../domain/entities/enums/roles.enum';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'fb160441-660f-4e4d-af0b-b65d1a368b6f', description: "User's unique ID" })
@@ -25,7 +25,7 @@ export class CreateUserDto {
 
   @ApiProperty({ example: rolesName.USER, description: 'Username of the user', enum: rolesName })
   @IsEnum(rolesName)
-  role: string;
+  role: RoleNamesTypes;
 
   @ApiProperty({ example: '1212213213', description: 'Document of the user' })
   document: string;

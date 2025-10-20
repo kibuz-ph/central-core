@@ -8,10 +8,10 @@ import { UserPrismaRepository } from '../user/infrastructure/persistence/user.re
 import { CheckAuthStatusUseCase } from './application/services/check-auth-status.use-case';
 import { SignupUseCase } from './application/services/signup.use-case';
 import { SignInUseCase } from './application/services/singin.use-case';
-import { AuthController } from './infrastructure/http/auth.controller';
 import { SecurityServices } from './infrastructure/security/services/security.service';
 import { JwtStrategy } from './infrastructure/security/strategies/jwt.strategy';
 import { LocalStrategy } from './infrastructure/security/strategies/local.strategy';
+import { AuthController } from './presentation/auth.controller';
 
 @Module({
   controllers: [AuthController],

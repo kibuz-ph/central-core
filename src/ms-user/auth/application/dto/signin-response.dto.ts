@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsObject, IsString, ValidateNested } from 'class-validator';
-import { UserDto } from '../../../../user/infrastructure/http/dtos/user.dto';
+import { UserDto } from '../../../user/application/dtos/user.dto';
 
 export class SignInResponseDto {
   @ApiProperty({ type: UserDto, description: 'User data' })

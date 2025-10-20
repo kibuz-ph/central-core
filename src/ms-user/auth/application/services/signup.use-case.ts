@@ -3,7 +3,7 @@ import { DomainException } from '../../../../modules/pino/domain/exceptions/doma
 import { rolesName } from '../../../user/domain/entities/enums/roles.enum';
 import { User } from '../../../user/domain/entities/user.entity';
 import { UserRepositoryInterface } from '../../../user/domain/repositories/user.repository-interface';
-import { SignupDto } from '../../infrastructure/http/dto/signup.dto';
+import { SignupDto } from '../dto/signup.dto';
 
 @Injectable()
 export class SignupUseCase {
