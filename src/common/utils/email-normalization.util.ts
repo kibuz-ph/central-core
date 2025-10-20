@@ -6,11 +6,11 @@
  * @returns Normalized email address (lowercase and trimmed)
  */
 export function normalizeEmail(email: string): string {
-	if (!email || typeof email !== "string") {
-		return email;
-	}
+  if (!email || typeof email !== 'string') {
+    return email;
+  }
 
-	return email.trim().toLowerCase();
+  return email.trim().toLowerCase();
 }
 
 /**
@@ -18,5 +18,5 @@ export function normalizeEmail(email: string): string {
  * Usage: @Transform(({ value }) => normalizeEmailTransform(value))
  */
 export function normalizeEmailTransform(value: unknown): string {
-	return normalizeEmail(value as string);
+  return normalizeEmail(value as string);
 }

@@ -30,7 +30,7 @@ export default (): Config => {
     CORS_ORIGINS: z.string(),
     DATABASE_URL: z.url(),
     ACCESS_TOKEN_SECRET: z.string(),
-    ACCESS_TOKEN_EXPIRES_IN: z.string().default('8h'),
+    ACCESS_TOKEN_EXPIRES_IN: z.string().default('30Min'),
     REDIS_URL: z.string(),
     REDIS_CACHE_TTL: z.preprocess(val => Number(val), z.number().positive()),
   });

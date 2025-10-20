@@ -4,7 +4,7 @@ import { SecurityServiceInterface } from '../../domain/repositories/security-ser
 import { SignInResponseDto } from '../../infrastructure/http/dto/signin-response.dto';
 
 @Injectable()
-export class SignInUseCase {
+export class CheckAuthStatusUseCase {
   constructor(
     @Inject('SecurityServiceInterface')
     private readonly securityService: SecurityServiceInterface,

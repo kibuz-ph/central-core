@@ -1,8 +1,10 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { Public } from '../../../../common/decorators/make-me-public.decorator';
 import { EndpointSwaggerDecorator } from '../../../../common/decorators/swagger.decorator';
 import { User, UserProps } from '../../../user/domain/entities/user.entity';
+import { CheckAuthStatusUseCase } from '../../application/services/check-auth-status.use-case';
 import { SignupUseCase } from '../../application/services/signup.use-case';
 import { SignInUseCase } from '../../application/services/singin.use-case';
 import { LocalAuthGuard } from '../security/guards/local-auth.guard';
@@ -15,6 +17,7 @@ export class AuthController {
   constructor(
     private readonly signupUseCase: SignupUseCase,
     private readonly signInUseCase: SignInUseCase,
+    private readonly checkAuthStatusUseCase: CheckAuthStatusUseCase,
   ) {}
 
   @Post('signup')
@@ -40,7 +43,7 @@ export class AuthController {
   @Post('login')
   @Public()
   @UseGuards(LocalAuthGuard)
-  @Throttle({ default: { limit: 5, ttl: 60 } }) // 2 requests per minute
+  @Throttle({ default: { limit: 5, ttl: 60 } })
   @EndpointSwaggerDecorator({
     summary: 'Login user and return token',
     responseType: SignInResponseDto,
@@ -59,5 +62,13 @@ export class AuthController {
     @Req() req: Request & { user: Omit<UserProps, 'password'> & { id: string } },
   ): SignInResponseDto {
     return this.signInUseCase.execute(req.user);
+  }
+
+  @Get('status')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  checkAuthStatus(@Req() req: Request & { user: Omit<UserProps, 'password'> & { id: string } }) {
+    return this.checkAuthStatusUseCase.execute(req.user);
   }
 }

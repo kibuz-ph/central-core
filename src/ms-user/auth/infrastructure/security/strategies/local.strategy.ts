@@ -10,7 +10,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     @Inject('SecurityServiceInterface')
     private readonly securityService: SecurityServiceInterface,
   ) {
-    super({ usernameField: 'email' });
+    super({
+      usernameField: 'email',
+    });
   }
 
   async validate(email: string, password: string) {

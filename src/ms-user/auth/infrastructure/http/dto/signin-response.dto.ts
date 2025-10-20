@@ -1,15 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { IsBoolean, IsString } from 'class-validator';
-import { normalizeEmailTransform } from '../../../../../common/utils/email-normalization.util';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsObject, IsString, ValidateNested } from 'class-validator';
+import { UserDto } from '../../../../user/infrastructure/http/dtos/user.dto';
 
 export class SignInResponseDto {
-  @ApiProperty({ example: 'fb160441-660f-4e4d-af0b-b65d1a368b6f', description: "User's unique ID" })
-  id: string;
-
-  @ApiProperty({ example: 'jhon.doe@email.com', description: 'User email' })
-  @Transform(({ value }) => normalizeEmailTransform(value))
-  email: string;
+  @ApiProperty({ type: UserDto, description: 'User data' })
+  @ValidateNested()
+  @Type(() => UserDto)
+  @IsObject()
+  user: UserDto;
 
   @ApiProperty({ example: 'token.generated.login', description: 'User token' })
   @IsString()
