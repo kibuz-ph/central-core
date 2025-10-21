@@ -12,6 +12,8 @@ export interface Config {
   logLevel: string;
   cors: string[];
   databaseUsl: string;
+  accessTokenSecret: string;
+  accessTokenExpiresIn: string;
   redis: {
     url: string;
     cacheTtl: number;
@@ -27,6 +29,8 @@ export default (): Config => {
     LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal']).default('info'),
     CORS_ORIGINS: z.string(),
     DATABASE_URL: z.url(),
+    ACCESS_TOKEN_SECRET: z.string(),
+    ACCESS_TOKEN_EXPIRES_IN: z.string().default('30Min'),
     REDIS_URL: z.string(),
     REDIS_CACHE_TTL: z.preprocess(val => Number(val), z.number().positive()),
   });
@@ -50,6 +54,8 @@ export default (): Config => {
     logLevel: result.data.LOG_LEVEL,
     cors: result.data.CORS_ORIGINS.split(',').map(url => url.trim()),
     databaseUsl: result.data.DATABASE_URL,
+    accessTokenSecret: result.data.ACCESS_TOKEN_SECRET,
+    accessTokenExpiresIn: result.data.ACCESS_TOKEN_EXPIRES_IN,
     redis: {
       url: result.data.REDIS_URL,
       cacheTtl: result.data.REDIS_CACHE_TTL,

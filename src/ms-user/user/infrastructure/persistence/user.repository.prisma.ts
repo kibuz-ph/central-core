@@ -38,4 +38,20 @@ export class UserPrismaRepository implements UserRepositoryInterface {
         })
       : null;
   }
+
+  async findById(id: string): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    return user
+      ? new User({
+          ...user,
+          secondName: user.secondName ?? '',
+          secondLastName: user.secondLastName ?? '',
+        })
+      : null;
+  }
 }

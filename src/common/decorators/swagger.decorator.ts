@@ -1,13 +1,5 @@
-import { Type, applyDecorators } from "@nestjs/common";
-import { HttpStatus } from "@nestjs/common";
-import {
-	ApiBody,
-	ApiCookieAuth,
-	ApiExtraModels,
-	ApiOperation,
-	ApiQuery,
-	ApiResponse,
-} from "@nestjs/swagger";
+import { HttpStatus, Type, applyDecorators } from '@nestjs/common';
+import { ApiBody, ApiCookieAuth, ApiExtraModels, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 /**
  * custom Swagger decorator for automating API documentation.
@@ -19,52 +11,52 @@ import {
  * @param extraResponses - Additional custom response statuses.
  */
 export function EndpointSwaggerDecorator({
-	summary,
-	responseType,
-	bodyType,
-	queryType,
-	successStatus = HttpStatus.OK,
-	extraResponses = [],
-	requireAuth = true,
+  summary,
+  responseType,
+  bodyType,
+  queryType,
+  successStatus = HttpStatus.OK,
+  extraResponses = [],
+  requireAuth = true,
 }: {
-	summary: string;
-	responseType?: Type<unknown>;
-	bodyType?: Type<unknown>;
-	queryType?: Type<unknown>;
-	successStatus?: HttpStatus;
-	extraResponses?: { status: number; description: string; type?: Type<unknown> }[];
-	requireAuth?: boolean;
+  summary: string;
+  responseType?: Type<unknown>;
+  bodyType?: Type<unknown>;
+  queryType?: Type<unknown>;
+  successStatus?: HttpStatus;
+  extraResponses?: { status: number; description: string; type?: Type<unknown> }[];
+  requireAuth?: boolean;
 }) {
-	const decorators = [
-		ApiOperation({ summary }),
+  const decorators = [
+    ApiOperation({ summary }),
 
-		// Security Decorators
-		...(requireAuth ? [ApiCookieAuth()] : []),
+    // Security Decorators
+    ...(requireAuth ? [ApiCookieAuth()] : []),
 
-		// Default Success Response (Customizable)
-		ApiResponse({ status: successStatus, description: "Success", type: responseType }),
+    // Default Success Response (Customizable)
+    ApiResponse({ status: successStatus, description: 'Success', type: responseType }),
 
-		// Default Error Responses
-		ApiResponse({ status: HttpStatus.BAD_REQUEST, description: "Bad Request" }),
-		ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: "Internal Server Error" }),
-		ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: "Unauthorized" }),
-	];
+    // Default Error Responses
+    ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' }),
+    ApiResponse({ status: HttpStatus.INTERNAL_SERVER_ERROR, description: 'Internal Server Error' }),
+    ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Unauthorized' }),
+  ];
 
-	// Add Request Body if Specified
-	if (bodyType) {
-		decorators.push(ApiBody({ type: bodyType }));
-	}
+  // Add Request Body if Specified
+  if (bodyType) {
+    decorators.push(ApiBody({ type: bodyType }));
+  }
 
-	if (queryType) {
-		decorators.push(ApiExtraModels(queryType));
-	}
+  if (queryType) {
+    decorators.push(ApiExtraModels(queryType));
+  }
 
-	// Add Extra Responses if Provided
-	for (const res of extraResponses) {
-		decorators.push(
-			ApiResponse({ status: res.status, description: res.description, type: res.type }),
-		);
-	}
+  // Add Extra Responses if Provided
+  for (const res of extraResponses) {
+    decorators.push(
+      ApiResponse({ status: res.status, description: res.description, type: res.type }),
+    );
+  }
 
-	return applyDecorators(...decorators);
+  return applyDecorators(...decorators);
 }

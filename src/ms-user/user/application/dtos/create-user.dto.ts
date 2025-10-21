@@ -1,11 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsEnum, IsOptional } from 'class-validator';
-import { rolesName } from '../../../domain/entities/enums/roles.enum';
+import { RoleNamesTypes, rolesName } from '../../domain/entities/enums/roles.enum';
 
 export class CreateUserDto {
-  @ApiProperty({ example: 'fb160441-660f-4e4d-af0b-b65d1a368b6f', description: "User's unique ID" })
-  id: string;
-
   @ApiProperty({ example: 'John', description: 'First name of the user' })
   firstName: string;
 
@@ -25,7 +22,7 @@ export class CreateUserDto {
 
   @ApiProperty({ example: rolesName.USER, description: 'Username of the user', enum: rolesName })
   @IsEnum(rolesName)
-  role: string;
+  role: RoleNamesTypes;
 
   @ApiProperty({ example: '1212213213', description: 'Document of the user' })
   document: string;
@@ -40,6 +37,6 @@ export class CreateUserDto {
   @ApiProperty({ example: '3141341343', description: 'Phone of the user' })
   phone: string;
 
-  @ApiProperty({ example: true, description: 'Is user Active' })
-  isActive: boolean;
+  @ApiProperty({ example: 'SomeStrongP4ssword!', description: 'User password' })
+  password: string;
 }
