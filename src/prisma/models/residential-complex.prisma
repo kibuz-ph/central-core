@@ -1,8 +1,8 @@
 model ResidentialComplex {
   id             String    @id @default(uuid())
-  nit            Int
+  nit            Int       @unique
   name           String
-  slug           String
+  slug           String    @unique
   phone          String
   address        String
   city           String
