@@ -61,4 +61,15 @@ export class ResidentialComplexPrismaRepository implements ResidentialComplexInt
       secondaryColor: residentialComplexUpdated.secondaryColor ?? undefined,
     });
   }
+
+  async delete(id: string): Promise<boolean> {
+    await this.prisma.residentialComplex.update({
+      where: { id },
+      data: {
+        deletedAt: new Date(),
+        isActive: false,
+      },
+    });
+    return true;
+  }
 }

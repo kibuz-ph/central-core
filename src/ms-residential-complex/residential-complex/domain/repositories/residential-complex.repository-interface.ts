@@ -10,6 +10,5 @@ export interface ResidentialComplexInterface {
   }): Promise<ResidentialComplex | null>;
   create(residentialComplex: ResidentialComplex): Promise<ResidentialComplex>;
   update(id: string, residentialComplex: Partial<ResidentialComplex>): Promise<ResidentialComplex>;
-  // findMany(): Promise<ResidentialComplex[]>;
-  // delete(id: string): Promise<void>;
+  delete(id: string): Promise<boolean>;
 }
