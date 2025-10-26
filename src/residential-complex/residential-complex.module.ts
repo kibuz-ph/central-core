@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { PrismaModule } from '../../prisma/prisma.module';
+import { PrismaModule } from '../prisma/prisma.module';
 import { CreateResidentialComplexUseCase } from './application/services/create-residential-complex.use-case';
 import { DeleteResidentialComplexUseCase } from './application/services/delete-residential-complex.use-case';
 import { FindResidentialComplexUseCase } from './application/services/find-residential-complex.use-case';

@@ -13,11 +13,11 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
-import { SetResponseMessageDecorator } from '../../../common/decorators/set-response-message.decorator';
-import { EndpointSwaggerDecorator } from '../../../common/decorators/swagger.decorator';
-import { WrapResponse } from '../../../common/decorators/wrap-response.decorator';
-import { createBaseResponse, createDataResponse } from '../../../common/dtos/base-response.dto';
-import { ResponseWrapperInterceptor } from '../../../common/interceptors/response-wrapper.interceptor';
+import { SetResponseMessageDecorator } from '../../common/decorators/set-response-message.decorator';
+import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
+import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
+import { createBaseResponse, createDataResponse } from '../../common/dtos/base-response.dto';
+import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { CreateResidentialComplexDto } from '../application/dto/create-residential-complex.dto';
 import { ResidentialComplexResponseDto } from '../application/dto/residential-complex-response.dto';
 import { UpdateResidentialComplexDto } from '../application/dto/update-residential-complex.dto';

@@ -1,6 +1,6 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { generateSlug } from '../../../../common/utils/slug-generator.util';
-import { DomainException } from '../../../../modules/pino/domain/exceptions/domain.exception';
+import { generateSlug } from '../../../common/utils/slug-generator.util';
+import { DomainException } from '../../../modules/pino/domain/exceptions/domain.exception';
 import { ResidentialComplexInterface } from '../../domain/repositories/residential-complex.repository-interface';
 import { ResidentialComplexResponseDto } from '../dto/residential-complex-response.dto';
 import { UpdateResidentialComplexDto } from '../dto/update-residential-complex.dto';

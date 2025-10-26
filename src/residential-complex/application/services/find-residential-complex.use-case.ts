@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { DomainException } from '../../../../modules/pino/domain/exceptions/domain.exception';
+import { DomainException } from '../../../modules/pino/domain/exceptions/domain.exception';
 import { ResidentialComplexInterface } from '../../domain/repositories/residential-complex.repository-interface';
 import { ResidentialComplexResponseDto } from '../dto/residential-complex-response.dto';
 

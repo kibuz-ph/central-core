@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Prisma } from '../../../../prisma/prisma-client/client';
-import { PrismaService } from '../../../../prisma/prisma.service';
+import { Prisma } from '../../../prisma/prisma-client/client';
+import { PrismaService } from '../../../prisma/prisma.service';
 import {
   ResidentialComplex,
   ResidentialComplexProps,
