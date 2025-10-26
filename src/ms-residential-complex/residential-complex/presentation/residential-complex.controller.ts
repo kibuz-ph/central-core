@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   UseGuards,
   UseInterceptors,
@@ -18,8 +19,10 @@ import { createBaseResponse, createDataResponse } from '../../../common/dtos/bas
 import { ResponseWrapperInterceptor } from '../../../common/interceptors/response-wrapper.interceptor';
 import { CreateResidentialComplexDto } from '../application/dto/create-residential-complex.dto';
 import { ResidentialComplexResponseDto } from '../application/dto/residential-complex-response.dto';
+import { UpdateResidentialComplexDto } from '../application/dto/update-residential-complex.dto';
 import { CreateResidentialComplexUseCase } from '../application/services/create-residential-complex.use-case';
 import { FindResidentialComplexUseCase } from '../application/services/find-residential-complex.use-case';
+import { UpdateResidentialComplexUseCase } from '../application/services/update-residential-complex.use-case';
 
 @Controller('residential-complexes')
 @UseInterceptors(ResponseWrapperInterceptor)
@@ -27,6 +30,7 @@ export class ResidentialComplexController {
   constructor(
     private readonly findResidentialComplexUseCase: FindResidentialComplexUseCase,
     private readonly createResidentialComplexUseCase: CreateResidentialComplexUseCase,
+    private readonly ppdateResidentialComplexUseCase: UpdateResidentialComplexUseCase,
   ) {}
 
   @Get('/:slug')
@@ -48,7 +52,7 @@ export class ResidentialComplexController {
         description: 'Residential complex not found',
       },
     ],
-    requireAuth: false,
+    requireAuth: true,
   })
   async getResidentialComplex(@Param('slug') slug: string): Promise<ResidentialComplexResponseDto> {
     return this.findResidentialComplexUseCase.executeBySlug(slug);
@@ -71,11 +75,37 @@ export class ResidentialComplexController {
         description: 'Residential complex not found',
       },
     ],
-    requireAuth: false,
+    requireAuth: true,
   })
   async createResidentialComplex(
     @Body() createResidentialComplexDto: CreateResidentialComplexDto,
   ): Promise<ResidentialComplexResponseDto> {
     return this.createResidentialComplexUseCase.execute(createResidentialComplexDto);
+  }
+
+  @Patch('/:id')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Residential complex updated successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Create residential complex',
+    responseType: createBaseResponse('Residential complex created successfully'),
+    bodyType: UpdateResidentialComplexDto,
+    successStatus: HttpStatus.CREATED,
+    extraResponses: [
+      {
+        status: HttpStatus.BAD_REQUEST,
+        description: 'Residential complex not found',
+      },
+    ],
+    requireAuth: true,
+  })
+  async updateResidentialComplex(
+    @Param('id') id: string,
+    @Body() updateResidentialComplexDto: UpdateResidentialComplexDto,
+  ): Promise<ResidentialComplexResponseDto> {
+    return this.ppdateResidentialComplexUseCase.execute(id, updateResidentialComplexDto);
   }
 }

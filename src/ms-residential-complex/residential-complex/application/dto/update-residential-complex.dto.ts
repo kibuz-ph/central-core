@@ -1,14 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsHexColor, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class CreateResidentialComplexDto {
+export class UpdateResidentialComplexDto {
   @ApiProperty({
     example: '888222750',
     description: "Residentail complex's NIT",
   })
   @IsNumber()
   @IsNotEmpty()
-  nit: number;
+  @IsOptional()
+  nit?: number;
 
   @ApiProperty({
     example: 'Kibuz Residential Complex',
@@ -16,7 +17,8 @@ export class CreateResidentialComplexDto {
   })
   @IsString()
   @IsNotEmpty()
-  name: string;
+  @IsOptional()
+  name?: string;
 
   @ApiProperty({
     example: '3146418899',
@@ -24,7 +26,8 @@ export class CreateResidentialComplexDto {
   })
   @IsString()
   @IsNotEmpty()
-  phone: string;
+  @IsOptional()
+  phone?: string;
 
   @ApiProperty({
     example: 'Av Siempre Viva 1234',
@@ -32,7 +35,8 @@ export class CreateResidentialComplexDto {
   })
   @IsString()
   @IsNotEmpty()
-  address: string;
+  @IsOptional()
+  address?: string;
 
   @ApiProperty({
     example: 'Medayork',
@@ -40,7 +44,8 @@ export class CreateResidentialComplexDto {
   })
   @IsString()
   @IsNotEmpty()
-  city: string;
+  @IsOptional()
+  city?: string;
 
   @ApiProperty({
     example: 'Antioquia',
@@ -48,7 +53,8 @@ export class CreateResidentialComplexDto {
   })
   @IsString()
   @IsNotEmpty()
-  state: string;
+  @IsOptional()
+  state?: string;
 
   @ApiProperty({
     example: 'Colombia',
@@ -56,7 +62,8 @@ export class CreateResidentialComplexDto {
   })
   @IsString()
   @IsNotEmpty()
-  country: string;
+  @IsOptional()
+  country?: string;
 
   @ApiProperty({
     example: 'www.some-url.com',

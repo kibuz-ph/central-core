@@ -45,4 +45,20 @@ export class ResidentialComplexPrismaRepository implements ResidentialComplexInt
       secondaryColor: residentialComplexCreated.secondaryColor ?? undefined,
     });
   }
+
+  async update(
+    id: string,
+    residentialComplex: Partial<ResidentialComplex>,
+  ): Promise<ResidentialComplex> {
+    const residentialComplexUpdated = await this.prisma.residentialComplex.update({
+      where: { id },
+      data: residentialComplex,
+    });
+    return ResidentialComplex.fromPrisma({
+      ...residentialComplexUpdated,
+      logo: residentialComplexUpdated.logo ?? undefined,
+      primaryColor: residentialComplexUpdated.primaryColor ?? undefined,
+      secondaryColor: residentialComplexUpdated.secondaryColor ?? undefined,
+    });
+  }
 }
