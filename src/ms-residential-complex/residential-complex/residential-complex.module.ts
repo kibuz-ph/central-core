@@ -1,14 +1,17 @@
 import { Module } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
 import { PrismaModule } from '../../prisma/prisma.module';
-import { ResidentialComplexController } from '../presentation/residential-complex.controller';
+import { CreateResidentialComplexUseCase } from './application/services/create-residential-complex.use-case';
 import { FindResidentialComplexUseCase } from './application/services/find-residential-complex.use-case';
 import { ResidentialComplexPrismaRepository } from './infrastructure/persistence/residential-complex.repository.prisma';
+import { ResidentialComplexController } from './presentation/residential-complex.controller';
 
 @Module({
   controllers: [ResidentialComplexController],
-  imports: [PrismaModule],
+  imports: [PrismaModule, PassportModule.register({ defaultStrategy: 'jwt' })],
   providers: [
     FindResidentialComplexUseCase,
+    CreateResidentialComplexUseCase,
     {
       provide: 'ResidentialComplexInterface',
       useClass: ResidentialComplexPrismaRepository,

@@ -1,5 +1,5 @@
 export interface ResidentialComplexProps {
-  id: string;
+  id?: string;
   nit: number;
   name: string;
   slug: string;
@@ -15,7 +15,7 @@ export interface ResidentialComplexProps {
 }
 
 export class ResidentialComplex {
-  public readonly id: string;
+  public readonly id?: string;
   public readonly nit: number;
   public readonly name: string;
   public readonly slug: string;

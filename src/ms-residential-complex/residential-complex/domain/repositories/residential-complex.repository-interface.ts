@@ -8,7 +8,7 @@ export interface ResidentialComplexInterface {
     conditions: any;
     include?: any;
   }): Promise<ResidentialComplex | null>;
-  // create(residentialComplex: ResidentialComplexProps): Promise<ResidentialComplex>;
+  create(residentialComplex: ResidentialComplex): Promise<ResidentialComplex>;
   // findMany(): Promise<ResidentialComplex[]>;
   // delete(id: string): Promise<void>;
   // update(residentialComplex: ResidentialComplexProps): Promise<ResidentialComplex>;

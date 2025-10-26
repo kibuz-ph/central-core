@@ -1,7 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '../../../../prisma/prisma-client/client';
 import { PrismaService } from '../../../../prisma/prisma.service';
-import { ResidentialComplex } from '../../domain/entities/residential-complex.entity';
+import {
+  ResidentialComplex,
+  ResidentialComplexProps,
+} from '../../domain/entities/residential-complex.entity';
 import { ResidentialComplexInterface } from '../../domain/repositories/residential-complex.repository-interface';
 
 @Injectable()
@@ -27,6 +30,19 @@ export class ResidentialComplexPrismaRepository implements ResidentialComplexInt
       logo: residentialComplex.logo ?? undefined,
       primaryColor: residentialComplex.primaryColor ?? undefined,
       secondaryColor: residentialComplex.secondaryColor ?? undefined,
+    });
+  }
+
+  async create(residentialComplex: ResidentialComplexProps): Promise<ResidentialComplex> {
+    const { id: _id, ...residentialComplexData } = residentialComplex;
+    const residentialComplexCreated = await this.prisma.residentialComplex.create({
+      data: residentialComplexData,
+    });
+    return ResidentialComplex.fromPrisma({
+      ...residentialComplexCreated,
+      logo: residentialComplexCreated.logo ?? undefined,
+      primaryColor: residentialComplexCreated.primaryColor ?? undefined,
+      secondaryColor: residentialComplexCreated.secondaryColor ?? undefined,
     });
   }
 }
