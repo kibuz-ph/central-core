@@ -1,40 +1,30 @@
 import { faker } from '@faker-js/faker';
 import 'dotenv/config';
 import { Prisma, PrismaClient } from '../prisma/prisma-client/client';
-import { Role } from '../prisma/prisma-client/enums';
 
 const prisma = new PrismaClient();
 
 async function createUsers(tx: Prisma.TransactionClient) {
   const password = '$2b$10$PjReZjiztFbzgz3HlVL/MuSpMwm8o265DxJ6Jb84RB6S0BDIxFmRW'; // Kibuz2025*
+  const uuid = faker.string.uuid();
+
+  const usersArray = Array.from({ length: 5 }).map(() => ({
+    id: faker.string.uuid(),
+    username: faker.internet.username().toLowerCase(),
+    email: faker.internet.email().toLowerCase(),
+    password,
+    isActive: true,
+  }));
 
   const usersData = [
     {
+      id: uuid,
       username: 'admin.kibuz',
-      role: Role.ADMIN,
-      document: faker.string.numeric(10),
-      firstName: 'Admin',
-      lastName: 'Kibuz',
-      birthday: faker.date.birthdate({ min: 25, max: 50, mode: 'age' }),
       email: 'admin@kibuz.com',
-      phone: faker.phone.number(),
       password,
       isActive: true,
     },
-    ...Array.from({ length: 5 }).map(() => ({
-      username: faker.internet.username().toLowerCase(),
-      role: Role.USER,
-      document: faker.string.numeric(10),
-      firstName: faker.person.firstName(),
-      secondName: faker.datatype.boolean() ? faker.person.firstName() : undefined,
-      lastName: faker.person.lastName(),
-      secondLastName: faker.datatype.boolean() ? faker.person.lastName() : undefined,
-      birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }),
-      email: faker.internet.email().toLowerCase(),
-      phone: faker.phone.number(),
-      password,
-      isActive: true,
-    })),
+    ...usersArray,
   ];
 
   const users = await Promise.all(
@@ -46,6 +36,39 @@ async function createUsers(tx: Prisma.TransactionClient) {
   );
 
   console.log(`✅ Created ${users.length} users (1 admin, 5 regular users)`);
+
+  const usersDetailsData = [
+    {
+      document: faker.string.numeric(10),
+      firstName: 'Admin',
+      lastName: 'Kibuz',
+      birthday: faker.date.birthdate({ min: 25, max: 50, mode: 'age' }),
+      email: 'admin@kibuz.com',
+      phone: faker.phone.number(),
+      userId: uuid,
+    },
+    ...Array.from({ length: 5 }).map((value: any, index: number) => ({
+      document: faker.string.numeric(10),
+      firstName: faker.person.firstName(),
+      secondName: faker.datatype.boolean() ? faker.person.firstName() : undefined,
+      lastName: faker.person.lastName(),
+      secondLastName: faker.datatype.boolean() ? faker.person.lastName() : undefined,
+      birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }),
+      email: usersArray[index].email,
+      phone: faker.phone.number(),
+      userId: usersArray[index].id,
+    })),
+  ];
+
+  const usersDetails = await Promise.all(
+    usersDetailsData.map(userDetailsData =>
+      tx.userDetail.create({
+        data: userDetailsData,
+      }),
+    ),
+  );
+
+  console.log(`✅ Created ${usersDetails.length} users details (1 admin, 5 regular users)`);
   return users;
 }
 
