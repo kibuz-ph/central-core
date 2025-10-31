@@ -1,0 +1,11 @@
+model CommonArea {
+  id                   String  @id @default(uuid())
+  name                 String
+  icon                 String?
+  description          String?
+  residentialComplexId String
+
+  residentialComplex ResidentialComplex @relation(fields: [residentialComplexId], references: [id])
+
+  @@map("common_areas")
+}

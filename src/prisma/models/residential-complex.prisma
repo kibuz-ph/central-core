@@ -17,5 +17,7 @@ model ResidentialComplex {
   updatedAt      DateTime  @updatedAt
   deletedAt      DateTime?
 
+  commonAreas CommonArea[]
+
   @@map("residential_complexes")
 }
