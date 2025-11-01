@@ -7,6 +7,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { CreateUserDetailUseCase } from '../user-details/application/services/create-user-detail.use-case';
 import { UserDetailPrismaRepository } from '../user-details/infrastructure/persistence/user_detail.repository.prisma';
 import { UserDetailsModule } from '../user-details/user-details.module';
+import { CreateUserUseCase } from '../users/application/services/create-user.use-case';
 import { UserPrismaRepository } from '../users/infrastructure/persistence/user.repository.prisma';
 import { UsersModule } from '../users/users.module';
 import { CheckAuthStatusUseCase } from './application/services/check-auth-status.use-case';
@@ -39,6 +40,7 @@ import { AuthController } from './presentation/auth.controller';
   providers: [
     SignInUseCase,
     SignupUseCase,
+    CreateUserUseCase,
     CreateUserDetailUseCase,
     CheckAuthStatusUseCase,
     LocalStrategy,

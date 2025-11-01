@@ -8,7 +8,7 @@ export interface UserDetailProps {
   birthday: Date;
   email: string;
   phone: string;
-  userId?: string;
+  userId: string;
 }
 
 export class UserDetail {
@@ -21,7 +21,7 @@ export class UserDetail {
   public readonly birthday: Date;
   public readonly email: string;
   public readonly phone: string;
-  public readonly userId?: string;
+  public readonly userId: string;
 
   constructor(props: UserDetailProps) {
     this.id = props.id;

@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { PaginationQueryDto } from '../../../common/dtos/pagination-query.dto';
 import { DomainException } from '../../../modules/pino/domain/exceptions/domain.exception';
 import { UserRepositoryInterface } from '../../domain/repositories/user.repository-interface';
 import { UserResponseDto } from '../dto/user-response.dto';
@@ -10,8 +11,8 @@ export class FindUsersUseCase {
     private readonly userRepositoryInterface: UserRepositoryInterface,
   ) {}
 
-  async executeAll(): Promise<UserResponseDto[]> {
-    const users = await this.userRepositoryInterface.findAll();
+  async executeAll(paginationQueryDto: PaginationQueryDto): Promise<UserResponseDto[]> {
+    const users = await this.userRepositoryInterface.findAll(paginationQueryDto);
 
     if (!users) {
       throw new DomainException(`Users not found`);
