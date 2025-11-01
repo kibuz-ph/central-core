@@ -1,4 +1,5 @@
 import { Inject } from '@nestjs/common';
+import { PaginationQueryDto } from '../../../common/dtos/pagination-query.dto';
 import { Prisma } from '../../../prisma/prisma-client/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { UserResponseDto, UserResponseProps } from '../../application/dto/user-response.dto';
@@ -39,7 +40,7 @@ export class UserPrismaRepository implements UserRepositoryInterface {
       : null;
   }
 
-  async findAll(): Promise<UserResponseDto[] | null> {
+  async findAll(paginationQueryDto: PaginationQueryDto): Promise<UserResponseDto[] | null> {
     const users = await this.prisma.user.findMany({
       include: {
         userDetail: true,
@@ -47,6 +48,8 @@ export class UserPrismaRepository implements UserRepositoryInterface {
       where: {
         isActive: true,
       },
+      take: paginationQueryDto.perPage,
+      skip: paginationQueryDto.page,
     });
 
     if (!users) return null;
@@ -69,6 +72,26 @@ export class UserPrismaRepository implements UserRepositoryInterface {
     if (!user) return null;
 
     return UserResponseDto.fromEntities(user as UserResponseProps);
+  }
+
+  async create(user: User): Promise<User> {
+    const createdUser = await this.prisma.user.create({
+      data: {
+        ...user,
+        password: user.getPassword(),
+      },
+    });
+
+    return User.fromPrisma(createdUser);
+  }
+
+  async update(id: string, user: Partial<User>): Promise<User> {
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: { ...user },
+    });
+
+    return User.fromPrisma(updatedUser);
   }
 
   async delete(id: string): Promise<boolean> {

@@ -1,8 +1,8 @@
 import { PartialType } from '@nestjs/swagger';
 import { IsBoolean, IsOptional } from 'class-validator';
-import { CreateUserDetailDto } from './create-user-detail.dto';
+import { CreateUserDto } from './create-user.dto';
 
-export class UpdateUserDetailDto extends PartialType(CreateUserDetailDto) {
+export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsBoolean()
   @IsOptional()
   isActive?: boolean;
