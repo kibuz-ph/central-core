@@ -5,10 +5,12 @@ import { CustomCacheModule } from './modules/cache/cahce.module';
 import { FrobnicatorModule } from './modules/frobnicator/frobnicator.module';
 import { PinoModule } from './modules/pino/pino.module';
 import { MsUserModule } from './ms-user/ms-user.module';
+import { ResidentialComplexModule } from './residential-complex/residential-complex.module';
 
 @Module({
   imports: [
     MsUserModule,
+    ResidentialComplexModule,
     FrobnicatorModule,
     CustomCacheModule,
     PinoModule,

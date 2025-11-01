@@ -30,6 +30,14 @@ export default tseslint.config(
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
       '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          'argsIgnorePattern': '^_',
+          'varsIgnorePattern': '^_',
+          'caughtErrorsIgnorePattern': '^_'
+        }
+      ],
       'semi': ['error', 'always'],
       'object-curly-spacing': ['error', 'always'],
       'space-before-blocks': 'error',
@@ -38,7 +46,8 @@ export default tseslint.config(
         'error',
         {
           'selector': 'variable',
-          'format': ['camelCase', 'UPPER_CASE', 'PascalCase']
+          'format': ['camelCase', 'UPPER_CASE', 'PascalCase'],
+          'leadingUnderscore': 'allow'
         },
         {
           'selector': 'function',
@@ -54,7 +63,8 @@ export default tseslint.config(
         },
         {
           'selector': 'parameter',
-          'format': ['camelCase']
+          'format': ['camelCase'],
+          'leadingUnderscore': 'allow'
         },
         {
           'selector': 'property',

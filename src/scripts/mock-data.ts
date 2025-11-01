@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import 'dotenv/config';
 import { Prisma, PrismaClient } from '../prisma/prisma-client/client';
 import { Role } from '../prisma/prisma-client/enums';
+import { seedResidentialComplexes } from './seeders/residential-complex.seeder';
 
 const prisma = new PrismaClient();
 
@@ -39,13 +40,15 @@ async function createUsers(tx: Prisma.TransactionClient) {
 
   const users = await Promise.all(
     usersData.map(userData =>
-      tx.user.create({
-        data: userData,
+      tx.user.upsert({
+        where: { email: userData.email },
+        update: {},
+        create: userData,
       }),
     ),
   );
 
-  console.log(`✅ Created ${users.length} users (1 admin, 5 regular users)`);
+  console.log(`✅ Created/updated ${users.length} users (1 admin, 5 regular users)`);
   return users;
 }
 
@@ -53,6 +56,7 @@ async function main() {
   await prisma.$transaction(
     async (tx: Prisma.TransactionClient) => {
       await createUsers(tx);
+      await seedResidentialComplexes(tx);
     },
     { timeout: 100000 },
   );
