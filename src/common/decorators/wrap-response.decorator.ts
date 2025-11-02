@@ -8,7 +8,7 @@ export const WRAP_WITH_DATA_KEY = 'wrapWithData';
  * @param withData - If true, wraps response as {message, success, data}. If false, wraps as {message, success}
  */
 export const WrapResponse = (withData: boolean = false) => {
-  return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+  return (target: object, propertyKey: string, descriptor: PropertyDescriptor) => {
     SetMetadata(WRAP_RESPONSE_KEY, true)(target, propertyKey, descriptor);
     SetMetadata(WRAP_WITH_DATA_KEY, withData)(target, propertyKey, descriptor);
     return descriptor;
