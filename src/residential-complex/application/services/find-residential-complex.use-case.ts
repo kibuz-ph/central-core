@@ -29,7 +29,6 @@ export class FindResidentialComplexUseCase {
     if (!residentialComplex) {
       throw new DomainException(`Residential complex ${slug} not found`);
     }
-    console.log('residentialComplex', residentialComplex);
     return ResidentialComplexResponseDto.fromEntities(residentialComplex);
   }
 }
