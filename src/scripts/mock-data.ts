@@ -76,6 +76,7 @@ async function main() {
     async (tx: Prisma.TransactionClient) => {
       await createUsers(tx);
       await seedResidentialComplexes(tx);
+      await seedCommonAreas(tx);
     },
     { timeout: 100000 },
   );
