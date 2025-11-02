@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import 'dotenv/config';
 import { Prisma, PrismaClient } from '../prisma/prisma-client/client';
 import { Role } from '../prisma/prisma-client/enums';
+import { seedCommonAreas } from './seeders/common-area.seeder';
 import { seedResidentialComplexes } from './seeders/residential-complex.seeder';
 
 const prisma = new PrismaClient();
@@ -57,6 +58,7 @@ async function main() {
     async (tx: Prisma.TransactionClient) => {
       await createUsers(tx);
       await seedResidentialComplexes(tx);
+      await seedCommonAreas(tx);
     },
     { timeout: 100000 },
   );

@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { Prisma } from '../../prisma/prisma-client/client';
+import { generateSlug } from '../../common/utils/slug-generator.util';
 
 export async function seedResidentialComplexes(tx: Prisma.TransactionClient) {
   const complexesData = Array.from({ length: 10 }).map(() => {
@@ -7,7 +8,7 @@ export async function seedResidentialComplexes(tx: Prisma.TransactionClient) {
     return {
       nit: faker.number.int({ min: 900000000, max: 999999999 }),
       name: `${companyName} Residencial`,
-      slug: faker.helpers.slugify(`${companyName} residencial`).toLowerCase(),
+      slug: generateSlug(`${companyName} Residencial`),
       phone: faker.phone.number(),
       address: faker.location.streetAddress(),
       city: faker.helpers.arrayElement(['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena']),
