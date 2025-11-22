@@ -19,7 +19,7 @@ export class SecurityServices implements SecurityServiceInterface {
   ) {}
 
   async validateUserByEmailPwd(signinDto: SignInDto): Promise<Omit<UserProps, 'password'> | null> {
-    const user = await this.userRepository.findByEmailAuth(signinDto.email);
+    const user = await this.userRepository.findUnique({ conditions: { email: signinDto.email } });
     if (!user?.isActive) {
       return null;
     }

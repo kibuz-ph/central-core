@@ -57,7 +57,7 @@ export class UsersController {
     requireAuth: true,
   })
   async getUsers(@Query() paginationQueryDto: PaginationQueryDto): Promise<UserResponseDto[]> {
-    return this.findUsersUseCase.executeAll(paginationQueryDto);
+    return this.findUsersUseCase.executeMany(paginationQueryDto);
   }
 
   @Get(':id')

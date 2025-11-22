@@ -11,13 +11,17 @@ export class FindUsersUseCase {
     private readonly userRepositoryInterface: UserRepositoryInterface,
   ) {}
 
-  async executeAll(paginationQueryDto: PaginationQueryDto): Promise<UserResponseDto[]> {
-    const users = await this.userRepositoryInterface.findAll(paginationQueryDto);
+  async executeMany(paginationQueryDto: PaginationQueryDto): Promise<UserResponseDto[]> {
+    const users = await this.userRepositoryInterface.findMany({
+      conditions: { isActive: true },
+      paginationQueryDto,
+    });
 
     if (!users) {
       throw new DomainException(`Users not found`);
     }
-    return users;
+
+    return users.map(user => UserResponseDto.fromEntities(user as UserResponseDto));
   }
 
   async executeById(id: string): Promise<UserResponseDto> {
@@ -29,6 +33,6 @@ export class FindUsersUseCase {
       throw new DomainException(`User ${id} not found`);
     }
 
-    return user;
+    return UserResponseDto.fromEntities(user as UserResponseDto);
   }
 }

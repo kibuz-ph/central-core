@@ -12,7 +12,7 @@ export class ActivateUserUseCase {
 
   async execute(id: string): Promise<boolean> {
     const userExists = await this.userRepository.findUnique({
-      conditions: { id },
+      conditions: { id, isActive: false },
     });
 
     if (!userExists) {

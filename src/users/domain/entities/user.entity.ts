@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcryptjs';
+import { UserDetail } from '../../../user-details/domain/entities/user-detail.entity';
 
 export interface UserProps {
   id?: string;
@@ -6,6 +7,7 @@ export interface UserProps {
   email: string;
   password?: string;
   isActive: boolean;
+  userDetail?: UserDetail;
 }
 
 export class User {
@@ -14,6 +16,7 @@ export class User {
   public readonly email: string;
   private password: string;
   public readonly isActive: boolean;
+  public readonly userDetail?: UserDetail | null;
 
   constructor(props: UserProps) {
     this.id = props.id;
@@ -21,6 +24,7 @@ export class User {
     this.email = props.email;
     this.password = props.password ?? '';
     this.isActive = props.isActive;
+    this.userDetail = props.userDetail;
   }
 
   async setPassword(newPassword: string) {
@@ -38,7 +42,7 @@ export class User {
   // This method looks like it's unused, but it's used for security reason on data convertion
   toJSON(): Omit<UserProps, 'password'> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...data } = this;
+    const { password, userDetail, ...data } = this;
     return data;
   }
 
@@ -49,6 +53,7 @@ export class User {
       email: data.email,
       password: data.password,
       isActive: data.isActive,
+      userDetail: data.userDetail,
     });
   }
 }

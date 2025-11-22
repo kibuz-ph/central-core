@@ -9,7 +9,6 @@ interface UserProps {
   username?: string;
   email?: string;
   password?: string;
-  isActive?: boolean;
 }
 
 interface UserDetailProps {
@@ -19,7 +18,6 @@ interface UserDetailProps {
   lastName?: string;
   secondLastName?: string;
   birthday?: Date;
-  email?: string;
   phone?: string;
 }
 
@@ -52,7 +50,6 @@ export class UpdateUserUseCase {
       username: updateUserDto.username,
       email: updateUserDto.email,
       password: updateUserDto.password,
-      isActive: updateUserDto.isActive,
     };
     const updateUser = await this.userRepository.update(id, user);
 
@@ -63,7 +60,6 @@ export class UpdateUserUseCase {
       lastName: updateUserDto.lastName,
       secondLastName: updateUserDto.secondLastName,
       birthday: updateUserDto.birthday,
-      email: updateUserDto.email,
       phone: updateUserDto.phone,
     };
     const updateUserDetail = await this.updateUserDetailUseCase.update(id, userDetail);

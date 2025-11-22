@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsBoolean, IsObject, IsString } from 'class-validator';
-import { UserDetail } from '../../../user-details/domain/entities/user_detail.entity';
+import { IsBoolean, IsString } from 'class-validator';
+import { UserDetailResponseDto } from '../../../user-details/application/dto/user-detail-response.dto';
+import { UserDetail } from '../../../user-details/domain/entities/user-detail.entity';
 
 export interface UserResponseProps {
   id?: string;
@@ -28,42 +28,21 @@ export class UserResponseDto {
   @IsBoolean()
   isActive: boolean;
 
-  @ApiProperty({ type: UserDetail, description: 'User details' })
-  @Type(() => UserDetail)
-  @IsObject()
-  userDetail?: UserDetail;
+  @ApiProperty({
+    type: [UserDetailResponseDto],
+    description: 'User details',
+  })
+  userDetail?: UserDetailResponseDto;
 
   constructor(user: UserResponseProps) {
     this.id = user.id;
     this.username = user.username;
     this.email = user.email;
     this.isActive = user.isActive;
-
-    if (user.userDetail != null) {
-      this.userDetail = new UserDetail({
-        id: user.userDetail.id,
-        document: user.userDetail.document,
-        firstName: user.userDetail.firstName,
-        secondName: user.userDetail.secondName,
-        lastName: user.userDetail.lastName,
-        secondLastName: user.userDetail.secondLastName,
-        birthday: user.userDetail.birthday,
-        email: user.userDetail.email,
-        phone: user.userDetail.phone,
-        userId: user.userDetail.userId,
-      });
-    }
+    this.userDetail = user.userDetail && UserDetailResponseDto.fromEntities(user.userDetail);
   }
 
   static fromEntities(user: UserResponseProps): UserResponseDto {
     return new UserResponseDto(user);
-  }
-
-  static fromEntitiesAll(users: UserResponseProps[]): UserResponseDto[] {
-    const usersResp: UserResponseDto[] = [];
-    users.map(user => {
-      usersResp.push(new UserResponseDto(user));
-    });
-    return usersResp;
   }
 }

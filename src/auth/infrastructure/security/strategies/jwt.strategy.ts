@@ -29,7 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: TokenPayloadDto) {
-    const user = await this.userRepository.findByIdAuth(payload.id);
+    const user = await this.userRepository.findUnique({ conditions: { id: payload.id } });
     if (!user) {
       throw new DomainException(`User with id: ${payload.id} doesn't exist`);
     }
