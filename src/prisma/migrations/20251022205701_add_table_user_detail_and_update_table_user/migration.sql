@@ -33,7 +33,6 @@ CREATE TABLE "user_details" (
     "lastName" TEXT NOT NULL,
     "secondLastName" TEXT,
     "birthday" TIMESTAMP(3) NOT NULL,
-    "email" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -42,9 +41,6 @@ CREATE TABLE "user_details" (
 
     CONSTRAINT "user_details_pkey" PRIMARY KEY ("id")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "users_details_email_key" ON "user_details"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_details_phone_key" ON "user_details"("phone");

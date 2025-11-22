@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { UserDetail } from '../../domain/entities/user_detail.entity';
-import { UserDetailRepositoryInterface } from '../../domain/repositories/user_detail.repository-interface';
+import { UserDetail } from '../../domain/entities/user-detail.entity';
+import { UserDetailRepositoryInterface } from '../../domain/repositories/user-detail.repository-interface';
 
 export class UserDetailPrismaRepository implements UserDetailRepositoryInterface {
   constructor(

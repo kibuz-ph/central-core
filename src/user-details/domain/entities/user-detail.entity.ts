@@ -6,7 +6,6 @@ export interface UserDetailProps {
   lastName: string;
   secondLastName?: string;
   birthday: Date;
-  email: string;
   phone: string;
   userId: string;
 }
@@ -19,7 +18,6 @@ export class UserDetail {
   public readonly lastName: string;
   public readonly secondLastName?: string;
   public readonly birthday: Date;
-  public readonly email: string;
   public readonly phone: string;
   public readonly userId: string;
 
@@ -31,7 +29,6 @@ export class UserDetail {
     this.lastName = props.lastName;
     this.secondLastName = props.secondLastName;
     this.birthday = props.birthday;
-    this.email = props.email;
     this.phone = props.phone;
     this.userId = props.userId;
   }
@@ -45,7 +42,6 @@ export class UserDetail {
       lastName: data.lastName,
       secondLastName: data.secondLastName,
       birthday: data.birthday,
-      email: data.email,
       phone: data.phone,
       userId: data.userId,
     });

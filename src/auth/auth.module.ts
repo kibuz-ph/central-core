@@ -5,7 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { Config } from '../config/config';
 import { PrismaModule } from '../prisma/prisma.module';
 import { CreateUserDetailUseCase } from '../user-details/application/services/create-user-detail.use-case';
-import { UserDetailPrismaRepository } from '../user-details/infrastructure/persistence/user_detail.repository.prisma';
+import { UserDetailPrismaRepository } from '../user-details/infrastructure/persistence/user-detail.repository.prisma';
 import { UserDetailsModule } from '../user-details/user-details.module';
 import { CreateUserUseCase } from '../users/application/services/create-user.use-case';
 import { UserPrismaRepository } from '../users/infrastructure/persistence/user.repository.prisma';

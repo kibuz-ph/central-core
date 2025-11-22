@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UserDetail } from '../../domain/entities/user_detail.entity';
-import { UserDetailRepositoryInterface } from '../../domain/repositories/user_detail.repository-interface';
+import { UserDetail } from '../../domain/entities/user-detail.entity';
+import { UserDetailRepositoryInterface } from '../../domain/repositories/user-detail.repository-interface';
 
 @Injectable()
 export class CreateUserDetailUseCase {

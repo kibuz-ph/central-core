@@ -6,7 +6,6 @@ model userDetail {
   lastName       String
   secondLastName String?
   birthday       DateTime
-  email          String    @unique()
   phone          String    @unique()
   user           User      @relation(fields: [userId], references: [id])
   userId         String    @unique

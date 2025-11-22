@@ -3,7 +3,7 @@ import { PassportModule } from '@nestjs/passport';
 import { PrismaModule } from '../prisma/prisma.module';
 import { CreateUserDetailUseCase } from '../user-details/application/services/create-user-detail.use-case';
 import { UpdateUserDetailUseCase } from '../user-details/application/services/update-user-detail.use-case';
-import { UserDetailPrismaRepository } from '../user-details/infrastructure/persistence/user_detail.repository.prisma';
+import { UserDetailPrismaRepository } from '../user-details/infrastructure/persistence/user-detail.repository.prisma';
 import { ActivateUserUseCase } from './application/services/activate-user.use-case';
 import { CreateUserUseCase } from './application/services/create-user.use-case';
 import { DeleteUserUseCase } from './application/services/delete-user.use-case';

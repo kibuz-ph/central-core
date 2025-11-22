@@ -4,7 +4,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from '../prisma/prisma.module';
 import { CreateUserDetailUseCase } from './application/services/create-user-detail.use-case';
 import { UpdateUserDetailUseCase } from './application/services/update-user-detail.use-case';
-import { UserDetailPrismaRepository } from './infrastructure/persistence/user_detail.repository.prisma';
+import { UserDetailPrismaRepository } from './infrastructure/persistence/user-detail.repository.prisma';
 
 @Module({
   imports: [
