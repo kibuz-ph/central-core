@@ -1,0 +1,17 @@
+model userDetail {
+  id             String    @id @default(uuid())
+  document       String    @unique()
+  firstName      String
+  secondName     String?
+  lastName       String
+  secondLastName String?
+  birthday       DateTime
+  phone          String    @unique()
+  user           User      @relation(fields: [userId], references: [id])
+  userId         String    @unique
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  @@map("user_details")
+}
