@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import 'dotenv/config';
 import { Prisma, PrismaClient } from '../prisma/prisma-client/client';
+import { seedCommonAreas } from './seeders/common-area.seeder';
 import { seedResidentialComplexes } from './seeders/residential-complex.seeder';
 
 const prisma = new PrismaClient();
@@ -47,7 +48,7 @@ async function createUsers(tx: Prisma.TransactionClient) {
       phone: faker.phone.number(),
       userId: uuid,
     },
-    ...Array.from({ length: 5 }).map((value: any, index: number) => ({
+    ...Array.from({ length: 5 }).map((_: unknown, index: number) => ({
       document: faker.string.numeric(10),
       firstName: faker.person.firstName(),
       secondName: faker.datatype.boolean() ? faker.person.firstName() : undefined,

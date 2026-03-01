@@ -9,6 +9,7 @@
     "typescript",
     "javascript"
   ],
+  "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.preferences.importModuleSpecifier": "relative",
   "[typescript]": {
     "editor.formatOnSave": true,
