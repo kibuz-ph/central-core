@@ -1,3 +1,5 @@
+import { CommonArea } from '../../../common-area/domain/entities/common-area.entity';
+
 export interface ResidentialComplexProps {
   id?: string;
   nit: number;
@@ -12,6 +14,7 @@ export interface ResidentialComplexProps {
   primaryColor?: string;
   secondaryColor?: string;
   isActive: boolean;
+  commonAreas?: CommonArea[];
 }
 
 export class ResidentialComplex {
@@ -28,6 +31,7 @@ export class ResidentialComplex {
   public readonly primaryColor?: string;
   public readonly secondaryColor?: string;
   public readonly isActive: boolean;
+  public readonly commonAreas?: CommonArea[];
 
   constructor(props: ResidentialComplexProps) {
     this.id = props.id;
@@ -43,6 +47,7 @@ export class ResidentialComplex {
     this.primaryColor = props.primaryColor;
     this.secondaryColor = props.secondaryColor;
     this.isActive = props.isActive;
+    this.commonAreas = props.commonAreas;
   }
 
   static fromPrisma(data: ResidentialComplexProps) {
@@ -60,6 +65,7 @@ export class ResidentialComplex {
       primaryColor: data.primaryColor,
       secondaryColor: data.secondaryColor,
       isActive: data.isActive,
+      commonAreas: data.commonAreas,
     });
   }
 }
