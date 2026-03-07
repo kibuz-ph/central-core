@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { Config } from './config/config';
 import { PinoLoggerService } from './modules/pino/application/services/pino-logger.service';
@@ -13,6 +14,7 @@ async function bootstrap() {
   const port: number = configService.get('port') || 3001;
   const corsOrigins: string[] = configService.get('cors') || [];
 
+  app.use(cookieParser());
   app.setGlobalPrefix('api');
 
   app.useGlobalPipes(

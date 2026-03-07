@@ -1,6 +1,7 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
+import { Request } from 'express';
 import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
 import { Config } from '../../../../config/config';
 import { DomainException } from '../../../../modules/pino/domain/exceptions/domain.exception';
@@ -20,7 +21,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
 
     const strategyOptions: StrategyOptions = {
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (req: Request) => (req?.cookies?.accessToken as string | undefined) ?? null,
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ]),
       ignoreExpiration: false,
       secretOrKey: secret,
     };
