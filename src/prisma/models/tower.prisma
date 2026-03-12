@@ -1,5 +1,5 @@
 model Tower {
-  id                   String  @id @default(uuid())
+  id                   String    @id @default(uuid())
   name                 String
   description          String?
   residentialComplexId String

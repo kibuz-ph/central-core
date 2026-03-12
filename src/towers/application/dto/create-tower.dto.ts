@@ -4,7 +4,7 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class CreateTowerDto {
   @ApiProperty({
     example: 'Tower 1',
-    description: "Tower name",
+    description: 'Tower name',
   })
   @IsString()
   @IsNotEmpty()

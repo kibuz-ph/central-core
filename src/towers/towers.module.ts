@@ -10,30 +10,27 @@ import { TowerPrismaRepository } from './infrastructure/persistence/tower.reposi
 import { TowersController } from './presentation/towers.controller';
 
 @Module({
-    controllers: [TowersController],
-    imports: [
-        PrismaModule,
-        PassportModule.register({ defaultStrategy: 'jwt' }),
-    ],
-    providers: [
-        FindTowersUseCase,
-        CreateTowerUseCase,
-        UpdateTowerUseCase,
-        DeleteTowerUseCase,
-        {
-            provide: 'TowerRepositoryInterface',
-            useClass: TowerPrismaRepository,
-        },
-        {
-            provide: 'ResidentialComplexInterface',
-            useClass: ResidentialComplexPrismaRepository,
-        },
-    ],
-    exports: [
-        {
-            provide: 'TowerRepositoryInterface',
-            useClass: TowerPrismaRepository,
-        },
-    ],
+  controllers: [TowersController],
+  imports: [PrismaModule, PassportModule.register({ defaultStrategy: 'jwt' })],
+  providers: [
+    FindTowersUseCase,
+    CreateTowerUseCase,
+    UpdateTowerUseCase,
+    DeleteTowerUseCase,
+    {
+      provide: 'TowerRepositoryInterface',
+      useClass: TowerPrismaRepository,
+    },
+    {
+      provide: 'ResidentialComplexInterface',
+      useClass: ResidentialComplexPrismaRepository,
+    },
+  ],
+  exports: [
+    {
+      provide: 'TowerRepositoryInterface',
+      useClass: TowerPrismaRepository,
+    },
+  ],
 })
 export class TowersModule {}

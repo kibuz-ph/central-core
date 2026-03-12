@@ -18,7 +18,7 @@ model ResidentialComplex {
   deletedAt      DateTime?
 
   commonAreas CommonArea[]
-  towers Tower[]
+  towers      Tower[]
 
   @@map("residential_complexes")
 }

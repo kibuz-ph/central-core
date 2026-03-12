@@ -10,7 +10,7 @@ export class TowerResponseDto {
 
   @ApiProperty({
     example: 'Tower 1',
-    description: "Tower name",
+    description: 'Tower name',
   })
   name: string;
 

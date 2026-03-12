@@ -50,7 +50,12 @@ export class ResidentialComplexPrismaRepository implements ResidentialComplexInt
   }
 
   async create(residentialComplex: ResidentialComplexProps): Promise<ResidentialComplex> {
-    const { id: _id, towers: _towers, commonAreas: _commonAreas, ...residentialComplexData } = residentialComplex;
+    const {
+      id: _id,
+      towers: _towers,
+      commonAreas: _commonAreas,
+      ...residentialComplexData
+    } = residentialComplex;
     const residentialComplexCreated = await this.prisma.residentialComplex.create({
       data: residentialComplexData,
     });
