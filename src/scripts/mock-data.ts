@@ -3,6 +3,7 @@ import 'dotenv/config';
 import { Prisma, PrismaClient } from '../prisma/prisma-client/client';
 import { seedCommonAreas } from './seeders/common-area.seeder';
 import { seedResidentialComplexes } from './seeders/residential-complex.seeder';
+import { seedTowers } from './seeders/towers.seeder';
 
 const prisma = new PrismaClient();
 
@@ -78,6 +79,7 @@ async function main() {
       await createUsers(tx);
       await seedResidentialComplexes(tx);
       await seedCommonAreas(tx);
+      await seedTowers(tx);
     },
     { timeout: 100000 },
   );

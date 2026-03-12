@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CommonAreaResponseDto } from '../../../common-area/application/dto/common-area-response.dto';
+import { TowerResponseDto } from '../../../towers/application/dto/tower-response.dto';
 import { ResidentialComplex } from '../../domain/entities/residential-complex.entity';
 
 export class ResidentialComplexResponseDto {
@@ -82,6 +83,12 @@ export class ResidentialComplexResponseDto {
   isActive?: boolean;
 
   @ApiProperty({
+    type: [TowerResponseDto],
+    description: "Residential complex's towers",
+  })
+  towers?: TowerResponseDto[];
+
+  @ApiProperty({
     type: [CommonAreaResponseDto],
     description: "Residential complex's common areas",
   })
@@ -101,6 +108,9 @@ export class ResidentialComplexResponseDto {
     this.primaryColor = residentialComplex.primaryColor;
     this.secondaryColor = residentialComplex.secondaryColor;
     this.isActive = residentialComplex.isActive;
+    this.towers = residentialComplex.towers?.map(tower =>
+      TowerResponseDto.fromEntities(tower),
+    );
     this.commonAreas = residentialComplex.commonAreas?.map(area =>
       CommonAreaResponseDto.fromEntities(area),
     );

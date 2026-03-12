@@ -1,4 +1,5 @@
 import { CommonArea } from '../../../common-area/domain/entities/common-area.entity';
+import { Tower } from '../../../towers/domain/entities/tower.entity';
 
 export interface ResidentialComplexProps {
   id?: string;
@@ -14,6 +15,7 @@ export interface ResidentialComplexProps {
   primaryColor?: string;
   secondaryColor?: string;
   isActive: boolean;
+  towers?: Tower[];
   commonAreas?: CommonArea[];
 }
 
@@ -31,6 +33,7 @@ export class ResidentialComplex {
   public readonly primaryColor?: string;
   public readonly secondaryColor?: string;
   public readonly isActive: boolean;
+  public readonly towers?: Tower[];
   public readonly commonAreas?: CommonArea[];
 
   constructor(props: ResidentialComplexProps) {
@@ -47,6 +50,7 @@ export class ResidentialComplex {
     this.primaryColor = props.primaryColor;
     this.secondaryColor = props.secondaryColor;
     this.isActive = props.isActive;
+    this.towers = props.towers;
     this.commonAreas = props.commonAreas;
   }
 
@@ -65,6 +69,7 @@ export class ResidentialComplex {
       primaryColor: data.primaryColor,
       secondaryColor: data.secondaryColor,
       isActive: data.isActive,
+      towers: data.towers,
       commonAreas: data.commonAreas,
     });
   }

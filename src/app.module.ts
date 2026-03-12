@@ -6,6 +6,7 @@ import { CustomCacheModule } from './modules/cache/cahce.module';
 import { FrobnicatorModule } from './modules/frobnicator/frobnicator.module';
 import { PinoModule } from './modules/pino/pino.module';
 import { ResidentialComplexModule } from './residential-complex/residential-complex.module';
+import { TowersModule } from './towers/towers.module';
 import { UserDetailsModule } from './user-details/user-details.module';
 import { UsersModule } from './users/users.module';
 
@@ -15,6 +16,7 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     UserDetailsModule,
     ResidentialComplexModule,
+    TowersModule,
     FrobnicatorModule,
     CustomCacheModule,
     PinoModule,
