@@ -1,0 +1,13 @@
+model Role {
+  id        String          @id @default(uuid())
+  name      user_role_types
+  userRoles UserRole[]
+
+  @@unique([id])
+  @@map("roles")
+}
+
+enum user_role_types {
+  ADMIN
+  USER
+}
