@@ -70,7 +70,14 @@ $ yarn prisma:generate
 $ yarn prisma:migrate
 ```
 
-4. Populate the database with mock data (optional).
+4. Run database seeds (required — populates roles and other base data).
+
+```bash
+# Run seeds
+$ yarn prisma:seed
+```
+
+5. Populate the database with mock data (optional).
 
 ```bash
 # Run populate script
