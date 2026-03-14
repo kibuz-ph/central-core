@@ -10,12 +10,12 @@ export class DeleteTowerUseCase {
   ) {}
 
   async execute(id: string, residentialComplexId: string): Promise<boolean> {
-    const commonArea = await this.towerRepositoryInterface.findByIdAndResidentialComplexId(
+    const tower = await this.towerRepositoryInterface.findByIdAndResidentialComplexId(
       id,
       residentialComplexId,
     );
 
-    if (!commonArea) {
+    if (!tower) {
       throw new DomainException(
         `Tower: ${id} doesn't belongs to Residential Complex: ${residentialComplexId}`,
       );
