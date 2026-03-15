@@ -11,6 +11,3 @@ CREATE TABLE "public"."roles" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "roles_id_key" ON "public"."roles"("id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "user_details_document_key" ON "public"."user_details"("document");
