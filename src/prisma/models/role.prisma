@@ -8,6 +8,7 @@ model Role {
 }
 
 enum user_role_types {
+  SUPER_ADMIN
   ADMIN
   USER
 }
