@@ -109,18 +109,32 @@ export class UsersController {
     return this.registerUserUseCase.register(createUserDto);
   }
 
+  /**
+   * TODO: Create security decorator
+   * Only `ADMIN` can assign `USER` role
+   * @param residentialComplexId
+   * @param createUserDto
+   * @returns
+   */
   @Post(`/residential-complex/:residentialComplexId/user`)
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.CREATED)
   @SetResponseMessageDecorator('User created and assigned USER role successfully')
   @EndpointSwaggerDecorator({
-    summary: 'Create user and assign USER role to a residential complex',
+    summary: 'Register a user with USER role in a residential complex',
+    description: `Creates a new user account with its detail and assigns the USER role for the given residential complex. 
+      Validates that the residential complex exists before any record is created. 
+      A user cannot hold the same role twice in the same residential complex.`,
     bodyType: CreateUserDto,
     successStatus: HttpStatus.CREATED,
     extraResponses: [
       {
+        status: HttpStatus.BAD_REQUEST,
+        description: 'Residential complex not found',
+      },
+      {
         status: HttpStatus.CONFLICT,
-        description: 'User already exists',
+        description: 'User with the same email, document or phone already exists',
       },
     ],
     requireAuth: true,
@@ -136,15 +150,29 @@ export class UsersController {
     );
   }
 
+  /**
+   * TODO: Create security decorator
+   * Only `SUPER_ADMIN` can assign `ADMIN` role
+   * @param residentialComplexId
+   * @param createUserDto
+   * @returns
+   */
   @Post(`/residential-complex/:residentialComplexId/admin`)
   @UseGuards(AuthGuard())
   @HttpCode(HttpStatus.CREATED)
   @SetResponseMessageDecorator('User created and assigned ADMIN role successfully')
   @EndpointSwaggerDecorator({
-    summary: 'Create user and assign ADMIN role to a residential complex',
+    summary: 'Register a user with ADMIN role in a residential complex',
+    description: `Creates a new user account with its detail and assigns the ADMIN role for the given residential complex.
+      Validates that the residential complex exists before any record is created.
+      A user cannot hold the same role twice in the same residential complex.`,
     bodyType: CreateUserDto,
     successStatus: HttpStatus.CREATED,
     extraResponses: [
+      {
+        status: HttpStatus.BAD_REQUEST,
+        description: 'Residential complex not found',
+      },
       {
         status: HttpStatus.CONFLICT,
         description: 'User already exists',

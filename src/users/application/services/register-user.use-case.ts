@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DomainException } from '../../../modules/pino/domain/exceptions/domain.exception';
+import { FindResidentialComplexUseCase } from '../../../residential-complex/application/services/find-residential-complex.use-case';
 import { FindRoleByNameUseCase } from '../../../role/application/services/find-role-by-name.use-case';
 import { UserRoleTypes, userRoleTypes } from '../../../role/domain/enums/user-role-types.enum';
 import { CreateUserDetailUseCase } from '../../../user-details/application/services/create-user-detail.use-case';
@@ -16,6 +17,7 @@ export class RegisterUserUseCase {
   constructor(
     @Inject('UserDetailRepositoryInterface')
     private readonly userDetailRepository: UserDetailRepositoryInterface,
+    private readonly findResidentialComplexUseCase: FindResidentialComplexUseCase,
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly createUserDetailUseCase: CreateUserDetailUseCase,
     private readonly findRoleByNameUseCase: FindRoleByNameUseCase,
@@ -28,6 +30,10 @@ export class RegisterUserUseCase {
     role: UserRoleTypes = userRoleTypes.USER,
   ): Promise<UserResponseDto> {
     await this.validateUserDetailUniqueness(userData);
+
+    if (residentialComplexId) {
+      await this.findResidentialComplexUseCase.executeById(residentialComplexId);
+    }
 
     const createdUser = await this.createUserUseCase.create(userData);
 
