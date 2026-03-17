@@ -11,15 +11,10 @@ export class FindApartmentUseCase {
   ) {}
 
   async execute(towerId: string, id: string): Promise<ApartmentResponseDto> {
-    const apartment = await this.apartmentRepositoryInterface.findByIdAndTowerId(
-      id,
-      towerId,
-    );
+    const apartment = await this.apartmentRepositoryInterface.findByIdAndTowerId(id, towerId);
 
     if (!apartment) {
-      throw new DomainException(
-        `Apartment: ${id} doesn't belongs to Tower: ${towerId}`,
-      );
+      throw new DomainException(`Apartment: ${id} doesn't belongs to Tower: ${towerId}`);
     }
 
     return ApartmentResponseDto.fromEntities(apartment);

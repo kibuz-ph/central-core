@@ -10,15 +10,10 @@ export class DeleteApartmentUseCase {
   ) {}
 
   async execute(id: string, towerId: string): Promise<boolean> {
-    const apartment = await this.apartmentRepositoryInterface.findByIdAndTowerId(
-      id,
-      towerId,
-    );
+    const apartment = await this.apartmentRepositoryInterface.findByIdAndTowerId(id, towerId);
 
     if (!apartment) {
-      throw new DomainException(
-        `Apartment: ${id} doesn't belongs to Tower: ${towerId}`,
-      );
+      throw new DomainException(`Apartment: ${id} doesn't belongs to Tower: ${towerId}`);
     }
 
     return this.apartmentRepositoryInterface.delete(id, towerId);

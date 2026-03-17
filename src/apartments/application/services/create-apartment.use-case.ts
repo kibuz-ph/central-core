@@ -19,7 +19,10 @@ export class CreateApartmentUseCase {
     residentialComplexId: string,
     createApartments: CreateApartmentDto[],
   ): Promise<ApartmentResponseDto[]> {
-    const towerExists = await this.towerRepositoryInterface.findByIdAndResidentialComplexId(towerId, residentialComplexId);
+    const towerExists = await this.towerRepositoryInterface.findByIdAndResidentialComplexId(
+      towerId,
+      residentialComplexId,
+    );
 
     if (!towerExists) {
       throw new DomainException(`Tower: ${towerId} not found`);

@@ -16,11 +16,11 @@ export async function seedApartments(tx: Prisma.TransactionClient) {
   for (const tower of towers) {
     const floor = Math.floor(Math.random() * 10) + 1;
     apartmentsData.push({
-        floor: floor,
-        reference: `${floor}0${Math.floor(Math.random() * 6) + 1}`,
-        size: '68 mt2',
-        towerId: tower.id,
-        residentialComplexId: tower.residentialComplexId,
+      floor: floor,
+      reference: `${floor}0${Math.floor(Math.random() * 6) + 1}`,
+      size: '68 mt2',
+      towerId: tower.id,
+      residentialComplexId: tower.residentialComplexId,
     });
   }
 

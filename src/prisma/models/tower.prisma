@@ -9,7 +9,7 @@ model Tower {
 
   residentialComplex ResidentialComplex @relation(fields: [residentialComplexId], references: [id])
 
-  apartments  Apartment[]
+  apartments Apartment[]
 
   @@map("towers")
 }

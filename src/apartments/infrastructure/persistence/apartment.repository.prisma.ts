@@ -10,10 +10,7 @@ export class ApartmentPrismaRepository implements ApartmentRepositoryInterface {
     private readonly prisma: PrismaService,
   ) {}
 
-  async findByIdAndTowerId(
-    id: string,
-    towerId: string,
-  ): Promise<Apartment | null> {
+  async findByIdAndTowerId(id: string, towerId: string): Promise<Apartment | null> {
     const apartment = await this.prisma.apartment.findUnique({
       where: { id, towerId },
     });

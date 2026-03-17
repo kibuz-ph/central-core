@@ -15,15 +15,10 @@ export class UpdateApartmentUseCase {
     towerId: string,
     updateApartment: UpdateApartmentDto,
   ): Promise<boolean> {
-    const apartmentExists = await this.apartmentRepositoryInterface.findByIdAndTowerId(
-      id,
-      towerId,
-    );
+    const apartmentExists = await this.apartmentRepositoryInterface.findByIdAndTowerId(id, towerId);
 
     if (!apartmentExists) {
-      throw new DomainException(
-        `Apartment: ${id} doesn't belongs to Tower: ${towerId}`,
-      );
+      throw new DomainException(`Apartment: ${id} doesn't belongs to Tower: ${towerId}`);
     }
 
     await this.apartmentRepositoryInterface.update(id, towerId, updateApartment);
