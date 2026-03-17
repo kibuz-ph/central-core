@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import 'dotenv/config';
 import { Prisma, PrismaClient } from '../prisma/prisma-client/client';
+import { seedApartments } from './seeders/apartments.seeder';
 import { seedCommonAreas } from './seeders/common-area.seeder';
 import { seedResidentialComplexes } from './seeders/residential-complex.seeder';
 import { seedTowers } from './seeders/towers.seeder';
@@ -80,6 +81,7 @@ async function main() {
       await seedResidentialComplexes(tx);
       await seedCommonAreas(tx);
       await seedTowers(tx);
+      await seedApartments(tx);
     },
     { timeout: 100000 },
   );
