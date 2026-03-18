@@ -19,9 +19,11 @@ import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decora
 import { Config } from '../../config/config';
 import { UserProps } from '../../users/domain/entities/user.entity';
 import { AuthResponseDto } from '../application/dto/auth-response.dto';
+import { UserResponseDto } from '../../users/application/dto/user-response.dto';
 import { SignInDto } from '../application/dto/signin.dto';
 import { SignupDto } from '../application/dto/signup.dto';
 import { CheckAuthStatusUseCase } from '../application/services/check-auth-status.use-case';
+import { GetMeUseCase } from '../application/services/get-me.use-case';
 import { SignupUseCase } from '../application/services/signup.use-case';
 import { SignInUseCase } from '../application/services/singin.use-case';
 import { LocalAuthGuard } from '../infrastructure/security/guards/local-auth.guard';
@@ -43,6 +45,7 @@ export class AuthController {
     private readonly signupUseCase: SignupUseCase,
     private readonly signInUseCase: SignInUseCase,
     private readonly checkAuthStatusUseCase: CheckAuthStatusUseCase,
+    private readonly getMeUseCase: GetMeUseCase,
     private readonly configService: ConfigService<Config>,
   ) {}
 
@@ -121,6 +124,20 @@ export class AuthController {
     const { user, token } = this.checkAuthStatusUseCase.execute(req.user);
     this.setAccessTokenCookie(res, token);
     return { user, success: true };
+  }
+
+  @Get('me')
+  @UseGuards(AuthGuard())
+  @EndpointSwaggerDecorator({
+    summary: 'Get authenticated user profile',
+    responseType: UserResponseDto,
+    successStatus: HttpStatus.OK,
+    requireAuth: true,
+  })
+  async getMe(
+    @Req() req: Request & { user: Omit<UserProps, 'password'> & { id: string } },
+  ): Promise<UserResponseDto> {
+    return this.getMeUseCase.execute(req.user);
   }
 
   private setAccessTokenCookie(res: Response, token: string): void {

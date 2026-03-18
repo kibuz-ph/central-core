@@ -108,9 +108,7 @@ export class ResidentialComplexResponseDto {
     this.primaryColor = residentialComplex.primaryColor;
     this.secondaryColor = residentialComplex.secondaryColor;
     this.isActive = residentialComplex.isActive;
-    this.towers = residentialComplex.towers?.map(tower =>
-      TowerResponseDto.fromEntities(tower),
-    );
+    this.towers = residentialComplex.towers?.map(tower => TowerResponseDto.fromEntities(tower));
     this.commonAreas = residentialComplex.commonAreas?.map(area =>
       CommonAreaResponseDto.fromEntities(area),
     );
