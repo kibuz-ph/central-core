@@ -11,6 +11,7 @@ import { CreateUserUseCase } from '../users/application/services/create-user.use
 import { UserPrismaRepository } from '../users/infrastructure/persistence/user.repository.prisma';
 import { UsersModule } from '../users/users.module';
 import { CheckAuthStatusUseCase } from './application/services/check-auth-status.use-case';
+import { GetMeUseCase } from './application/services/get-me.use-case';
 import { SignupUseCase } from './application/services/signup.use-case';
 import { SignInUseCase } from './application/services/singin.use-case';
 import { SecurityServices } from './infrastructure/security/services/security.service';
@@ -43,6 +44,7 @@ import { AuthController } from './presentation/auth.controller';
     CreateUserUseCase,
     CreateUserDetailUseCase,
     CheckAuthStatusUseCase,
+    GetMeUseCase,
     LocalStrategy,
     JwtStrategy,
     {
