@@ -11,10 +11,9 @@ export class FindTowersUseCase {
   ) {}
 
   async execute(residentialComplexId: string, id: string): Promise<TowerResponseDto> {
-    const tower = await this.towerRepositoryInterface.findByIdAndResidentialComplexId(
-      id,
-      residentialComplexId,
-    );
+    const tower = await this.towerRepositoryInterface.findUnique({
+      conditions: {id, residentialComplexId}
+    });
 
     if (!tower) {
       throw new DomainException(

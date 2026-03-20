@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { Prisma } from '../../../prisma/prisma-client/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { Tower, TowerProps } from '../../domain/entities/tower.entity';
 import { TowerRepositoryInterface } from '../../domain/repositories/tower.repository-interface';
@@ -9,13 +10,28 @@ export class TowerPrismaRepository implements TowerRepositoryInterface {
     @Inject(PrismaService)
     private readonly prisma: PrismaService,
   ) {}
+  
+  async findMany({
+    conditions,
+  }: {
+    conditions: Prisma.TowerWhereInput;
+  }): Promise<Tower[]> {
+    const towers = await this.prisma.tower.findMany({
+      where: conditions,
+    });
 
-  async findByIdAndResidentialComplexId(
-    id: string,
-    residentialComplexId: string,
-  ): Promise<Tower | null> {
-    const tower = await this.prisma.tower.findUnique({
-      where: { id, residentialComplexId },
+    if (!towers) return [];
+
+    return towers.map(tower => Tower.fromPrisma(tower as TowerProps));
+  }
+
+  async findUnique({
+    conditions,
+  }: {
+    conditions: Prisma.TowerWhereInput;
+  }): Promise<Tower | null> {
+    const tower = await this.prisma.tower.findFirst({
+      where: conditions
     });
 
     if (!tower) return null;

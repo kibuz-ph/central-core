@@ -10,11 +10,13 @@ export class FindApartmentUseCase {
     private readonly apartmentRepositoryInterface: ApartmentRepositoryInterface,
   ) {}
 
-  async execute(towerId: string, id: string): Promise<ApartmentResponseDto> {
-    const apartment = await this.apartmentRepositoryInterface.findByIdAndTowerId(id, towerId);
+  async execute(id: string, residentialComplexId: string): Promise<ApartmentResponseDto> {
+    const apartment = await this.apartmentRepositoryInterface.findUnique({
+      conditions: { id, residentialComplexId },
+    });
 
     if (!apartment) {
-      throw new DomainException(`Apartment: ${id} doesn't belongs to Tower: ${towerId}`);
+      throw new DomainException(`Apartment: ${id} doesn't belongs to Residential Complex: ${residentialComplexId}`);
     }
 
     return ApartmentResponseDto.fromEntities(apartment);

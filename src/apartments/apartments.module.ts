@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { PrismaModule } from '../prisma/prisma.module';
+import { ResidentialComplexPrismaRepository } from '../residential-complex/infrastructure/persistence/residential-complex.repository.prisma';
 import { TowerPrismaRepository } from '../towers/infrastructure/persistence/tower.repository.prisma';
 import { CreateApartmentUseCase } from './application/services/create-apartment.use-case';
 import { DeleteApartmentUseCase } from './application/services/delete-apartment.use-case';
@@ -24,6 +25,10 @@ import { ApartmentsController } from './presentation/apartments.controller';
     {
       provide: 'TowerRepositoryInterface',
       useClass: TowerPrismaRepository,
+    },
+    {
+      provide: 'ResidentialComplexInterface',
+      useClass: ResidentialComplexPrismaRepository,
     },
   ],
   exports: [

@@ -15,10 +15,9 @@ export class UpdateTowerUseCase {
     residentialComplexId: string,
     updateTower: UpdateTowerDto,
   ): Promise<boolean> {
-    const towerExists = await this.towerRepositoryInterface.findByIdAndResidentialComplexId(
-      id,
-      residentialComplexId,
-    );
+    const towerExists = await this.towerRepositoryInterface.findUnique({
+      conditions: {id, residentialComplexId}
+    });
 
     if (!towerExists) {
       throw new DomainException(

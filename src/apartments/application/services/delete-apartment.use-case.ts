@@ -9,13 +9,15 @@ export class DeleteApartmentUseCase {
     private readonly apartmentRepositoryInterface: ApartmentRepositoryInterface,
   ) {}
 
-  async execute(id: string, towerId: string): Promise<boolean> {
-    const apartment = await this.apartmentRepositoryInterface.findByIdAndTowerId(id, towerId);
+  async execute(id: string, residentialComplexId: string): Promise<boolean> {
+    const apartment = await this.apartmentRepositoryInterface.findUnique({
+      conditions: { id, residentialComplexId },
+    });
 
     if (!apartment) {
-      throw new DomainException(`Apartment: ${id} doesn't belongs to Tower: ${towerId}`);
+      throw new DomainException(`Apartment: ${id} doesn't belongs to Residential Complex: ${residentialComplexId}`);
     }
 
-    return this.apartmentRepositoryInterface.delete(id, towerId);
+    return this.apartmentRepositoryInterface.delete(id, residentialComplexId);
   }
 }

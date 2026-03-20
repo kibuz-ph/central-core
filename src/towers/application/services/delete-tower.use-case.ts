@@ -10,10 +10,9 @@ export class DeleteTowerUseCase {
   ) {}
 
   async execute(id: string, residentialComplexId: string): Promise<boolean> {
-    const tower = await this.towerRepositoryInterface.findByIdAndResidentialComplexId(
-      id,
-      residentialComplexId,
-    );
+    const tower = await this.towerRepositoryInterface.findUnique({
+      conditions: {id, residentialComplexId}
+    });
 
     if (!tower) {
       throw new DomainException(

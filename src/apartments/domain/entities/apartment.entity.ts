@@ -3,7 +3,7 @@ export interface ApartmentProps {
   floor: number;
   reference: string;
   size: string;
-  towerId: string;
+  towerId?: string;
   residentialComplexId: string;
 }
 
@@ -12,7 +12,7 @@ export class Apartment {
   public readonly floor: number;
   public readonly reference: string;
   public readonly size: string;
-  public readonly towerId: string;
+  public readonly towerId?: string;
   public readonly residentialComplexId: string;
 
   constructor(props: ApartmentProps) {

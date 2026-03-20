@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateApartmentDto {
   @ApiProperty({
@@ -25,4 +25,12 @@ export class CreateApartmentDto {
   @IsString()
   @IsNotEmpty()
   size: string;
+
+  @ApiProperty({
+    example: 'fb160441-660f-4e4d-af0b-b65d1a368b6f',
+    description: "Tower's unique ID",
+  })
+  @IsString()
+  @IsOptional()
+  towerId?: string;
 }

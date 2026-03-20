@@ -37,17 +37,17 @@ export class ApartmentsController {
     private readonly deleteApartmentUseCase: DeleteApartmentUseCase,
   ) {}
 
-  @Get('/:id/tower/:towerId')
+  @Get('/:id/residential-complex/:residentialComplexId')
   @UseGuards(AuthGuard())
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.OK)
   @WrapResponse(true)
   @SetResponseMessageDecorator('Apartment retrieved successfully')
   @EndpointSwaggerDecorator({
-    summary: "Get tower's apartments",
+    summary: "Get tower's or residential complex's apartments",
     responseType: createDataResponse(
       ApartmentResponseDto,
-      "Tower's apartment retrieved successfully",
+      "Tower's or residential complex's apartment retrieved successfully",
     ),
     successStatus: HttpStatus.OK,
     extraResponses: [
@@ -60,39 +60,39 @@ export class ApartmentsController {
   })
   async getApartmentById(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('towerId', new ParseUUIDPipe()) towerId: string,
+    @Param('residentialComplexId', new ParseUUIDPipe()) residentialComplexId: string,
   ): Promise<ApartmentResponseDto> {
-    return this.findApartmentUseCase.execute(towerId, id);
+    return this.findApartmentUseCase.execute(id, residentialComplexId);
   }
 
-  @Post('/tower/:towerId')
+  @Post('/residential-complex/:residentialComplexId')
   @UseGuards(AuthGuard())
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.CREATED)
   @WrapResponse(false)
-  @SetResponseMessageDecorator('Apartments added to tower successfully')
+  @SetResponseMessageDecorator('Apartments added to tower or residential complex successfully')
   @EndpointSwaggerDecorator({
     summary: 'Create apartment',
-    responseType: createBaseResponse('Apartments added to tower successfully'),
+    responseType: createBaseResponse('Apartments added to tower or residential complex successfully'),
     bodyType: ApartmentResponseDto,
     successStatus: HttpStatus.CREATED,
     extraResponses: [
       {
         status: HttpStatus.BAD_REQUEST,
-        description: 'Tower not found',
+        description: 'Residential complex not found',
       },
     ],
     requireAuth: true,
   })
   async createApartments(
-    @Param('towerId', new ParseUUIDPipe()) towerId: string,
+    @Param('residentialComplexId', new ParseUUIDPipe()) residentialComplexId: string,
     @Body() createApartments: CreateApartmentsDto,
   ): Promise<ApartmentResponseDto[]> {
-    const { residentialComplexId, items } = createApartments;
-    return this.createApartmentUseCase.execute(towerId, residentialComplexId, items);
+    const { items } = createApartments;
+    return this.createApartmentUseCase.execute(residentialComplexId, items);
   }
 
-  @Patch('/:id/tower/:towerId')
+  @Patch('/:id/residential-complex/:residentialComplexId')
   @UseGuards(AuthGuard())
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.OK)
@@ -111,13 +111,13 @@ export class ApartmentsController {
   })
   async updateApartment(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('towerId', new ParseUUIDPipe()) towerId: string,
+    @Param('residentialComplexId', new ParseUUIDPipe()) residentialComplexId: string,
     @Body() updateApartment: UpdateApartmentDto,
   ): Promise<boolean> {
-    return this.updateApartmentUseCase.execute(id, towerId, updateApartment);
+    return this.updateApartmentUseCase.execute(id, residentialComplexId, updateApartment);
   }
 
-  @Delete('/:id/tower/:towerId')
+  @Delete('/:id/residential-complex/:residentialComplexId')
   @UseGuards(AuthGuard())
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -136,8 +136,8 @@ export class ApartmentsController {
   })
   async deleteApartment(
     @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('towerId', new ParseUUIDPipe()) towerId: string,
+    @Param('residentialComplexId', new ParseUUIDPipe()) residentialComplexId: string,
   ): Promise<boolean> {
-    return this.deleteApartmentUseCase.execute(id, towerId);
+    return this.deleteApartmentUseCase.execute(id, residentialComplexId);
   }
 }

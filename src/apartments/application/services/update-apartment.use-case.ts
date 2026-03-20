@@ -12,16 +12,29 @@ export class UpdateApartmentUseCase {
 
   async execute(
     id: string,
-    towerId: string,
+    residentialComplexId: string,
     updateApartment: UpdateApartmentDto,
   ): Promise<boolean> {
-    const apartmentExists = await this.apartmentRepositoryInterface.findByIdAndTowerId(id, towerId);
-
-    if (!apartmentExists) {
-      throw new DomainException(`Apartment: ${id} doesn't belongs to Tower: ${towerId}`);
+    const towerId = updateApartment.towerId;
+    if (towerId) {
+      const apartmentExists = await this.apartmentRepositoryInterface.findUnique({
+        conditions: { id, towerId }
+      });
+  
+      if (!apartmentExists) {
+        throw new DomainException(`Apartment: ${id} doesn't belongs to Tower: ${towerId}`);
+      }
+    } else {
+      const apartmentExists = await this.apartmentRepositoryInterface.findUnique({
+        conditions: { id, residentialComplexId }
+      });
+  
+      if (!apartmentExists) {
+        throw new DomainException(`Apartment: ${id} doesn't belongs to Residential Complex: ${residentialComplexId}`);
+      }
     }
 
-    await this.apartmentRepositoryInterface.update(id, towerId, updateApartment);
+    await this.apartmentRepositoryInterface.update(id, updateApartment);
 
     return true;
   }

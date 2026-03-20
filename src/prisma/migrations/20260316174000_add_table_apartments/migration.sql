@@ -4,7 +4,7 @@ CREATE TABLE "apartments" (
     "floor" INTEGER NOT NULL,
     "reference" TEXT NOT NULL,
     "size" TEXT NOT NULL,
-    "towerId" TEXT NOT NULL,
+    "towerId" TEXT,
     "residentialComplexId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
