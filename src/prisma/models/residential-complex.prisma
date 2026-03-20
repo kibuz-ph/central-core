@@ -19,6 +19,7 @@ model ResidentialComplex {
 
   commonAreas CommonArea[]
   towers      Tower[]
+  apartments  Apartment[]
 
   @@map("residential_complexes")
 }

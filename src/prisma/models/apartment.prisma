@@ -1,15 +1,16 @@
-model Tower {
+model Apartment {
   id                   String    @id @default(uuid())
-  name                 String
-  description          String?
+  floor                Int
+  reference            String
+  size                 String
+  towerId              String?
   residentialComplexId String
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
   deletedAt            DateTime?
 
+  tower              Tower?              @relation(fields: [towerId], references: [id])
   residentialComplex ResidentialComplex @relation(fields: [residentialComplexId], references: [id])
 
-  apartments Apartment[]
-
-  @@map("towers")
+  @@map("apartments")
 }

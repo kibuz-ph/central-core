@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ApartmentsModule } from './apartments/apartments.module';
 import { AuthModule } from './auth/auth.module';
 import configuration, { Config } from './config/config';
 import { CustomCacheModule } from './modules/cache/cahce.module';
@@ -17,6 +18,7 @@ import { UsersModule } from './users/users.module';
     UserDetailsModule,
     ResidentialComplexModule,
     TowersModule,
+    ApartmentsModule,
     FrobnicatorModule,
     CustomCacheModule,
     PinoModule,

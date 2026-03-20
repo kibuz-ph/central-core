@@ -6,7 +6,7 @@ export async function seedTowers(tx: Prisma.TransactionClient) {
   });
 
   if (residentialComplexes.length === 0) {
-    console.log('⚠️  No residential complexes found. Skipping common areas seeding.');
+    console.log('⚠️  No residential complexes found. Skipping towers seeding.');
     return [];
   }
 
