@@ -3,7 +3,7 @@ import { PassportModule } from '@nestjs/passport';
 import { PrismaModule } from '../prisma/prisma.module';
 import { ResidentialComplexPrismaRepository } from '../residential-complex/infrastructure/persistence/residential-complex.repository.prisma';
 import { TowerPrismaRepository } from '../towers/infrastructure/persistence/tower.repository.prisma';
-import { CreateApartmentUseCase } from './application/services/create-apartment.use-case';
+import { CreateApartmentsUseCase } from './application/services/create-apartments.use-case';
 import { DeleteApartmentUseCase } from './application/services/delete-apartment.use-case';
 import { FindApartmentUseCase } from './application/services/find-apartment.use-case';
 import { UpdateApartmentUseCase } from './application/services/update-apartment.use-case';
@@ -15,7 +15,7 @@ import { ApartmentsController } from './presentation/apartments.controller';
   imports: [PrismaModule, PassportModule.register({ defaultStrategy: 'jwt' })],
   providers: [
     FindApartmentUseCase,
-    CreateApartmentUseCase,
+    CreateApartmentsUseCase,
     UpdateApartmentUseCase,
     DeleteApartmentUseCase,
     {

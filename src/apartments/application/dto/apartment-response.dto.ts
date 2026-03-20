@@ -32,12 +32,19 @@ export class ApartmentResponseDto {
   })
   towerId?: string;
 
+  @ApiProperty({
+    example: 'fb160441-660f-4e4d-af0b-b65d1a368b6f',
+    description: "Residential Complex's unique ID",
+  })
+  residentialComplexId: string;
+
   constructor(apartment: Apartment) {
     this.id = apartment.id || '';
     this.floor = apartment.floor;
     this.reference = apartment.reference;
     this.size = apartment.size;
     this.towerId = apartment.towerId;
+    this.residentialComplexId = apartment.residentialComplexId;
   }
 
   static fromEntities(apartment: Apartment): ApartmentResponseDto {

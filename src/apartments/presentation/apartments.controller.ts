@@ -22,7 +22,7 @@ import { ResponseWrapperInterceptor } from '../../common/interceptors/response-w
 import { ApartmentResponseDto } from '../application/dto/apartment-response.dto';
 import { CreateApartmentsDto } from '../application/dto/create-apartments.dto';
 import { UpdateApartmentDto } from '../application/dto/update-apartment.dto';
-import { CreateApartmentUseCase } from '../application/services/create-apartment.use-case';
+import { CreateApartmentsUseCase } from '../application/services/create-apartments.use-case';
 import { DeleteApartmentUseCase } from '../application/services/delete-apartment.use-case';
 import { FindApartmentUseCase } from '../application/services/find-apartment.use-case';
 import { UpdateApartmentUseCase } from '../application/services/update-apartment.use-case';
@@ -32,7 +32,7 @@ import { UpdateApartmentUseCase } from '../application/services/update-apartment
 export class ApartmentsController {
   constructor(
     private readonly findApartmentUseCase: FindApartmentUseCase,
-    private readonly createApartmentUseCase: CreateApartmentUseCase,
+    private readonly createApartmentsUseCase: CreateApartmentsUseCase,
     private readonly updateApartmentUseCase: UpdateApartmentUseCase,
     private readonly deleteApartmentUseCase: DeleteApartmentUseCase,
   ) {}
@@ -89,7 +89,7 @@ export class ApartmentsController {
     @Body() createApartments: CreateApartmentsDto,
   ): Promise<ApartmentResponseDto[]> {
     const { items } = createApartments;
-    return this.createApartmentUseCase.execute(residentialComplexId, items);
+    return this.createApartmentsUseCase.execute(residentialComplexId, items);
   }
 
   @Patch('/:id/residential-complex/:residentialComplexId')

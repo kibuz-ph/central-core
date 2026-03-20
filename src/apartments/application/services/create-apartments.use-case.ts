@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ApartmentRepositoryInterface } from '../../../apartments/domain/repositories/apartment.repository-interface';
 import { DomainException } from '../../../modules/pino/domain/exceptions/domain.exception';
 import { ResidentialComplexInterface } from '../../../residential-complex/domain/repositories/residential-complex.repository-interface';
 import { TowerRepositoryInterface } from '../../../towers/domain/repositories/tower.repository-interface';
+import { ApartmentRepositoryInterface } from '../../domain/repositories/apartment.repository-interface';
 import { ApartmentResponseDto } from '../dto/apartment-response.dto';
 import { CreateApartmentDto } from '../dto/create-apartment.dto';
 
 @Injectable()
-export class CreateApartmentUseCase {
+export class CreateApartmentsUseCase {
   constructor(
     @Inject('ApartmentRepositoryInterface')
     private readonly apartmentRepositoryInterface: ApartmentRepositoryInterface,
