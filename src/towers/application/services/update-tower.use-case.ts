@@ -16,7 +16,7 @@ export class UpdateTowerUseCase {
     updateTower: UpdateTowerDto,
   ): Promise<boolean> {
     const towerExists = await this.towerRepositoryInterface.findUnique({
-      conditions: {id, residentialComplexId}
+      conditions: { id, residentialComplexId },
     });
 
     if (!towerExists) {

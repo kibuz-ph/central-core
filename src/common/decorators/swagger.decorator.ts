@@ -12,6 +12,7 @@ import { ApiBody, ApiCookieAuth, ApiExtraModels, ApiOperation, ApiResponse } fro
  */
 export function EndpointSwaggerDecorator({
   summary,
+  description,
   responseType,
   bodyType,
   queryType,
@@ -20,6 +21,7 @@ export function EndpointSwaggerDecorator({
   requireAuth = true,
 }: {
   summary: string;
+  description?: string;
   responseType?: Type<unknown>;
   bodyType?: Type<unknown>;
   queryType?: Type<unknown>;
@@ -28,7 +30,7 @@ export function EndpointSwaggerDecorator({
   requireAuth?: boolean;
 }) {
   const decorators = [
-    ApiOperation({ summary }),
+    ApiOperation({ summary, description }),
 
     // Security Decorators
     ...(requireAuth ? [ApiCookieAuth()] : []),

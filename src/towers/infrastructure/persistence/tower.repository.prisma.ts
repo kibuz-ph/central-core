@@ -10,12 +10,8 @@ export class TowerPrismaRepository implements TowerRepositoryInterface {
     @Inject(PrismaService)
     private readonly prisma: PrismaService,
   ) {}
-  
-  async findMany({
-    conditions,
-  }: {
-    conditions: Prisma.TowerWhereInput;
-  }): Promise<Tower[]> {
+
+  async findMany({ conditions }: { conditions: Prisma.TowerWhereInput }): Promise<Tower[]> {
     const towers = await this.prisma.tower.findMany({
       where: conditions,
     });
@@ -25,13 +21,9 @@ export class TowerPrismaRepository implements TowerRepositoryInterface {
     return towers.map(tower => Tower.fromPrisma(tower as TowerProps));
   }
 
-  async findUnique({
-    conditions,
-  }: {
-    conditions: Prisma.TowerWhereInput;
-  }): Promise<Tower | null> {
+  async findUnique({ conditions }: { conditions: Prisma.TowerWhereInput }): Promise<Tower | null> {
     const tower = await this.prisma.tower.findFirst({
-      where: conditions
+      where: conditions,
     });
 
     if (!tower) return null;

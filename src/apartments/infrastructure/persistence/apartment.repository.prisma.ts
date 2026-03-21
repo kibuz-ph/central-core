@@ -17,7 +17,7 @@ export class ApartmentPrismaRepository implements ApartmentRepositoryInterface {
     conditions: Prisma.ApartmentWhereInput;
   }): Promise<Apartment | null> {
     const apartment = await this.prisma.apartment.findFirst({
-      where: conditions
+      where: conditions,
     });
 
     if (!apartment) return null;
@@ -47,7 +47,7 @@ export class ApartmentPrismaRepository implements ApartmentRepositoryInterface {
       where: { id },
       data: updateData,
     });
-    
+
     return Apartment.fromPrisma({
       ...apartmentUpdated,
       towerId: apartment.towerId ?? undefined,

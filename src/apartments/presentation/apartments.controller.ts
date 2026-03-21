@@ -73,7 +73,9 @@ export class ApartmentsController {
   @SetResponseMessageDecorator('Apartments added to tower or residential complex successfully')
   @EndpointSwaggerDecorator({
     summary: 'Create apartment',
-    responseType: createBaseResponse('Apartments added to tower or residential complex successfully'),
+    responseType: createBaseResponse(
+      'Apartments added to tower or residential complex successfully',
+    ),
     bodyType: ApartmentResponseDto,
     successStatus: HttpStatus.CREATED,
     extraResponses: [

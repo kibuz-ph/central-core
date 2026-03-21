@@ -12,7 +12,7 @@ export class FindTowersUseCase {
 
   async execute(residentialComplexId: string, id: string): Promise<TowerResponseDto> {
     const tower = await this.towerRepositoryInterface.findUnique({
-      conditions: {id, residentialComplexId}
+      conditions: { id, residentialComplexId },
     });
 
     if (!tower) {

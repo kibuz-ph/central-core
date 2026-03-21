@@ -15,7 +15,9 @@ export class DeleteApartmentUseCase {
     });
 
     if (!apartment) {
-      throw new DomainException(`Apartment: ${id} doesn't belongs to Residential Complex: ${residentialComplexId}`);
+      throw new DomainException(
+        `Apartment: ${id} doesn't belongs to Residential Complex: ${residentialComplexId}`,
+      );
     }
 
     return this.apartmentRepositoryInterface.delete(id, residentialComplexId);

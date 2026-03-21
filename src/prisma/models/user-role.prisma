@@ -1,0 +1,13 @@
+model UserRole {
+  id                   String @id @default(uuid())
+  userId               String
+  roleId               String
+  residentialComplexId String
+
+  user               User               @relation(fields: [userId], references: [id])
+  role               Role               @relation(fields: [roleId], references: [id])
+  residentialComplex ResidentialComplex @relation(fields: [residentialComplexId], references: [id])
+
+  @@unique([userId, roleId, residentialComplexId])
+  @@map("users_roles")
+}

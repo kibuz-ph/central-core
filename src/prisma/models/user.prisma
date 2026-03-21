@@ -8,6 +8,7 @@ model User {
   updatedAt  DateTime    @updatedAt
   deletedAt  DateTime?
   userDetail userDetail?
+  userRoles  UserRole[]
 
   @@map("users")
 }

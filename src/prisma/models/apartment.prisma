@@ -9,7 +9,7 @@ model Apartment {
   updatedAt            DateTime  @updatedAt
   deletedAt            DateTime?
 
-  tower              Tower?              @relation(fields: [towerId], references: [id])
+  tower              Tower?             @relation(fields: [towerId], references: [id])
   residentialComplex ResidentialComplex @relation(fields: [residentialComplexId], references: [id])
 
   @@map("apartments")

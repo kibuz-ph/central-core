@@ -16,20 +16,21 @@ import { Throttle } from '@nestjs/throttler';
 import { SetResponseMessageDecorator } from '../../common/decorators/set-response-message.decorator';
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { PaginationQueryDto } from '../../common/dtos/pagination-query.dto';
+import { userRoleTypes } from '../../role/domain/enums/user-role-types.enum';
 import { CreateUserDto } from '../application/dto/create-user.dto';
 import { UpdateUserDto } from '../application/dto/update-user.dto';
 import { UserResponseDto } from '../application/dto/user-response.dto';
 import { ActivateUserUseCase } from '../application/services/activate-user.use-case';
-import { CreateUserUseCase } from '../application/services/create-user.use-case';
 import { DeleteUserUseCase } from '../application/services/delete-user.use-case';
 import { FindUsersUseCase } from '../application/services/find-users.use-case';
+import { RegisterUserUseCase } from '../application/services/register-user.use-case';
 import { UpdateUserUseCase } from '../application/services/update-user.use-case';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly findUsersUseCase: FindUsersUseCase,
-    private readonly createUserUseCase: CreateUserUseCase,
+    private readonly registerUserUseCase: RegisterUserUseCase,
     private readonly updateUserUseCase: UpdateUserUseCase,
     private readonly activateUserUseCase: ActivateUserUseCase,
     private readonly deleteUserUseCase: DeleteUserUseCase,
@@ -105,7 +106,89 @@ export class UsersController {
     requireAuth: true,
   })
   async createUser(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    return this.createUserUseCase.create(createUserDto);
+    return this.registerUserUseCase.register(createUserDto);
+  }
+
+  /**
+   * TODO: Create security decorator
+   * Only `ADMIN` can assign `USER` role
+   * @param residentialComplexId
+   * @param createUserDto
+   * @returns
+   */
+  @Post(`/residential-complex/:residentialComplexId/user`)
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.CREATED)
+  @SetResponseMessageDecorator('User created and assigned USER role successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Register a user with USER role in a residential complex',
+    description: `Creates a new user account with its detail and assigns the USER role for the given residential complex. 
+      Validates that the residential complex exists before any record is created. 
+      A user cannot hold the same role twice in the same residential complex.`,
+    bodyType: CreateUserDto,
+    successStatus: HttpStatus.CREATED,
+    extraResponses: [
+      {
+        status: HttpStatus.BAD_REQUEST,
+        description: 'Residential complex not found',
+      },
+      {
+        status: HttpStatus.CONFLICT,
+        description: 'User with the same email, document or phone already exists',
+      },
+    ],
+    requireAuth: true,
+  })
+  async createUserAndAssignUserRole(
+    @Param('residentialComplexId') residentialComplexId: string,
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<UserResponseDto> {
+    return this.registerUserUseCase.register(
+      createUserDto,
+      residentialComplexId,
+      userRoleTypes.USER,
+    );
+  }
+
+  /**
+   * TODO: Create security decorator
+   * Only `SUPER_ADMIN` can assign `ADMIN` role
+   * @param residentialComplexId
+   * @param createUserDto
+   * @returns
+   */
+  @Post(`/residential-complex/:residentialComplexId/admin`)
+  @UseGuards(AuthGuard())
+  @HttpCode(HttpStatus.CREATED)
+  @SetResponseMessageDecorator('User created and assigned ADMIN role successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Register a user with ADMIN role in a residential complex',
+    description: `Creates a new user account with its detail and assigns the ADMIN role for the given residential complex.
+      Validates that the residential complex exists before any record is created.
+      A user cannot hold the same role twice in the same residential complex.`,
+    bodyType: CreateUserDto,
+    successStatus: HttpStatus.CREATED,
+    extraResponses: [
+      {
+        status: HttpStatus.BAD_REQUEST,
+        description: 'Residential complex not found',
+      },
+      {
+        status: HttpStatus.CONFLICT,
+        description: 'User already exists',
+      },
+    ],
+    requireAuth: true,
+  })
+  async createUserAndAssignAdminRole(
+    @Param('residentialComplexId') residentialComplexId: string,
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<UserResponseDto> {
+    return this.registerUserUseCase.register(
+      createUserDto,
+      residentialComplexId,
+      userRoleTypes.ADMIN,
+    );
   }
 
   @Patch(':id')
@@ -138,7 +221,7 @@ export class UsersController {
     return this.updateUserUseCase.update(id, updateUserDto);
   }
 
-  @Patch('activateUser/:id')
+  @Patch('activate-user/:id')
   @UseGuards(AuthGuard())
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.OK)

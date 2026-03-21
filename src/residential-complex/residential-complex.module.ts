@@ -27,6 +27,7 @@ import { ResidentialComplexController } from './presentation/residential-complex
     },
   ],
   exports: [
+    FindResidentialComplexUseCase,
     {
       provide: 'ResidentialComplexInterface',
       useClass: ResidentialComplexPrismaRepository,
