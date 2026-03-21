@@ -18,19 +18,21 @@ export class UpdateApartmentUseCase {
     const towerId = updateApartment.towerId;
     if (towerId) {
       const apartmentExists = await this.apartmentRepositoryInterface.findUnique({
-        conditions: { id, towerId }
+        conditions: { id, towerId },
       });
-  
+
       if (!apartmentExists) {
         throw new DomainException(`Apartment: ${id} doesn't belongs to Tower: ${towerId}`);
       }
     } else {
       const apartmentExists = await this.apartmentRepositoryInterface.findUnique({
-        conditions: { id, residentialComplexId }
+        conditions: { id, residentialComplexId },
       });
-  
+
       if (!apartmentExists) {
-        throw new DomainException(`Apartment: ${id} doesn't belongs to Residential Complex: ${residentialComplexId}`);
+        throw new DomainException(
+          `Apartment: ${id} doesn't belongs to Residential Complex: ${residentialComplexId}`,
+        );
       }
     }
 

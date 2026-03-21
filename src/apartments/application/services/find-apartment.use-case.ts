@@ -16,7 +16,9 @@ export class FindApartmentUseCase {
     });
 
     if (!apartment) {
-      throw new DomainException(`Apartment: ${id} doesn't belongs to Residential Complex: ${residentialComplexId}`);
+      throw new DomainException(
+        `Apartment: ${id} doesn't belongs to Residential Complex: ${residentialComplexId}`,
+      );
     }
 
     return ApartmentResponseDto.fromEntities(apartment);
