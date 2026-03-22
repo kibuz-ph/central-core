@@ -16,7 +16,6 @@ import { Throttle } from '@nestjs/throttler';
 import { SetResponseMessageDecorator } from '../../common/decorators/set-response-message.decorator';
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { PaginationQueryDto } from '../../common/dtos/pagination-query.dto';
-import { userRoleTypes } from '../../role/domain/enums/user-role-types.enum';
 import { CreateUserDto } from '../application/dto/create-user.dto';
 import { UpdateUserDto } from '../application/dto/update-user.dto';
 import { UserResponseDto } from '../application/dto/user-response.dto';
@@ -107,88 +106,6 @@ export class UsersController {
   })
   async createUser(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
     return this.registerUserUseCase.register(createUserDto);
-  }
-
-  /**
-   * TODO: Create security decorator
-   * Only `ADMIN` can assign `USER` role
-   * @param residentialComplexId
-   * @param createUserDto
-   * @returns
-   */
-  @Post(`/residential-complex/:residentialComplexId/user`)
-  @UseGuards(AuthGuard())
-  @HttpCode(HttpStatus.CREATED)
-  @SetResponseMessageDecorator('User created and assigned USER role successfully')
-  @EndpointSwaggerDecorator({
-    summary: 'Register a user with USER role in a residential complex',
-    description: `Creates a new user account with its detail and assigns the USER role for the given residential complex. 
-      Validates that the residential complex exists before any record is created. 
-      A user cannot hold the same role twice in the same residential complex.`,
-    bodyType: CreateUserDto,
-    successStatus: HttpStatus.CREATED,
-    extraResponses: [
-      {
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Residential complex not found',
-      },
-      {
-        status: HttpStatus.CONFLICT,
-        description: 'User with the same email, document or phone already exists',
-      },
-    ],
-    requireAuth: true,
-  })
-  async createUserAndAssignUserRole(
-    @Param('residentialComplexId') residentialComplexId: string,
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<UserResponseDto> {
-    return this.registerUserUseCase.register(
-      createUserDto,
-      residentialComplexId,
-      userRoleTypes.USER,
-    );
-  }
-
-  /**
-   * TODO: Create security decorator
-   * Only `MASTER` can assign `ADMIN` role
-   * @param residentialComplexId
-   * @param createUserDto
-   * @returns
-   */
-  @Post(`/residential-complex/:residentialComplexId/admin`)
-  @UseGuards(AuthGuard())
-  @HttpCode(HttpStatus.CREATED)
-  @SetResponseMessageDecorator('User created and assigned ADMIN role successfully')
-  @EndpointSwaggerDecorator({
-    summary: 'Register a user with ADMIN role in a residential complex',
-    description: `Creates a new user account with its detail and assigns the ADMIN role for the given residential complex.
-      Validates that the residential complex exists before any record is created.
-      A user cannot hold the same role twice in the same residential complex.`,
-    bodyType: CreateUserDto,
-    successStatus: HttpStatus.CREATED,
-    extraResponses: [
-      {
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Residential complex not found',
-      },
-      {
-        status: HttpStatus.CONFLICT,
-        description: 'User already exists',
-      },
-    ],
-    requireAuth: true,
-  })
-  async createUserAndAssignAdminRole(
-    @Param('residentialComplexId') residentialComplexId: string,
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<UserResponseDto> {
-    return this.registerUserUseCase.register(
-      createUserDto,
-      residentialComplexId,
-      userRoleTypes.ADMIN,
-    );
   }
 
   @Patch(':id')
