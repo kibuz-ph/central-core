@@ -1,15 +1,15 @@
-import { user_role_types } from '../../../prisma/prisma-client/client';
+import { UserRoleType } from '../../../prisma/prisma-client/client';
 
-export { user_role_types };
+export { UserRoleType };
 
 export interface RoleProps {
   id?: string;
-  name: user_role_types;
+  name: UserRoleType;
 }
 
 export class Role {
   public readonly id?: string;
-  public readonly name: user_role_types;
+  public readonly name: UserRoleType;
 
   constructor(props: RoleProps) {
     this.id = props.id;

@@ -152,7 +152,7 @@ export class UsersController {
 
   /**
    * TODO: Create security decorator
-   * Only `SUPER_ADMIN` can assign `ADMIN` role
+   * Only `MASTER` can assign `ADMIN` role
    * @param residentialComplexId
    * @param createUserDto
    * @returns

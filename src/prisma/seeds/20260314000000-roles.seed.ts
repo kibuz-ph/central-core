@@ -1,10 +1,10 @@
-import { PrismaClient, user_role_types } from '../prisma-client/client';
+import { PrismaClient, UserRoleType } from '../prisma-client/client';
 import { SeederInterface } from './index';
 
 const ROLES = [
-  { name: user_role_types.SUPER_ADMIN },
-  { name: user_role_types.ADMIN },
-  { name: user_role_types.USER },
+  { name: UserRoleType.MASTER },
+  { name: UserRoleType.ADMIN },
+  { name: UserRoleType.USER },
 ];
 
 export class RolesSeeder20260314000000 implements SeederInterface {

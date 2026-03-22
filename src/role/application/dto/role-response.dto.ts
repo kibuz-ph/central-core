@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsString } from 'class-validator';
-import { user_role_types } from '../../domain/entities/role.entity';
+import { UserRoleType } from '../../domain/entities/role.entity';
 import { Role } from '../../domain/entities/role.entity';
 
 export class RoleResponseDto {
@@ -8,9 +8,9 @@ export class RoleResponseDto {
   @IsString()
   id?: string;
 
-  @ApiProperty({ enum: user_role_types, example: user_role_types.USER, description: "Role's name" })
-  @IsEnum(user_role_types)
-  name: user_role_types;
+  @ApiProperty({ enum: UserRoleType, example: UserRoleType.USER, description: "Role's name" })
+  @IsEnum(UserRoleType)
+  name: UserRoleType;
 
   constructor(role: Role) {
     this.id = role.id;
