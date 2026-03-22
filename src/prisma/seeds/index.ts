@@ -1,12 +1,16 @@
 import 'dotenv/config';
 import { PrismaClient } from '../prisma-client/client';
 import { RolesSeeder20260314000000 } from './20260314000000-roles.seed';
+import { AdminUserSeeder20260321002000 } from './20260321002000-admin-user.seed';
 
 export interface SeederInterface {
   run(prisma: PrismaClient): Promise<void>;
 }
 
-const seeders: SeederInterface[] = [new RolesSeeder20260314000000()];
+const seeders: SeederInterface[] = [
+  new AdminUserSeeder20260321002000(),
+  new RolesSeeder20260314000000(),
+];
 
 const prisma = new PrismaClient();
 
