@@ -1,11 +1,13 @@
 import * as bcrypt from 'bcryptjs';
 import { UserDetail } from '../../../user-details/domain/entities/user-detail.entity';
+import { UserTypes, userTypes } from '../enums/user-types.enum';
 
 export interface UserProps {
   id?: string;
   username: string;
   email: string;
   password?: string;
+  type?: UserTypes;
   isActive: boolean;
   userDetail?: UserDetail;
 }
@@ -15,6 +17,7 @@ export class User {
   public readonly username: string;
   public readonly email: string;
   private password: string;
+  public readonly type: UserTypes;
   public readonly isActive: boolean;
   public readonly userDetail?: UserDetail | null;
 
@@ -23,6 +26,7 @@ export class User {
     this.username = props.username;
     this.email = props.email;
     this.password = props.password ?? '';
+    this.type = props.type ?? userTypes.OTHER;
     this.isActive = props.isActive;
     this.userDetail = props.userDetail;
   }
@@ -52,6 +56,7 @@ export class User {
       username: data.username,
       email: data.email,
       password: data.password,
+      type: data.type,
       isActive: data.isActive,
       userDetail: data.userDetail,
     });

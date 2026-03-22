@@ -1,5 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
+import { UserTypeGuard } from '../common/guards/user-type.guard';
 import { CommonAreaModule } from '../common-area/common-area.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { CreateResidentialComplexUseCase } from './application/services/create-residential-complex.use-case';
@@ -17,6 +18,7 @@ import { ResidentialComplexController } from './presentation/residential-complex
     forwardRef(() => CommonAreaModule),
   ],
   providers: [
+    UserTypeGuard,
     FindResidentialComplexUseCase,
     CreateResidentialComplexUseCase,
     UpdateResidentialComplexUseCase,

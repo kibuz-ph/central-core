@@ -14,6 +14,8 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
+import { RequiredUserTypes, UserTypeGuard } from '../../common/guards/user-type.guard';
+import { userTypes } from '../../users/domain/enums/user-types.enum';
 import { CommonAreaResponseDto } from '../../common-area/application/dto/common-area-response.dto';
 import { CreateCommonAreasDto } from '../../common-area/application/dto/create-common-areas.dto';
 import { UpdateCommonAreaDto } from '../../common-area/application/dto/update-common-area.dto';
@@ -151,7 +153,8 @@ export class ResidentialComplexController {
   }
 
   @Post()
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), UserTypeGuard)
+  @RequiredUserTypes(userTypes.KIBUZ)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.CREATED)
   @WrapResponse(false)
