@@ -34,7 +34,7 @@ export class ComplexRoleGuard implements CanActivate {
       .getRequest<Request & { user: Omit<UserProps, 'password'> & { id: string } }>();
 
     const { user, params } = request;
-    const residentialComplexId = params.id;
+    const residentialComplexId = params.id as string;
 
     if (!user || !residentialComplexId) {
       throw new ForbiddenException('Access denied: insufficient permissions');
