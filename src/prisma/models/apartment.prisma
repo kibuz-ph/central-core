@@ -13,6 +13,7 @@ model Apartment {
   residentialComplex ResidentialComplex @relation(fields: [residentialComplexId], references: [id])
   vehicles           Vehicle[]
   usefulRooms        UsefulRoom[]
+  parkingLots        ParkingLot[]
 
   @@map("apartments")
 }

@@ -1,0 +1,19 @@
+model ParkingLot {
+  id          String         @id @default(uuid())
+  reference   String
+  description String?
+  type        ParkingLotType
+  apartmentId String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  deletedAt   DateTime?
+
+  apartment Apartment @relation(fields: [apartmentId], references: [id])
+
+  @@map("parking_lots")
+}
+
+enum ParkingLotType {
+  SINGLE
+  DOUBLE
+}
