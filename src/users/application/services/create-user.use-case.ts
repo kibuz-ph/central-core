@@ -1,5 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DomainException } from '../../../modules/pino/domain/exceptions/domain.exception';
+import { CreateUserDetailUseCase } from '../../../user-details/application/services/create-user-detail.use-case';
+import { UserDetail } from '../../../user-details/domain/entities/user-detail.entity';
 import { User } from '../../../users/domain/entities/user.entity';
 import { UserRepositoryInterface } from '../../../users/domain/repositories/user.repository-interface';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -9,6 +11,7 @@ export class CreateUserUseCase {
   constructor(
     @Inject('UserRepositoryInterface')
     private readonly userRepository: UserRepositoryInterface,
+    private readonly createUserDetailUseCase: CreateUserDetailUseCase,
   ) {}
 
   async create(userData: CreateUserDto): Promise<User> {
@@ -26,6 +29,12 @@ export class CreateUserUseCase {
     const user = new User({ ...userData, isActive: true });
     await user.setPassword(userData.password);
 
-    return this.userRepository.create(user);
+    const createdUser = await this.userRepository.create(user);
+
+    await this.createUserDetailUseCase.create(
+      new UserDetail({ ...userData, userId: createdUser.id as string }),
+    );
+
+    return createdUser;
   }
 }

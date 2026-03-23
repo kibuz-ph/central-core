@@ -9,8 +9,7 @@ import { seedTowers } from './seeders/towers.seeder';
 const prisma = new PrismaClient();
 
 async function createUsers(tx: Prisma.TransactionClient) {
-  const password = '$2b$10$PjReZjiztFbzgz3HlVL/MuSpMwm8o265DxJ6Jb84RB6S0BDIxFmRW'; // Kibuz2025*
-  const uuid = faker.string.uuid();
+  const password = '$2b$10$PjReZjiztFbzgz3HlVL/MuSpMwm8o265DxJ6Jb84RB6S0BDIxFmRW';
 
   const usersArray = Array.from({ length: 5 }).map(() => ({
     id: faker.string.uuid(),
@@ -20,47 +19,26 @@ async function createUsers(tx: Prisma.TransactionClient) {
     isActive: true,
   }));
 
-  const usersData = [
-    {
-      id: uuid,
-      username: 'admin.kibuz',
-      email: 'admin@kibuz.com',
-      password,
-      isActive: true,
-    },
-    ...usersArray,
-  ];
-
   const users = await Promise.all(
-    usersData.map(userData =>
+    usersArray.map(userData =>
       tx.user.create({
         data: userData,
       }),
     ),
   );
 
-  console.log(`✅ Created ${users.length} users (1 admin, 5 regular users)`);
+  console.log(`✅ Created ${users.length} users`);
 
-  const usersDetailsData = [
-    {
-      document: faker.string.numeric(10),
-      firstName: 'Admin',
-      lastName: 'Kibuz',
-      birthday: faker.date.birthdate({ min: 25, max: 50, mode: 'age' }),
-      phone: faker.phone.number(),
-      userId: uuid,
-    },
-    ...Array.from({ length: 5 }).map((_: unknown, index: number) => ({
-      document: faker.string.numeric(10),
-      firstName: faker.person.firstName(),
-      secondName: faker.datatype.boolean() ? faker.person.firstName() : undefined,
-      lastName: faker.person.lastName(),
-      secondLastName: faker.datatype.boolean() ? faker.person.lastName() : undefined,
-      birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }),
-      phone: faker.phone.number(),
-      userId: usersArray[index].id,
-    })),
-  ];
+  const usersDetailsData = Array.from({ length: 5 }).map((_: unknown, index: number) => ({
+    document: faker.string.numeric(10),
+    firstName: faker.person.firstName(),
+    secondName: faker.datatype.boolean() ? faker.person.firstName() : undefined,
+    lastName: faker.person.lastName(),
+    secondLastName: faker.datatype.boolean() ? faker.person.lastName() : undefined,
+    birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }),
+    phone: faker.phone.number(),
+    userId: usersArray[index].id,
+  }));
 
   const usersDetails = await Promise.all(
     usersDetailsData.map(userDetailsData =>
@@ -70,7 +48,7 @@ async function createUsers(tx: Prisma.TransactionClient) {
     ),
   );
 
-  console.log(`✅ Created ${usersDetails.length} users details (1 admin, 5 regular users)`);
+  console.log(`✅ Created ${usersDetails.length} user details`);
   return users;
 }
 

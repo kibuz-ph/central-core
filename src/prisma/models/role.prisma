@@ -1,14 +1,14 @@
 model Role {
-  id        String          @id @default(uuid())
-  name      user_role_types @unique
+  id        String       @id @default(uuid())
+  name      UserRoleType @unique
   userRoles UserRole[]
 
   @@unique([id])
   @@map("roles")
 }
 
-enum user_role_types {
-  SUPER_ADMIN
+enum UserRoleType {
+  MASTER
   ADMIN
   USER
 }

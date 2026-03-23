@@ -24,6 +24,20 @@ export class UserRolePrismaRepository implements UserRoleRepositoryInterface {
     return UserRole.fromPrisma(userRole);
   }
 
+  async findFirst({
+    conditions,
+  }: {
+    conditions: Prisma.UserRoleWhereInput;
+  }): Promise<UserRole | null> {
+    const userRole = await this.prisma.userRole.findFirst({
+      where: conditions,
+    });
+
+    if (!userRole) return null;
+
+    return UserRole.fromPrisma(userRole);
+  }
+
   async create(userRole: UserRole): Promise<UserRole> {
     const created = await this.prisma.userRole.create({
       data: userRole,

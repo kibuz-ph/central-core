@@ -17,6 +17,7 @@ import { Request } from 'express';
 import { UserProps } from '../../users/domain/entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
+import { Request } from 'express';
 import { CommonAreaResponseDto } from '../../common-area/application/dto/common-area-response.dto';
 import { CreateCommonAreasDto } from '../../common-area/application/dto/create-common-areas.dto';
 import { UpdateCommonAreaDto } from '../../common-area/application/dto/update-common-area.dto';
@@ -28,7 +29,14 @@ import { SetResponseMessageDecorator } from '../../common/decorators/set-respons
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
 import { createBaseResponse, createDataResponse } from '../../common/dtos/base-response.dto';
+import { ComplexRoleGuard, RequiredComplexRoles } from '../../common/guards/complex-role.guard';
+import { RequiredUserTypes, UserTypeGuard } from '../../common/guards/user-type.guard';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
+import { userRoleTypes } from '../../role/domain/enums/user-role-types.enum';
+import { CreateUserDto } from '../../users/application/dto/create-user.dto';
+import { UserResponseDto } from '../../users/application/dto/user-response.dto';
+import { UserProps } from '../../users/domain/entities/user.entity';
+import { userTypes } from '../../users/domain/enums/user-types.enum';
 import { CreateResidentialComplexDto } from '../application/dto/create-residential-complex.dto';
 import { ResidentialComplexResponseDto } from '../application/dto/residential-complex-response.dto';
 import { UpdateResidentialComplexDto } from '../application/dto/update-residential-complex.dto';
@@ -36,6 +44,7 @@ import { CreateResidentialComplexUseCase } from '../application/services/create-
 import { DeleteResidentialComplexUseCase } from '../application/services/delete-residential-complex.use-case';
 import { FindResidentialComplexesByUserUseCase } from '../application/services/find-residential-complexes-by-user.use-case';
 import { FindResidentialComplexUseCase } from '../application/services/find-residential-complex.use-case';
+import { RegisterUserToComplexUseCase } from '../application/services/register-user-to-complex.use-case';
 import { UpdateResidentialComplexUseCase } from '../application/services/update-residential-complex.use-case';
 
 @Controller('residential-complexes')
@@ -47,6 +56,7 @@ export class ResidentialComplexController {
     private readonly createResidentialComplexUseCase: CreateResidentialComplexUseCase,
     private readonly updateResidentialComplexUseCase: UpdateResidentialComplexUseCase,
     private readonly deleteResidentialComplexUseCase: DeleteResidentialComplexUseCase,
+    private readonly registerUserToComplexUseCase: RegisterUserToComplexUseCase,
     private readonly createCommonAreaUseCase: CreateCommonAreaUseCase,
     private readonly getCommonAreaUseCase: GetCommonAreaUseCase,
     private readonly deleteCommonAreaUseCase: DeleteCommonAreaUseCase,
@@ -177,7 +187,8 @@ export class ResidentialComplexController {
   }
 
   @Post()
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), UserTypeGuard)
+  @RequiredUserTypes(userTypes.KIBUZ)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.CREATED)
   @WrapResponse(false)
@@ -196,9 +207,10 @@ export class ResidentialComplexController {
     requireAuth: true,
   })
   async createResidentialComplex(
+    @Req() req: Request & { user: Omit<UserProps, 'password'> & { id: string } },
     @Body() createResidentialComplexDto: CreateResidentialComplexDto,
   ): Promise<ResidentialComplexResponseDto> {
-    return this.createResidentialComplexUseCase.execute(createResidentialComplexDto);
+    return this.createResidentialComplexUseCase.execute(createResidentialComplexDto, req.user.id);
   }
 
   @Patch('/:id')
@@ -279,5 +291,61 @@ export class ResidentialComplexController {
   ): Promise<CommonAreaResponseDto[]> {
     const { items } = createCommonAreasDto;
     return this.createCommonAreaUseCase.execute(id, items);
+  }
+
+  @Post('/:id/users')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.CREATED)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('User registered to residential complex successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Register a user with USER role in a residential complex',
+    description: `Creates a new user and assigns the USER role for the given residential complex.
+      If the user already exists (by email), assigns the role without creating a new user.
+      Requires ADMIN or MASTER role in the residential complex.`,
+    bodyType: CreateUserDto,
+    successStatus: HttpStatus.CREATED,
+    extraResponses: [
+      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
+      { status: HttpStatus.CONFLICT, description: 'User already has this role in the complex' },
+      { status: HttpStatus.FORBIDDEN, description: 'Insufficient permissions' },
+    ],
+    requireAuth: true,
+  })
+  async registerUserToComplex(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<UserResponseDto> {
+    return this.registerUserToComplexUseCase.execute(createUserDto, id, userRoleTypes.USER);
+  }
+
+  @Post('/:id/admins')
+  @UseGuards(AuthGuard(), UserTypeGuard)
+  @RequiredUserTypes(userTypes.KIBUZ)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.CREATED)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Admin registered to residential complex successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Register a user with ADMIN role in a residential complex',
+    description: `Creates a new user and assigns the ADMIN role for the given residential complex.
+      If the user already exists (by email), assigns the role without creating a new user.
+      Requires KIBUZ user type.`,
+    bodyType: CreateUserDto,
+    successStatus: HttpStatus.CREATED,
+    extraResponses: [
+      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
+      { status: HttpStatus.CONFLICT, description: 'User already has this role in the complex' },
+      { status: HttpStatus.FORBIDDEN, description: 'Insufficient permissions' },
+    ],
+    requireAuth: true,
+  })
+  async registerAdminToComplex(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<UserResponseDto> {
+    return this.registerUserToComplexUseCase.execute(createUserDto, id, userRoleTypes.ADMIN);
   }
 }
