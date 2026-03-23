@@ -49,6 +49,23 @@ export class ResidentialComplexPrismaRepository implements ResidentialComplexInt
     });
   }
 
+  async findManyByUserId(userId: string): Promise<ResidentialComplex[]> {
+    const results = await this.prisma.residentialComplex.findMany({
+      where: {
+        userRoles: { some: { userId } },
+      },
+    });
+
+    return results.map(rc =>
+      ResidentialComplex.fromPrisma({
+        ...rc,
+        logo: rc.logo ?? undefined,
+        primaryColor: rc.primaryColor ?? undefined,
+        secondaryColor: rc.secondaryColor ?? undefined,
+      }),
+    );
+  }
+
   async create(residentialComplex: ResidentialComplexProps): Promise<ResidentialComplex> {
     const {
       id: _id,

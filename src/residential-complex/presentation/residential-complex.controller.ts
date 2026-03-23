@@ -9,9 +9,12 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Req,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { Request } from 'express';
+import { UserProps } from '../../users/domain/entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { CommonAreaResponseDto } from '../../common-area/application/dto/common-area-response.dto';
@@ -31,6 +34,7 @@ import { ResidentialComplexResponseDto } from '../application/dto/residential-co
 import { UpdateResidentialComplexDto } from '../application/dto/update-residential-complex.dto';
 import { CreateResidentialComplexUseCase } from '../application/services/create-residential-complex.use-case';
 import { DeleteResidentialComplexUseCase } from '../application/services/delete-residential-complex.use-case';
+import { FindResidentialComplexesByUserUseCase } from '../application/services/find-residential-complexes-by-user.use-case';
 import { FindResidentialComplexUseCase } from '../application/services/find-residential-complex.use-case';
 import { UpdateResidentialComplexUseCase } from '../application/services/update-residential-complex.use-case';
 
@@ -39,6 +43,7 @@ import { UpdateResidentialComplexUseCase } from '../application/services/update-
 export class ResidentialComplexController {
   constructor(
     private readonly findResidentialComplexUseCase: FindResidentialComplexUseCase,
+    private readonly findResidentialComplexesByUserUseCase: FindResidentialComplexesByUserUseCase,
     private readonly createResidentialComplexUseCase: CreateResidentialComplexUseCase,
     private readonly updateResidentialComplexUseCase: UpdateResidentialComplexUseCase,
     private readonly deleteResidentialComplexUseCase: DeleteResidentialComplexUseCase,
@@ -123,6 +128,27 @@ export class ResidentialComplexController {
     @Body() updateCommonAreaDto: UpdateCommonAreaDto,
   ): Promise<boolean> {
     return this.updateCommonAreaUseCase.execute(id, commonAreaId, updateCommonAreaDto);
+  }
+
+  @Get('/me')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator('Residential complexes retrieved successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Get residential complexes for the authenticated user',
+    responseType: createDataResponse(
+      ResidentialComplexResponseDto,
+      'Residential complexes retrieved successfully',
+    ),
+    successStatus: HttpStatus.OK,
+    requireAuth: true,
+  })
+  async getResidentialComplexesByUser(
+    @Req() req: Request & { user: Omit<UserProps, 'password'> & { id: string } },
+  ): Promise<ResidentialComplexResponseDto[]> {
+    return this.findResidentialComplexesByUserUseCase.execute(req.user.id);
   }
 
   @Get('/:slug')
