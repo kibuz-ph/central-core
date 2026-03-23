@@ -42,14 +42,6 @@ export class UsefulRoomPrismaRepository implements UsefulRoomRepositoryInterface
     );
   }
 
-  async create(usefulRoom: UsefulRoomProps): Promise<UsefulRoom> {
-    const created = await this.prisma.usefulRoom.create({
-      data: usefulRoom,
-    });
-
-    return UsefulRoom.fromPrisma({ ...created, description: created.description ?? undefined });
-  }
-
   async createMany(usefulRooms: UsefulRoomProps[]): Promise<UsefulRoom[]> {
     const created = await this.prisma.usefulRoom.createManyAndReturn({
       data: usefulRooms,
