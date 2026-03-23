@@ -26,11 +26,6 @@ export class VehiclePrismaRepository implements VehicleRepositoryInterface {
     return vehicles.map(vehicle => Vehicle.fromPrisma(vehicle));
   }
 
-  async create(vehicle: VehicleProps): Promise<Vehicle> {
-    const created = await this.prisma.vehicle.create({ data: vehicle });
-    return Vehicle.fromPrisma(created);
-  }
-
   async createMany(vehicles: VehicleProps[]): Promise<Vehicle[]> {
     const created = await this.prisma.vehicle.createManyAndReturn({ data: vehicles });
     return created.map(vehicle => Vehicle.fromPrisma(vehicle));

@@ -13,8 +13,6 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { Request } from 'express';
-import { UserProps } from '../../users/domain/entities/user.entity';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
@@ -42,8 +40,8 @@ import { ResidentialComplexResponseDto } from '../application/dto/residential-co
 import { UpdateResidentialComplexDto } from '../application/dto/update-residential-complex.dto';
 import { CreateResidentialComplexUseCase } from '../application/services/create-residential-complex.use-case';
 import { DeleteResidentialComplexUseCase } from '../application/services/delete-residential-complex.use-case';
-import { FindResidentialComplexesByUserUseCase } from '../application/services/find-residential-complexes-by-user.use-case';
 import { FindResidentialComplexUseCase } from '../application/services/find-residential-complex.use-case';
+import { FindResidentialComplexesByUserUseCase } from '../application/services/find-residential-complexes-by-user.use-case';
 import { RegisterUserToComplexUseCase } from '../application/services/register-user-to-complex.use-case';
 import { UpdateResidentialComplexUseCase } from '../application/services/update-residential-complex.use-case';
 
