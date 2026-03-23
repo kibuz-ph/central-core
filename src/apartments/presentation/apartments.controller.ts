@@ -19,6 +19,8 @@ import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decora
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
 import { createBaseResponse, createDataResponse } from '../../common/dtos/base-response.dto';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
+import { VehicleResponseDto } from '../../vehicles/application/dto/vehicle-response.dto';
+import { FindVehicleUseCase } from '../../vehicles/application/services/find-vehicle.use-case';
 import { ApartmentResponseDto } from '../application/dto/apartment-response.dto';
 import { CreateApartmentsDto } from '../application/dto/create-apartments.dto';
 import { UpdateApartmentDto } from '../application/dto/update-apartment.dto';
@@ -35,6 +37,7 @@ export class ApartmentsController {
     private readonly createApartmentsUseCase: CreateApartmentsUseCase,
     private readonly updateApartmentUseCase: UpdateApartmentUseCase,
     private readonly deleteApartmentUseCase: DeleteApartmentUseCase,
+    private readonly findVehicleUseCase: FindVehicleUseCase,
   ) {}
 
   @Get('/:id/residential-complex/:residentialComplexId')
@@ -141,5 +144,27 @@ export class ApartmentsController {
     @Param('residentialComplexId', new ParseUUIDPipe()) residentialComplexId: string,
   ): Promise<boolean> {
     return this.deleteApartmentUseCase.execute(id, residentialComplexId);
+  }
+
+  @Get('/:id/vehicles')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator('Apartment vehicles retrieved successfully')
+  @EndpointSwaggerDecorator({
+    summary: "Get apartment's vehicles",
+    responseType: createDataResponse(
+      VehicleResponseDto,
+      "Apartment's vehicles retrieved successfully",
+    ),
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
+    requireAuth: true,
+  })
+  async getApartmentVehicles(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<VehicleResponseDto[]> {
+    return this.findVehicleUseCase.executeByApartment(id);
   }
 }
