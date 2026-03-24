@@ -19,6 +19,8 @@ import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decora
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
 import { createBaseResponse, createDataResponse } from '../../common/dtos/base-response.dto';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
+import { UsefulRoomResponseDto } from '../../useful-rooms/application/dto/useful-room-response.dto';
+import { FindUsefulRoomsByApartmentUseCase } from '../../useful-rooms/application/services/find-useful-rooms-by-apartment.use-case';
 import { VehicleResponseDto } from '../../vehicles/application/dto/vehicle-response.dto';
 import { FindVehicleUseCase } from '../../vehicles/application/services/find-vehicle.use-case';
 import { ApartmentResponseDto } from '../application/dto/apartment-response.dto';
@@ -38,6 +40,7 @@ export class ApartmentsController {
     private readonly updateApartmentUseCase: UpdateApartmentUseCase,
     private readonly deleteApartmentUseCase: DeleteApartmentUseCase,
     private readonly findVehicleUseCase: FindVehicleUseCase,
+    private readonly findUsefulRoomsByApartmentUseCase: FindUsefulRoomsByApartmentUseCase,
   ) {}
 
   @Get('/:id/residential-complex/:residentialComplexId')
@@ -166,5 +169,27 @@ export class ApartmentsController {
     @Param('id', new ParseUUIDPipe()) id: string,
   ): Promise<VehicleResponseDto[]> {
     return this.findVehicleUseCase.executeByApartment(id);
+  }
+
+  @Get('/:id/useful-rooms')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator('Apartment useful rooms retrieved successfully')
+  @EndpointSwaggerDecorator({
+    summary: "Get apartment's useful rooms",
+    responseType: createDataResponse(
+      UsefulRoomResponseDto,
+      "Apartment's useful rooms retrieved successfully",
+    ),
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
+    requireAuth: true,
+  })
+  async getApartmentUsefulRooms(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<UsefulRoomResponseDto[]> {
+    return this.findUsefulRoomsByApartmentUseCase.execute(id);
   }
 }

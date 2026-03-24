@@ -1,0 +1,13 @@
+model UsefulRoom {
+  id          String    @id @default(uuid())
+  reference   String
+  description String?
+  apartmentId String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  apartment Apartment @relation(fields: [apartmentId], references: [id])
+
+  @@map("useful_rooms")
+}
