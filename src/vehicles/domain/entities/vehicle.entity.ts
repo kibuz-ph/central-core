@@ -1,8 +1,8 @@
-import { VehicleType } from '../../../prisma/prisma-client/client';
+import { VehicleTypes } from '../enums/vehicle-types.enum';
 
 export interface VehicleProps {
   id?: string;
-  type: VehicleType;
+  type: VehicleTypes;
   brand: string;
   plate: string;
   color: string;
@@ -12,7 +12,7 @@ export interface VehicleProps {
 
 export class Vehicle {
   public readonly id?: string;
-  public readonly type: VehicleType;
+  public readonly type: VehicleTypes;
   public readonly brand: string;
   public readonly plate: string;
   public readonly color: string;

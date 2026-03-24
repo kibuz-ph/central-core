@@ -21,12 +21,4 @@ export class FindVehicleUseCase {
 
     return VehicleResponseDto.fromEntities(vehicle);
   }
-
-  async executeByApartment(apartmentId: string): Promise<VehicleResponseDto[]> {
-    const vehicles = await this.vehicleRepository.findMany({
-      conditions: { apartmentId, deletedAt: null },
-    });
-
-    return vehicles.map(vehicle => VehicleResponseDto.fromEntities(vehicle));
-  }
 }
