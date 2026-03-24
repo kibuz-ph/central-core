@@ -46,6 +46,23 @@ export class UserRolePrismaRepository implements UserRoleRepositoryInterface {
     return UserRole.fromPrisma(created);
   }
 
+  async findMany({ conditions }: { conditions: Prisma.UserRoleWhereInput }): Promise<UserRole[]> {
+    const userRoles = await this.prisma.userRole.findMany({
+      where: conditions,
+      include: { role: true },
+    });
+
+    return userRoles.map(ur =>
+      UserRole.fromPrisma({
+        id: ur.id,
+        userId: ur.userId,
+        roleId: ur.roleId,
+        residentialComplexId: ur.residentialComplexId,
+        roleName: ur.role.name,
+      }),
+    );
+  }
+
   async delete(id: string): Promise<void> {
     await this.prisma.userRole.delete({
       where: { id },
