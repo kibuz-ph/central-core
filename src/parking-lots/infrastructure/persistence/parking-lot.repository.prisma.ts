@@ -45,17 +45,6 @@ export class ParkingLotPrismaRepository implements ParkingLotRepositoryInterface
     );
   }
 
-  async create(parkingLot: ParkingLotProps): Promise<ParkingLot> {
-    const created = await this.prisma.parkingLot.create({
-      data: parkingLot,
-    });
-
-    return ParkingLot.fromPrisma({
-      ...created,
-      description: created.description ?? undefined,
-    });
-  }
-
   async createMany(parkingLots: ParkingLotProps[]): Promise<ParkingLot[]> {
     const created = await this.prisma.parkingLot.createManyAndReturn({
       data: parkingLots,
