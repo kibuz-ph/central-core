@@ -1,4 +1,5 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { randomBytes } from 'crypto';
 import { DomainException } from '../../../modules/pino/domain/exceptions/domain.exception';
 import { FindRoleByNameUseCase } from '../../../role/application/services/find-role-by-name.use-case';
 import { userRoleTypes, UserRoleTypes } from '../../../role/domain/enums/user-role-types.enum';
@@ -80,7 +81,12 @@ export class RegisterUserToComplexUseCase {
       return UserResponseDto.fromEntities({ ...existingUser, userDetail: undefined });
     }
 
-    const createdUser = await this.createUserUseCase.create(userData);
+    // TODO: send generatedPassword via email
+    const generatedPassword = `Kbz${randomBytes(8).toString('hex')}!`;
+    const createdUser = await this.createUserUseCase.create({
+      ...userData,
+      password: generatedPassword,
+    });
 
     await this.createUserRoleUseCase.create(
       new UserRole({

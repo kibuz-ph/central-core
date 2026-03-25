@@ -26,6 +26,8 @@ export class CreateUserUseCase {
       throw new DomainException(`User with email: ${userData.email} already exits`);
     }
 
+    if (!userData.password) throw new DomainException('Password is required');
+
     const user = new User({ ...userData, isActive: true });
     await user.setPassword(userData.password);
 

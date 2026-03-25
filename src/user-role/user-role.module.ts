@@ -4,6 +4,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from '../prisma/prisma.module';
 import { CreateUserRoleUseCase } from './application/services/create-user-role.use-case';
 import { DeleteUserRoleUseCase } from './application/services/delete-user-role.use-case';
+import { FindUserRolesByComplexUseCase } from './application/services/find-user-roles-by-complex.use-case';
 import { UserRolePrismaRepository } from './infrastructure/persistence/user-role.repository.prisma';
 
 @Module({
@@ -20,11 +21,12 @@ import { UserRolePrismaRepository } from './infrastructure/persistence/user-role
   providers: [
     CreateUserRoleUseCase,
     DeleteUserRoleUseCase,
+    FindUserRolesByComplexUseCase,
     {
       provide: 'UserRoleRepositoryInterface',
       useClass: UserRolePrismaRepository,
     },
   ],
-  exports: [CreateUserRoleUseCase, DeleteUserRoleUseCase],
+  exports: [CreateUserRoleUseCase, DeleteUserRoleUseCase, FindUserRolesByComplexUseCase],
 })
 export class UserRoleModule {}
