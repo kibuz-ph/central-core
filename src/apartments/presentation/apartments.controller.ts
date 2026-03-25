@@ -21,10 +21,12 @@ import { createBaseResponse, createDataResponse } from '../../common/dtos/base-r
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { ParkingLotResponseDto } from '../../parking-lots/application/dto/parking-lot-response.dto';
 import { FindParkingLotsByApartmentUseCase } from '../../parking-lots/application/services/find-parking-lots-by-apartment.use-case';
+import { PetResponseDto } from '../../pets/application/dto/pet-response.dto';
+import { FindPetsByApartmentUseCase } from '../../pets/application/services/find-pets-by-apartment.use-case';
 import { UsefulRoomResponseDto } from '../../useful-rooms/application/dto/useful-room-response.dto';
 import { FindUsefulRoomsByApartmentUseCase } from '../../useful-rooms/application/services/find-useful-rooms-by-apartment.use-case';
 import { VehicleResponseDto } from '../../vehicles/application/dto/vehicle-response.dto';
-import { FindVehicleUseCase } from '../../vehicles/application/services/find-vehicle.use-case';
+import { FindVehiclesByApartmentUseCase } from '../../vehicles/application/services/find-vehicles-by-apartment.use-case';
 import { ApartmentResponseDto } from '../application/dto/apartment-response.dto';
 import { CreateApartmentsDto } from '../application/dto/create-apartments.dto';
 import { UpdateApartmentDto } from '../application/dto/update-apartment.dto';
@@ -42,8 +44,9 @@ export class ApartmentsController {
     private readonly updateApartmentUseCase: UpdateApartmentUseCase,
     private readonly deleteApartmentUseCase: DeleteApartmentUseCase,
     private readonly findParkingLotsByApartmentUseCase: FindParkingLotsByApartmentUseCase,
-    private readonly findVehicleUseCase: FindVehicleUseCase,
     private readonly findUsefulRoomsByApartmentUseCase: FindUsefulRoomsByApartmentUseCase,
+    private readonly findVehiclesByApartmentUseCase: FindVehiclesByApartmentUseCase,
+    private readonly findPetsByApartmentUseCase: FindPetsByApartmentUseCase,
   ) {}
 
   @Get('/:id/residential-complex/:residentialComplexId')
@@ -193,7 +196,24 @@ export class ApartmentsController {
   async getApartmentVehicles(
     @Param('id', new ParseUUIDPipe()) id: string,
   ): Promise<VehicleResponseDto[]> {
-    return this.findVehicleUseCase.executeByApartment(id);
+    return this.findVehiclesByApartmentUseCase.execute(id);
+  }
+
+  @Get('/:id/pets')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator('Apartment pets retrieved successfully')
+  @EndpointSwaggerDecorator({
+    summary: "Get apartment's pets",
+    responseType: createDataResponse(PetResponseDto, "Apartment's pets retrieved successfully"),
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
+    requireAuth: true,
+  })
+  async getApartmentPets(@Param('id', new ParseUUIDPipe()) id: string): Promise<PetResponseDto[]> {
+    return this.findPetsByApartmentUseCase.execute(id);
   }
 
   @Get('/:id/useful-rooms')

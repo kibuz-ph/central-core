@@ -2,12 +2,15 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { FindParkingLotsByApartmentUseCase } from '../parking-lots/application/services/find-parking-lots-by-apartment.use-case';
 import { ParkingLotPrismaRepository } from '../parking-lots/infrastructure/persistence/parking-lot.repository.prisma';
+import { FindPetsByApartmentUseCase } from '../pets/application/services/find-pets-by-apartment.use-case';
+import { PetPrismaRepository } from '../pets/infrastructure/persistence/pet.repository.prisma';
 import { PrismaModule } from '../prisma/prisma.module';
 import { ResidentialComplexPrismaRepository } from '../residential-complex/infrastructure/persistence/residential-complex.repository.prisma';
 import { TowerPrismaRepository } from '../towers/infrastructure/persistence/tower.repository.prisma';
 import { FindUsefulRoomsByApartmentUseCase } from '../useful-rooms/application/services/find-useful-rooms-by-apartment.use-case';
 import { UsefulRoomPrismaRepository } from '../useful-rooms/infrastructure/persistence/useful-room.repository.prisma';
 import { FindVehicleUseCase } from '../vehicles/application/services/find-vehicle.use-case';
+import { FindVehiclesByApartmentUseCase } from '../vehicles/application/services/find-vehicles-by-apartment.use-case';
 import { VehiclePrismaRepository } from '../vehicles/infrastructure/persistence/vehicle.repository.prisma';
 import { CreateApartmentsUseCase } from './application/services/create-apartments.use-case';
 import { DeleteApartmentUseCase } from './application/services/delete-apartment.use-case';
@@ -27,6 +30,8 @@ import { ApartmentsController } from './presentation/apartments.controller';
     FindVehicleUseCase,
     FindUsefulRoomsByApartmentUseCase,
     FindParkingLotsByApartmentUseCase,
+    FindVehiclesByApartmentUseCase,
+    FindPetsByApartmentUseCase,
     {
       provide: 'ApartmentRepositoryInterface',
       useClass: ApartmentPrismaRepository,
@@ -50,6 +55,10 @@ import { ApartmentsController } from './presentation/apartments.controller';
     {
       provide: 'ParkingLotRepositoryInterface',
       useClass: ParkingLotPrismaRepository,
+    },
+    {
+      provide: 'PetRepositoryInterface',
+      useClass: PetPrismaRepository,
     },
   ],
   exports: [

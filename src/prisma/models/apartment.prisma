@@ -14,6 +14,7 @@ model Apartment {
   vehicles           Vehicle[]
   usefulRooms        UsefulRoom[]
   parkingLots        ParkingLot[]
+  pets               Pet[]
 
   @@map("apartments")
 }

@@ -1,0 +1,21 @@
+model Pet {
+  id          String     @id @default(uuid())
+  name        String
+  species     PetSpecies
+  apartmentId String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime?
+
+  apartment Apartment @relation(fields: [apartmentId], references: [id])
+
+  @@map("pets")
+}
+
+enum PetSpecies {
+  DOG
+  CAT
+  BIRD
+  RABIT
+  OTHER
+}

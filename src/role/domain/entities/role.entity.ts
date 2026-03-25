@@ -1,15 +1,13 @@
-import { UserRoleType } from '../../../prisma/prisma-client/client';
-
-export { UserRoleType };
+import { UserRoleTypes } from '../enums/user-role-types.enum';
 
 export interface RoleProps {
   id?: string;
-  name: UserRoleType;
+  name: UserRoleTypes;
 }
 
 export class Role {
   public readonly id?: string;
-  public readonly name: UserRoleType;
+  public readonly name: UserRoleTypes;
 
   constructor(props: RoleProps) {
     this.id = props.id;
