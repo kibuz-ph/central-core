@@ -55,7 +55,10 @@ export class ApartmentPrismaRepository implements ApartmentRepositoryInterface {
   }
 
   async delete(id: string, residentialComplexId: string): Promise<boolean> {
-    await this.prisma.apartment.delete({ where: { id, residentialComplexId } });
+    await this.prisma.apartment.update({
+      where: { id, residentialComplexId },
+      data: { deletedAt: new Date() },
+    });
     return true;
   }
 }

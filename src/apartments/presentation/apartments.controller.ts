@@ -19,6 +19,8 @@ import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decora
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
 import { createBaseResponse, createDataResponse } from '../../common/dtos/base-response.dto';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
+import { ParkingLotResponseDto } from '../../parking-lots/application/dto/parking-lot-response.dto';
+import { FindParkingLotsByApartmentUseCase } from '../../parking-lots/application/services/find-parking-lots-by-apartment.use-case';
 import { UsefulRoomResponseDto } from '../../useful-rooms/application/dto/useful-room-response.dto';
 import { FindUsefulRoomsByApartmentUseCase } from '../../useful-rooms/application/services/find-useful-rooms-by-apartment.use-case';
 import { VehicleResponseDto } from '../../vehicles/application/dto/vehicle-response.dto';
@@ -39,6 +41,7 @@ export class ApartmentsController {
     private readonly createApartmentsUseCase: CreateApartmentsUseCase,
     private readonly updateApartmentUseCase: UpdateApartmentUseCase,
     private readonly deleteApartmentUseCase: DeleteApartmentUseCase,
+    private readonly findParkingLotsByApartmentUseCase: FindParkingLotsByApartmentUseCase,
     private readonly findVehicleUseCase: FindVehicleUseCase,
     private readonly findUsefulRoomsByApartmentUseCase: FindUsefulRoomsByApartmentUseCase,
   ) {}
@@ -147,6 +150,28 @@ export class ApartmentsController {
     @Param('residentialComplexId', new ParseUUIDPipe()) residentialComplexId: string,
   ): Promise<boolean> {
     return this.deleteApartmentUseCase.execute(id, residentialComplexId);
+  }
+
+  @Get('/:id/parking-lots')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator("Apartment's parking lots retrieved successfully")
+  @EndpointSwaggerDecorator({
+    summary: "Get apartment's parking lots",
+    responseType: createDataResponse(
+      ParkingLotResponseDto,
+      "Apartment's parking lots retrieved successfully",
+    ),
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
+    requireAuth: true,
+  })
+  async getApartmentParkingLots(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<ParkingLotResponseDto[]> {
+    return this.findParkingLotsByApartmentUseCase.execute(id);
   }
 
   @Get('/:id/vehicles')

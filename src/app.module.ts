@@ -6,6 +6,7 @@ import configuration, { Config } from './config/config';
 import { CustomCacheModule } from './modules/cache/cahce.module';
 import { FrobnicatorModule } from './modules/frobnicator/frobnicator.module';
 import { PinoModule } from './modules/pino/pino.module';
+import { ParkingLotsModule } from './parking-lots/parking-lots.module';
 import { ResidentialComplexModule } from './residential-complex/residential-complex.module';
 import { RoleModule } from './role/role.module';
 import { TowersModule } from './towers/towers.module';
@@ -27,6 +28,7 @@ import { VehiclesModule } from './vehicles/vehicles.module';
     ApartmentsModule,
     VehiclesModule,
     UsefulRoomsModule,
+    ParkingLotsModule,
     FrobnicatorModule,
     CustomCacheModule,
     PinoModule,

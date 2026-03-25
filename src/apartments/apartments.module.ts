@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
+import { FindParkingLotsByApartmentUseCase } from '../parking-lots/application/services/find-parking-lots-by-apartment.use-case';
+import { ParkingLotPrismaRepository } from '../parking-lots/infrastructure/persistence/parking-lot.repository.prisma';
 import { PrismaModule } from '../prisma/prisma.module';
 import { ResidentialComplexPrismaRepository } from '../residential-complex/infrastructure/persistence/residential-complex.repository.prisma';
 import { TowerPrismaRepository } from '../towers/infrastructure/persistence/tower.repository.prisma';
@@ -24,6 +26,7 @@ import { ApartmentsController } from './presentation/apartments.controller';
     DeleteApartmentUseCase,
     FindVehicleUseCase,
     FindUsefulRoomsByApartmentUseCase,
+    FindParkingLotsByApartmentUseCase,
     {
       provide: 'ApartmentRepositoryInterface',
       useClass: ApartmentPrismaRepository,
@@ -43,6 +46,10 @@ import { ApartmentsController } from './presentation/apartments.controller';
     {
       provide: 'UsefulRoomRepositoryInterface',
       useClass: UsefulRoomPrismaRepository,
+    },
+    {
+      provide: 'ParkingLotRepositoryInterface',
+      useClass: ParkingLotPrismaRepository,
     },
   ],
   exports: [

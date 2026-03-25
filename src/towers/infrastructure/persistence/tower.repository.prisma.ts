@@ -60,7 +60,10 @@ export class TowerPrismaRepository implements TowerRepositoryInterface {
   }
 
   async delete(id: string, residentialComplexId: string): Promise<boolean> {
-    await this.prisma.tower.delete({ where: { id, residentialComplexId } });
+    await this.prisma.tower.update({
+      where: { id, residentialComplexId },
+      data: { deletedAt: new Date() },
+    });
     return true;
   }
 }
