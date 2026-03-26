@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ParkingLotType } from '../../domain/entities/parking-lot.entity';
 
 export class CreateParkingLotDto {
@@ -27,4 +27,13 @@ export class CreateParkingLotDto {
   @IsEnum(ParkingLotType)
   @IsNotEmpty()
   type: ParkingLotType;
+
+  @ApiProperty({
+    example: '0f48881f-6e53-4170-93bd-c575e2e33c38',
+    description: 'Apartment ID (optional)',
+    required: false,
+  })
+  @IsUUID()
+  @IsOptional()
+  apartmentId?: string;
 }

@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { Prisma } from '../../../prisma/prisma-client/client';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { CommonArea, CommonAreaProps } from '../../domain/entities/common-area.entity';
 import { CommonAreaRepositoryInterface } from '../../domain/repositories/common-area.repository-interface';
@@ -10,15 +11,13 @@ export class CommonAreaPrismaRepository implements CommonAreaRepositoryInterface
     private readonly prisma: PrismaService,
   ) {}
 
-  async findByIdAndResidentialComplexId(
-    id: string,
-    residentialComplexId: string,
-  ): Promise<CommonArea | null> {
-    const commonArea = await this.prisma.commonArea.findUnique({
-      where: { id, residentialComplexId },
-    });
+  async findUnique({
+    conditions,
+  }: {
+    conditions: Prisma.CommonAreaWhereInput;
+  }): Promise<CommonArea | null> {
+    const commonArea = await this.prisma.commonArea.findFirst({ where: conditions });
     if (!commonArea) return null;
-
     return CommonArea.fromPrisma({
       ...commonArea,
       icon: commonArea.icon ?? undefined,
@@ -26,12 +25,24 @@ export class CommonAreaPrismaRepository implements CommonAreaRepositoryInterface
     });
   }
 
-  async createMany(commonAreas: CommonAreaProps[]): Promise<CommonArea[]> {
-    const commonAreasCreated = await this.prisma.commonArea.createManyAndReturn({
-      data: commonAreas,
-    });
+  async findMany({
+    conditions,
+  }: {
+    conditions: Prisma.CommonAreaWhereInput;
+  }): Promise<CommonArea[]> {
+    const commonAreas = await this.prisma.commonArea.findMany({ where: conditions });
+    return commonAreas.map(ca =>
+      CommonArea.fromPrisma({
+        ...ca,
+        icon: ca.icon ?? undefined,
+        description: ca.description ?? undefined,
+      }),
+    );
+  }
 
-    return commonAreasCreated.map(ca =>
+  async createMany(commonAreas: CommonAreaProps[]): Promise<CommonArea[]> {
+    const created = await this.prisma.commonArea.createManyAndReturn({ data: commonAreas });
+    return created.map(ca =>
       CommonArea.fromPrisma({
         ...ca,
         icon: ca.icon ?? undefined,
@@ -45,15 +56,14 @@ export class CommonAreaPrismaRepository implements CommonAreaRepositoryInterface
     residentialComplexId: string,
     commonArea: Partial<CommonArea>,
   ): Promise<CommonArea> {
-    const commonAreaUpdated = await this.prisma.commonArea.update({
+    const updated = await this.prisma.commonArea.update({
       where: { id, residentialComplexId },
       data: commonArea,
     });
-
     return CommonArea.fromPrisma({
-      ...commonAreaUpdated,
-      icon: commonAreaUpdated.icon ?? undefined,
-      description: commonAreaUpdated.description ?? undefined,
+      ...updated,
+      icon: updated.icon ?? undefined,
+      description: updated.description ?? undefined,
     });
   }
 

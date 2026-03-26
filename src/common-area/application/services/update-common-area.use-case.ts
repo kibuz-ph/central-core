@@ -11,15 +11,13 @@ export class UpdateCommonAreaUseCase {
   ) {}
 
   async execute(
-    residentialComplexId: string,
     id: string,
+    residentialComplexId: string,
     updateCommonArea: UpdateCommonAreaDto,
   ): Promise<boolean> {
-    const commonAreaExists =
-      await this.commonAreaRepositoryInterface.findByIdAndResidentialComplexId(
-        id,
-        residentialComplexId,
-      );
+    const commonAreaExists = await this.commonAreaRepositoryInterface.findUnique({
+      conditions: { id, residentialComplexId },
+    });
 
     if (!commonAreaExists) {
       throw new DomainException(

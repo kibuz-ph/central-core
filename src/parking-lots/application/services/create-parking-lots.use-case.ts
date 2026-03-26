@@ -15,19 +15,23 @@ export class CreateParkingLotsUseCase {
   ) {}
 
   async execute(
-    apartmentId: string,
+    residentialComplexId: string,
     createParkingLots: CreateParkingLotDto[],
   ): Promise<ParkingLotResponseDto[]> {
-    const apartment = await this.apartmentRepository.findUnique({
-      conditions: { id: apartmentId },
-    });
+    const apartmentIds = [...new Set(createParkingLots.map(p => p.apartmentId).filter(Boolean))];
 
-    if (!apartment) {
-      throw new DomainException(`Apartment: ${apartmentId} not found`);
+    for (const apartmentId of apartmentIds) {
+      const apartment = await this.apartmentRepository.findUnique({
+        conditions: { id: apartmentId, residentialComplexId },
+      });
+
+      if (!apartment) {
+        throw new DomainException(`Apartment: ${apartmentId} not found`);
+      }
     }
 
     const parkingLots = await this.parkingLotRepository.createMany(
-      createParkingLots.map(parkingLot => ({ ...parkingLot, apartmentId })),
+      createParkingLots.map(parkingLot => ({ ...parkingLot, residentialComplexId })),
     );
 
     return parkingLots.map(parkingLot => ParkingLotResponseDto.fromEntities(parkingLot));

@@ -9,15 +9,17 @@ export class DeleteParkingLotUseCase {
     private readonly parkingLotRepository: ParkingLotRepositoryInterface,
   ) {}
 
-  async execute(id: string, apartmentId: string): Promise<boolean> {
+  async execute(id: string, residentialComplexId: string): Promise<boolean> {
     const parkingLot = await this.parkingLotRepository.findUnique({
-      conditions: { id, apartmentId },
+      conditions: { id, residentialComplexId },
     });
 
     if (!parkingLot) {
-      throw new DomainException(`Parking lot: ${id} doesn't belong to Apartment: ${apartmentId}`);
+      throw new DomainException(
+        `Parking lot: ${id} doesn't belong to Residential Complex: ${residentialComplexId}`,
+      );
     }
 
-    return this.parkingLotRepository.delete(id, apartmentId);
+    return this.parkingLotRepository.delete(id, residentialComplexId);
   }
 }

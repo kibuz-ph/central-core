@@ -1,10 +1,8 @@
 import { CommonArea } from '../entities/common-area.entity';
 
 export interface CommonAreaRepositoryInterface {
-  findByIdAndResidentialComplexId(
-    id: string,
-    residentialComplexId: string,
-  ): Promise<CommonArea | null>;
+  findUnique({ conditions }: { conditions: any }): Promise<CommonArea | null>;
+  findMany({ conditions }: { conditions: any }): Promise<CommonArea[]>;
   createMany(commonAreas: CommonArea[]): Promise<CommonArea[]>;
   update(
     id: string,

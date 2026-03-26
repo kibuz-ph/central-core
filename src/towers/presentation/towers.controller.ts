@@ -18,7 +18,9 @@ import { SetResponseMessageDecorator } from '../../common/decorators/set-respons
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
 import { createBaseResponse, createDataResponse } from '../../common/dtos/base-response.dto';
+import { ComplexRoleGuard, RequiredComplexRoles } from '../../common/guards/complex-role.guard';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
+import { userRoleTypes } from '../../role/domain/enums/user-role-types.enum';
 import { CreateTowersDto } from '../application/dto/create-towers.dto';
 import { TowerResponseDto } from '../application/dto/tower-response.dto';
 import { UpdateTowerDto } from '../application/dto/update-tower.dto';
@@ -66,7 +68,8 @@ export class TowersController {
   }
 
   @Post('/residential-complex/:residentialComplexeId')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.CREATED)
   @WrapResponse(false)
@@ -93,7 +96,8 @@ export class TowersController {
   }
 
   @Patch('/:id/residential-complex/:residentialComplexeId')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.OK)
   @WrapResponse(false)
@@ -118,7 +122,8 @@ export class TowersController {
   }
 
   @Delete('/:id/residential-complex/:residentialComplexeId')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.NO_CONTENT)
   @WrapResponse(false)

@@ -5,5 +5,5 @@ export interface ParkingLotRepositoryInterface {
   findMany({ conditions }: { conditions: any }): Promise<ParkingLot[]>;
   createMany(parkingLots: ParkingLot[]): Promise<ParkingLot[]>;
   update(id: string, parkingLot: Partial<ParkingLot>): Promise<ParkingLot>;
-  delete(id: string, apartmentId: string): Promise<boolean>;
+  delete(id: string, residentialComplexId: string): Promise<boolean>;
 }

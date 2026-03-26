@@ -18,11 +18,13 @@ import { SetResponseMessageDecorator } from '../../common/decorators/set-respons
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
 import { createBaseResponse, createDataResponse } from '../../common/dtos/base-response.dto';
+import { ComplexRoleGuard, RequiredComplexRoles } from '../../common/guards/complex-role.guard';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { ParkingLotResponseDto } from '../../parking-lots/application/dto/parking-lot-response.dto';
 import { FindParkingLotsByApartmentUseCase } from '../../parking-lots/application/services/find-parking-lots-by-apartment.use-case';
 import { PetResponseDto } from '../../pets/application/dto/pet-response.dto';
 import { FindPetsByApartmentUseCase } from '../../pets/application/services/find-pets-by-apartment.use-case';
+import { userRoleTypes } from '../../role/domain/enums/user-role-types.enum';
 import { UsefulRoomResponseDto } from '../../useful-rooms/application/dto/useful-room-response.dto';
 import { FindUsefulRoomsByApartmentUseCase } from '../../useful-rooms/application/services/find-useful-rooms-by-apartment.use-case';
 import { VehicleResponseDto } from '../../vehicles/application/dto/vehicle-response.dto';
@@ -78,7 +80,8 @@ export class ApartmentsController {
   }
 
   @Post('/residential-complex/:residentialComplexId')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.CREATED)
   @WrapResponse(false)
@@ -107,7 +110,8 @@ export class ApartmentsController {
   }
 
   @Patch('/:id/residential-complex/:residentialComplexId')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.OK)
   @WrapResponse(false)
@@ -132,7 +136,8 @@ export class ApartmentsController {
   }
 
   @Delete('/:id/residential-complex/:residentialComplexId')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.NO_CONTENT)
   @WrapResponse(false)

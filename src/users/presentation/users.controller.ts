@@ -22,6 +22,7 @@ import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decora
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
 import { createDataResponse } from '../../common/dtos/base-response.dto';
 import { PaginationQueryDto } from '../../common/dtos/pagination-query.dto';
+import { RequiredUserTypes, UserTypeGuard } from '../../common/guards/user-type.guard';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { UserRoleResponseDto } from '../../user-role/application/dto/user-role-response.dto';
 import { FindUserRolesByComplexUseCase } from '../../user-role/application/services/find-user-roles-by-complex.use-case';
@@ -34,6 +35,7 @@ import { FindUsersUseCase } from '../application/services/find-users.use-case';
 import { RegisterUserUseCase } from '../application/services/register-user.use-case';
 import { UpdateUserUseCase } from '../application/services/update-user.use-case';
 import { UserProps } from '../domain/entities/user.entity';
+import { userTypes } from '../domain/enums/user-types.enum';
 
 @Controller('users')
 @UseInterceptors(ResponseWrapperInterceptor)
@@ -196,7 +198,8 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), UserTypeGuard)
+  @RequiredUserTypes(userTypes.KIBUZ)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.OK)
   // @WrapResponse(false)

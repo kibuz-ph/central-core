@@ -1,14 +1,16 @@
 model ParkingLot {
-  id          String         @id @default(uuid())
-  reference   String
-  description String?
-  type        ParkingLotType
-  apartmentId String
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  deletedAt   DateTime?
+  id                   String         @id @default(uuid())
+  reference            String
+  description          String?
+  type                 ParkingLotType
+  apartmentId          String?
+  residentialComplexId String
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  deletedAt            DateTime?
 
-  apartment Apartment @relation(fields: [apartmentId], references: [id])
+  apartment          Apartment?         @relation(fields: [apartmentId], references: [id])
+  residentialComplex ResidentialComplex @relation(fields: [residentialComplexId], references: [id])
 
   @@map("parking_lots")
 }
@@ -16,4 +18,5 @@ model ParkingLot {
 enum ParkingLotType {
   SINGLE
   DOUBLE
+  MOTORCICLE
 }

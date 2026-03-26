@@ -21,110 +21,110 @@ import { createBaseResponse, createDataResponse } from '../../common/dtos/base-r
 import { ComplexRoleGuard, RequiredComplexRoles } from '../../common/guards/complex-role.guard';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { userRoleTypes } from '../../role/domain/enums/user-role-types.enum';
-import { CreateParkingLotsDto } from '../application/dto/create-parking-lots.dto';
-import { ParkingLotResponseDto } from '../application/dto/parking-lot-response.dto';
-import { UpdateParkingLotDto } from '../application/dto/update-parking-lot.dto';
-import { CreateParkingLotsUseCase } from '../application/services/create-parking-lots.use-case';
-import { DeleteParkingLotUseCase } from '../application/services/delete-parking-lot.use-case';
-import { FindParkingLotUseCase } from '../application/services/find-parking-lot.use-case';
-import { UpdateParkingLotUseCase } from '../application/services/update-parking-lot.use-case';
+import { CommonAreaResponseDto } from '../application/dto/common-area-response.dto';
+import { CreateCommonAreasDto } from '../application/dto/create-common-areas.dto';
+import { UpdateCommonAreaDto } from '../application/dto/update-common-area.dto';
+import { CreateCommonAreaUseCase } from '../application/services/create-common-area.use-case';
+import { DeleteCommonAreaUseCase } from '../application/services/delete-common-area.use-case';
+import { GetCommonAreaUseCase } from '../application/services/get-common-area.use-case';
+import { UpdateCommonAreaUseCase } from '../application/services/update-common-area.use-case';
 
-@Controller('parking-lots')
+@Controller('common-areas')
 @UseInterceptors(ResponseWrapperInterceptor)
-export class ParkingLotsController {
+export class CommonAreaController {
   constructor(
-    private readonly findParkingLotUseCase: FindParkingLotUseCase,
-    private readonly createParkingLotsUseCase: CreateParkingLotsUseCase,
-    private readonly updateParkingLotUseCase: UpdateParkingLotUseCase,
-    private readonly deleteParkingLotUseCase: DeleteParkingLotUseCase,
+    private readonly createCommonAreaUseCase: CreateCommonAreaUseCase,
+    private readonly getCommonAreaUseCase: GetCommonAreaUseCase,
+    private readonly deleteCommonAreaUseCase: DeleteCommonAreaUseCase,
+    private readonly updateCommonAreaUseCase: UpdateCommonAreaUseCase,
   ) {}
 
-  @Get('/:id/residential-complex/:residentialComplexId')
+  @Get('/:id/residential-complexes/:residentialComplexId')
   @UseGuards(AuthGuard())
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.OK)
   @WrapResponse(true)
-  @SetResponseMessageDecorator('Parking lot retrieved successfully')
+  @SetResponseMessageDecorator('Common area retrieved successfully')
   @EndpointSwaggerDecorator({
-    summary: "Get residential complex's parking lot",
+    summary: "Get residential complex's common area",
     responseType: createDataResponse(
-      ParkingLotResponseDto,
-      "Residential complex's parking lot retrieved successfully",
+      CommonAreaResponseDto,
+      "Residential complex's common area retrieved successfully",
     ),
     successStatus: HttpStatus.OK,
-    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Parking lot not found' }],
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Common area not found' }],
     requireAuth: true,
   })
-  async getParkingLotById(
+  async getCommonAreaById(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('residentialComplexId', new ParseUUIDPipe()) residentialComplexId: string,
-  ): Promise<ParkingLotResponseDto> {
-    return this.findParkingLotUseCase.execute(id, residentialComplexId);
+  ): Promise<CommonAreaResponseDto> {
+    return this.getCommonAreaUseCase.execute(id, residentialComplexId);
   }
 
-  @Post('/residential-complex/:residentialComplexId')
+  @Post('/residential-complexes/:residentialComplexId')
   @UseGuards(AuthGuard(), ComplexRoleGuard)
   @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.CREATED)
   @WrapResponse(false)
-  @SetResponseMessageDecorator('Parking lots added to residential complex successfully')
+  @SetResponseMessageDecorator('Common areas added to residential complex successfully')
   @EndpointSwaggerDecorator({
-    summary: 'Create parking lots',
-    responseType: createBaseResponse('Parking lots added to residential complex successfully'),
-    bodyType: CreateParkingLotsDto,
+    summary: 'Create common areas',
+    responseType: createBaseResponse('Common areas added to residential complex successfully'),
+    bodyType: CreateCommonAreasDto,
     successStatus: HttpStatus.CREATED,
     extraResponses: [
       { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
     ],
     requireAuth: true,
   })
-  async createParkingLots(
+  async createCommonArea(
     @Param('residentialComplexId', new ParseUUIDPipe()) residentialComplexId: string,
-    @Body() createParkingLotsDto: CreateParkingLotsDto,
-  ): Promise<ParkingLotResponseDto[]> {
-    const { items } = createParkingLotsDto;
-    return this.createParkingLotsUseCase.execute(residentialComplexId, items);
+    @Body() createCommonAreasDto: CreateCommonAreasDto,
+  ): Promise<CommonAreaResponseDto[]> {
+    const { items } = createCommonAreasDto;
+    return this.createCommonAreaUseCase.execute(residentialComplexId, items);
   }
 
-  @Patch('/:id/residential-complex/:residentialComplexId')
+  @Patch('/:id/residential-complexes/:residentialComplexId')
   @UseGuards(AuthGuard(), ComplexRoleGuard)
   @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.OK)
   @WrapResponse(false)
-  @SetResponseMessageDecorator('Parking lot updated successfully')
+  @SetResponseMessageDecorator('Common area updated successfully')
   @EndpointSwaggerDecorator({
-    summary: 'Update a parking lot',
+    summary: 'Update a common area',
     successStatus: HttpStatus.OK,
-    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Parking lot not found' }],
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Common area not found' }],
     requireAuth: true,
   })
-  async updateParkingLot(
+  async updateCommonArea(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('residentialComplexId', new ParseUUIDPipe()) residentialComplexId: string,
-    @Body() updateParkingLotDto: UpdateParkingLotDto,
+    @Body() updateCommonAreaDto: UpdateCommonAreaDto,
   ): Promise<boolean> {
-    return this.updateParkingLotUseCase.execute(id, residentialComplexId, updateParkingLotDto);
+    return this.updateCommonAreaUseCase.execute(id, residentialComplexId, updateCommonAreaDto);
   }
 
-  @Delete('/:id/residential-complex/:residentialComplexId')
+  @Delete('/:id/residential-complexes/:residentialComplexId')
   @UseGuards(AuthGuard(), ComplexRoleGuard)
   @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.NO_CONTENT)
   @WrapResponse(false)
-  @SetResponseMessageDecorator('Parking lot deleted successfully')
+  @SetResponseMessageDecorator('Common area deleted successfully')
   @EndpointSwaggerDecorator({
-    summary: 'Delete a parking lot',
+    summary: 'Delete a common area',
     successStatus: HttpStatus.NO_CONTENT,
-    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Parking lot not found' }],
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Common area not found' }],
     requireAuth: true,
   })
-  async deleteParkingLot(
+  async deleteCommonArea(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Param('residentialComplexId', new ParseUUIDPipe()) residentialComplexId: string,
   ): Promise<boolean> {
-    return this.deleteParkingLotUseCase.execute(id, residentialComplexId);
+    return this.deleteCommonAreaUseCase.execute(id, residentialComplexId);
   }
 }

@@ -7,7 +7,8 @@ export interface ParkingLotProps {
   reference: string;
   description?: string;
   type: ParkingLotType;
-  apartmentId: string;
+  apartmentId?: string;
+  residentialComplexId: string;
 }
 
 export class ParkingLot {
@@ -15,7 +16,8 @@ export class ParkingLot {
   public readonly reference: string;
   public readonly description?: string;
   public readonly type: ParkingLotType;
-  public readonly apartmentId: string;
+  public readonly apartmentId?: string;
+  public readonly residentialComplexId: string;
 
   constructor(props: ParkingLotProps) {
     this.id = props.id;
@@ -23,6 +25,7 @@ export class ParkingLot {
     this.description = props.description;
     this.type = props.type;
     this.apartmentId = props.apartmentId;
+    this.residentialComplexId = props.residentialComplexId;
   }
 
   static fromPrisma(data: ParkingLotProps): ParkingLot {
@@ -32,6 +35,7 @@ export class ParkingLot {
       description: data.description,
       type: data.type,
       apartmentId: data.apartmentId,
+      residentialComplexId: data.residentialComplexId,
     });
   }
 }

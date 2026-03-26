@@ -29,14 +29,14 @@ export class ComplexRoleGuard implements CanActivate {
     );
     if (!requiredRoles) return true;
 
-    const request = context
-      .switchToHttp()
-      .getRequest<
-        Request<{ id: string }> & { user: Omit<UserProps, 'password'> & { id: string } }
-      >();
+    const request = context.switchToHttp().getRequest<
+      Request<{ id: string; residentialComplexId: string }> & {
+        user: Omit<UserProps, 'password'> & { id: string };
+      }
+    >();
 
     const { user, params } = request;
-    const residentialComplexId = params.id;
+    const residentialComplexId = params.residentialComplexId ?? params.id;
 
     if (!user || !residentialComplexId) {
       throw new ForbiddenException('Access denied: insufficient permissions');

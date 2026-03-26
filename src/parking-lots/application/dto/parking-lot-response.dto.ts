@@ -30,8 +30,15 @@ export class ParkingLotResponseDto {
   @ApiProperty({
     example: 'fb160441-660f-4e4d-af0b-b65d1a368b6f',
     description: "Apartment's unique ID",
+    required: false,
   })
-  apartmentId: string;
+  apartmentId?: string;
+
+  @ApiProperty({
+    example: 'fb160441-660f-4e4d-af0b-b65d1a368b6f',
+    description: "Residential complex's unique ID",
+  })
+  residentialComplexId: string;
 
   constructor(parkingLot: ParkingLot) {
     this.id = parkingLot.id || '';
@@ -39,6 +46,7 @@ export class ParkingLotResponseDto {
     this.description = parkingLot.description;
     this.type = parkingLot.type;
     this.apartmentId = parkingLot.apartmentId;
+    this.residentialComplexId = parkingLot.residentialComplexId;
   }
 
   static fromEntities(parkingLot: ParkingLot): ParkingLotResponseDto {

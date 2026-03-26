@@ -21,6 +21,7 @@ model ResidentialComplex {
   towers      Tower[]
   apartments  Apartment[]
   userRoles   UserRole[]
+  parkingLots ParkingLot[]
 
   @@map("residential_complexes")
 }
