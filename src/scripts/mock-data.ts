@@ -8,6 +8,25 @@ import { seedTowers } from './seeders/towers.seeder';
 
 const prisma = new PrismaClient();
 
+async function validateSeedsHaveRun() {
+  const adminEmail = process.env.KIBUZ_ADMIN_EMAIL;
+  if (!adminEmail) throw new Error('KIBUZ_ADMIN_EMAIL environment variable is not set');
+
+  const kibuzUser = await prisma.user.findUnique({ where: { email: adminEmail } });
+  if (!kibuzUser) {
+    throw new Error(
+      'Seeds have not been run. Execute "npm run prisma:seed" before running mock data.',
+    );
+  }
+
+  const masterRole = await prisma.role.findFirst({ where: { name: 'MASTER' } });
+  if (!masterRole) {
+    throw new Error(
+      'Seeds have not been run. Execute "npm run prisma:seed" before running mock data.',
+    );
+  }
+}
+
 async function createUsers(tx: Prisma.TransactionClient) {
   const password = '$2b$10$PjReZjiztFbzgz3HlVL/MuSpMwm8o265DxJ6Jb84RB6S0BDIxFmRW';
 
@@ -53,6 +72,7 @@ async function createUsers(tx: Prisma.TransactionClient) {
 }
 
 async function main() {
+  await validateSeedsHaveRun();
   await prisma.$transaction(
     async (tx: Prisma.TransactionClient) => {
       await createUsers(tx);

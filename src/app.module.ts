@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ApartmentsModule } from './apartments/apartments.module';
 import { AuthModule } from './auth/auth.module';
+import { CommonAreaModule } from './common-area/common-area.module';
 import configuration, { Config } from './config/config';
 import { CustomCacheModule } from './modules/cache/cahce.module';
 import { FrobnicatorModule } from './modules/frobnicator/frobnicator.module';
@@ -25,6 +26,7 @@ import { VehiclesModule } from './vehicles/vehicles.module';
     UserDetailsModule,
     UserRoleModule,
     ResidentialComplexModule,
+    CommonAreaModule,
     TowersModule,
     ApartmentsModule,
     VehiclesModule,

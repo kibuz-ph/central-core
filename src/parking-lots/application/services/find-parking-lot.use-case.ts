@@ -10,13 +10,15 @@ export class FindParkingLotUseCase {
     private readonly parkingLotRepository: ParkingLotRepositoryInterface,
   ) {}
 
-  async execute(id: string, apartmentId: string): Promise<ParkingLotResponseDto> {
+  async execute(id: string, residentialComplexId: string): Promise<ParkingLotResponseDto> {
     const parkingLot = await this.parkingLotRepository.findUnique({
-      conditions: { id, apartmentId },
+      conditions: { id, residentialComplexId },
     });
 
     if (!parkingLot) {
-      throw new DomainException(`Parking lot: ${id} doesn't belong to Apartment: ${apartmentId}`);
+      throw new DomainException(
+        `Parking lot: ${id} doesn't belong to Residential Complex: ${residentialComplexId}`,
+      );
     }
 
     return ParkingLotResponseDto.fromEntities(parkingLot);

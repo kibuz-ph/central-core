@@ -1,8 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CommonArea } from '../../../common-area/domain/entities/common-area.entity';
 import { Prisma } from '../../../prisma/prisma-client/client';
 import { PrismaService } from '../../../prisma/prisma.service';
-import { Tower } from '../../../towers/domain/entities/tower.entity';
 import {
   ResidentialComplex,
   ResidentialComplexProps,
@@ -23,7 +21,6 @@ export class ResidentialComplexPrismaRepository implements ResidentialComplexInt
   }): Promise<ResidentialComplex | null> {
     const residentialComplex = await this.prisma.residentialComplex.findFirst({
       where: conditions,
-      include: { towers: true, commonAreas: true },
     });
 
     if (!residentialComplex) return null;
@@ -33,19 +30,6 @@ export class ResidentialComplexPrismaRepository implements ResidentialComplexInt
       logo: residentialComplex.logo ?? undefined,
       primaryColor: residentialComplex.primaryColor ?? undefined,
       secondaryColor: residentialComplex.secondaryColor ?? undefined,
-      towers: residentialComplex.towers?.map(tower =>
-        Tower.fromPrisma({
-          ...tower,
-          description: tower.description ?? undefined,
-        }),
-      ),
-      commonAreas: residentialComplex.commonAreas?.map(area =>
-        CommonArea.fromPrisma({
-          ...area,
-          icon: area.icon ?? undefined,
-          description: area.description ?? undefined,
-        }),
-      ),
     });
   }
 
@@ -67,12 +51,7 @@ export class ResidentialComplexPrismaRepository implements ResidentialComplexInt
   }
 
   async create(residentialComplex: ResidentialComplexProps): Promise<ResidentialComplex> {
-    const {
-      id: _id,
-      towers: _towers,
-      commonAreas: _commonAreas,
-      ...residentialComplexData
-    } = residentialComplex;
+    const { id: _id, ...residentialComplexData } = residentialComplex;
     const residentialComplexCreated = await this.prisma.residentialComplex.create({
       data: residentialComplexData,
     });
@@ -88,7 +67,7 @@ export class ResidentialComplexPrismaRepository implements ResidentialComplexInt
     id: string,
     residentialComplex: Partial<ResidentialComplex>,
   ): Promise<ResidentialComplex> {
-    const { towers: _towers, commonAreas: _commonAreas, ...updateData } = residentialComplex;
+    const { ...updateData } = residentialComplex;
     const residentialComplexUpdated = await this.prisma.residentialComplex.update({
       where: { id },
       data: updateData,

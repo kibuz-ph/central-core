@@ -12,15 +12,17 @@ export class UpdateParkingLotUseCase {
 
   async execute(
     id: string,
-    apartmentId: string,
+    residentialComplexId: string,
     updateParkingLot: UpdateParkingLotDto,
   ): Promise<boolean> {
     const parkingLot = await this.parkingLotRepository.findUnique({
-      conditions: { id, apartmentId },
+      conditions: { id, residentialComplexId },
     });
 
     if (!parkingLot) {
-      throw new DomainException(`Parking lot: ${id} doesn't belong to Apartment: ${apartmentId}`);
+      throw new DomainException(
+        `Parking lot: ${id} doesn't belong to Residential Complex: ${residentialComplexId}`,
+      );
     }
 
     await this.parkingLotRepository.update(id, updateParkingLot);

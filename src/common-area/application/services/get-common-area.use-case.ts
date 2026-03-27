@@ -10,11 +10,10 @@ export class GetCommonAreaUseCase {
     private readonly commonAreaRepositoryInterface: CommonAreaRepositoryInterface,
   ) {}
 
-  async execute(residentialComplexId: string, id: string): Promise<CommonAreaResponseDto> {
-    const commonArea = await this.commonAreaRepositoryInterface.findByIdAndResidentialComplexId(
-      id,
-      residentialComplexId,
-    );
+  async execute(id: string, residentialComplexId: string): Promise<CommonAreaResponseDto> {
+    const commonArea = await this.commonAreaRepositoryInterface.findUnique({
+      conditions: { id, residentialComplexId },
+    });
 
     if (!commonArea) {
       throw new DomainException(

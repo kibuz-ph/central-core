@@ -1,8 +1,7 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { UserTypeGuard } from '../common/guards/user-type.guard';
 import { ComplexRoleGuard } from '../common/guards/complex-role.guard';
-import { CommonAreaModule } from '../common-area/common-area.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { RoleModule } from '../role/role.module';
 import { CreateUserDetailUseCase } from '../user-details/application/services/create-user-detail.use-case';
@@ -11,6 +10,12 @@ import { UserRolePrismaRepository } from '../user-role/infrastructure/persistenc
 import { UserRoleModule } from '../user-role/user-role.module';
 import { CreateUserUseCase } from '../users/application/services/create-user.use-case';
 import { UserPrismaRepository } from '../users/infrastructure/persistence/user.repository.prisma';
+import { FindCommonAreasByResidentialComplexUseCase } from '../common-area/application/services/find-common-areas-by-residential-complex.use-case';
+import { CommonAreaPrismaRepository } from '../common-area/infrastructure/persistence/common-area.repository.prisma';
+import { FindParkingLotsByResidentialComplexUseCase } from '../parking-lots/application/services/find-parking-lots-by-residential-complex.use-case';
+import { ParkingLotPrismaRepository } from '../parking-lots/infrastructure/persistence/parking-lot.repository.prisma';
+import { FindTowersByResidentialComplexUseCase } from '../towers/application/services/find-towers-by-residential-complex.use-case';
+import { TowerPrismaRepository } from '../towers/infrastructure/persistence/tower.repository.prisma';
 import { CreateResidentialComplexUseCase } from './application/services/create-residential-complex.use-case';
 import { DeleteResidentialComplexUseCase } from './application/services/delete-residential-complex.use-case';
 import { FindResidentialComplexesByUserUseCase } from './application/services/find-residential-complexes-by-user.use-case';
@@ -25,7 +30,6 @@ import { ResidentialComplexController } from './presentation/residential-complex
   imports: [
     PrismaModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
-    forwardRef(() => CommonAreaModule),
     RoleModule,
     UserRoleModule,
   ],
@@ -38,6 +42,9 @@ import { ResidentialComplexController } from './presentation/residential-complex
     UpdateResidentialComplexUseCase,
     DeleteResidentialComplexUseCase,
     RegisterUserToComplexUseCase,
+    FindCommonAreasByResidentialComplexUseCase,
+    FindParkingLotsByResidentialComplexUseCase,
+    FindTowersByResidentialComplexUseCase,
     CreateUserUseCase,
     CreateUserDetailUseCase,
     {
@@ -55,6 +62,18 @@ import { ResidentialComplexController } from './presentation/residential-complex
     {
       provide: 'UserRoleRepositoryInterface',
       useClass: UserRolePrismaRepository,
+    },
+    {
+      provide: 'ParkingLotRepositoryInterface',
+      useClass: ParkingLotPrismaRepository,
+    },
+    {
+      provide: 'CommonAreaRepositoryInterface',
+      useClass: CommonAreaPrismaRepository,
+    },
+    {
+      provide: 'TowerRepositoryInterface',
+      useClass: TowerPrismaRepository,
     },
   ],
   exports: [

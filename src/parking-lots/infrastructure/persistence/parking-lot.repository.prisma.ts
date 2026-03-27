@@ -11,6 +11,24 @@ export class ParkingLotPrismaRepository implements ParkingLotRepositoryInterface
     private readonly prisma: PrismaService,
   ) {}
 
+  private toDomain(parkingLot: {
+    id: string;
+    reference: string;
+    description: string | null;
+    type: ParkingLotProps['type'];
+    apartmentId: string | null;
+    residentialComplexId: string;
+  }): ParkingLot {
+    return ParkingLot.fromPrisma({
+      id: parkingLot.id,
+      reference: parkingLot.reference,
+      description: parkingLot.description ?? undefined,
+      type: parkingLot.type,
+      apartmentId: parkingLot.apartmentId ?? undefined,
+      residentialComplexId: parkingLot.residentialComplexId,
+    });
+  }
+
   async findUnique({
     conditions,
   }: {
@@ -22,10 +40,7 @@ export class ParkingLotPrismaRepository implements ParkingLotRepositoryInterface
 
     if (!parkingLot) return null;
 
-    return ParkingLot.fromPrisma({
-      ...parkingLot,
-      description: parkingLot.description ?? undefined,
-    });
+    return this.toDomain(parkingLot);
   }
 
   async findMany({
@@ -37,12 +52,7 @@ export class ParkingLotPrismaRepository implements ParkingLotRepositoryInterface
       where: conditions,
     });
 
-    return parkingLots.map(parkingLot =>
-      ParkingLot.fromPrisma({
-        ...parkingLot,
-        description: parkingLot.description ?? undefined,
-      }),
-    );
+    return parkingLots.map(parkingLot => this.toDomain(parkingLot));
   }
 
   async createMany(parkingLots: ParkingLotProps[]): Promise<ParkingLot[]> {
@@ -50,12 +60,7 @@ export class ParkingLotPrismaRepository implements ParkingLotRepositoryInterface
       data: parkingLots,
     });
 
-    return created.map(parkingLot =>
-      ParkingLot.fromPrisma({
-        ...parkingLot,
-        description: parkingLot.description ?? undefined,
-      }),
-    );
+    return created.map(parkingLot => this.toDomain(parkingLot));
   }
 
   async update(id: string, parkingLot: Partial<ParkingLot>): Promise<ParkingLot> {
@@ -64,15 +69,12 @@ export class ParkingLotPrismaRepository implements ParkingLotRepositoryInterface
       data: parkingLot,
     });
 
-    return ParkingLot.fromPrisma({
-      ...updated,
-      description: updated.description ?? undefined,
-    });
+    return this.toDomain(updated);
   }
 
-  async delete(id: string, apartmentId: string): Promise<boolean> {
+  async delete(id: string, residentialComplexId: string): Promise<boolean> {
     await this.prisma.parkingLot.update({
-      where: { id, apartmentId },
+      where: { id, residentialComplexId },
       data: { deletedAt: new Date() },
     });
     return true;
