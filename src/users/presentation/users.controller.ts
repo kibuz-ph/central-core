@@ -20,12 +20,12 @@ import { Request } from 'express';
 import { SetResponseMessageDecorator } from '../../common/decorators/set-response-message.decorator';
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
-import { createDataResponse } from '../../common/dtos/base-response.dto';
 import { PaginationQueryDto } from '../../common/dtos/pagination-query.dto';
 import { RequiredUserTypes, UserTypeGuard } from '../../common/guards/user-type.guard';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { UserRoleResponseDto } from '../../user-role/application/dto/user-role-response.dto';
 import { FindUserRolesByComplexUseCase } from '../../user-role/application/services/find-user-roles-by-complex.use-case';
+import { GetUserRolesResponseDto } from '../application/dto/get-user-roles-response.dto';
 import { CreateUserDto } from '../application/dto/create-user.dto';
 import { UpdateUserDto } from '../application/dto/update-user.dto';
 import { UserResponseDto } from '../application/dto/user-response.dto';
@@ -57,7 +57,7 @@ export class UsersController {
   @SetResponseMessageDecorator('User roles retrieved successfully')
   @EndpointSwaggerDecorator({
     summary: 'Get authenticated user roles in a residential complex',
-    responseType: createDataResponse(UserRoleResponseDto, 'User roles retrieved successfully'),
+    responseType: GetUserRolesResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [
       { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },

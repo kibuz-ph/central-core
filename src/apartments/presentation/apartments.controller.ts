@@ -17,7 +17,6 @@ import { Throttle } from '@nestjs/throttler';
 import { SetResponseMessageDecorator } from '../../common/decorators/set-response-message.decorator';
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
-import { createBaseResponse, createDataResponse } from '../../common/dtos/base-response.dto';
 import { ComplexRoleGuard, RequiredComplexRoles } from '../../common/guards/complex-role.guard';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { ParkingLotResponseDto } from '../../parking-lots/application/dto/parking-lot-response.dto';
@@ -30,6 +29,10 @@ import { FindUsefulRoomsByApartmentUseCase } from '../../useful-rooms/applicatio
 import { VehicleResponseDto } from '../../vehicles/application/dto/vehicle-response.dto';
 import { FindVehiclesByApartmentUseCase } from '../../vehicles/application/services/find-vehicles-by-apartment.use-case';
 import { ApartmentResponseDto } from '../application/dto/apartment-response.dto';
+import { GetApartmentParkingLotsResponseDto } from '../application/dto/get-apartment-parking-lots-response.dto';
+import { GetApartmentPetsResponseDto } from '../application/dto/get-apartment-pets-response.dto';
+import { GetApartmentUsefulRoomsResponseDto } from '../application/dto/get-apartment-useful-rooms-response.dto';
+import { GetApartmentVehiclesResponseDto } from '../application/dto/get-apartment-vehicles-response.dto';
 import { CreateApartmentsDto } from '../application/dto/create-apartments.dto';
 import { UpdateApartmentDto } from '../application/dto/update-apartment.dto';
 import { CreateApartmentsUseCase } from '../application/services/create-apartments.use-case';
@@ -59,10 +62,7 @@ export class ApartmentsController {
   @SetResponseMessageDecorator('Apartment retrieved successfully')
   @EndpointSwaggerDecorator({
     summary: "Get tower's or residential complex's apartments",
-    responseType: createDataResponse(
-      ApartmentResponseDto,
-      "Tower's or residential complex's apartment retrieved successfully",
-    ),
+    responseType: ApartmentResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [
       {
@@ -88,9 +88,6 @@ export class ApartmentsController {
   @SetResponseMessageDecorator('Apartments added to tower or residential complex successfully')
   @EndpointSwaggerDecorator({
     summary: 'Create apartment',
-    responseType: createBaseResponse(
-      'Apartments added to tower or residential complex successfully',
-    ),
     bodyType: ApartmentResponseDto,
     successStatus: HttpStatus.CREATED,
     extraResponses: [
@@ -168,10 +165,7 @@ export class ApartmentsController {
   @SetResponseMessageDecorator("Apartment's parking lots retrieved successfully")
   @EndpointSwaggerDecorator({
     summary: "Get apartment's parking lots",
-    responseType: createDataResponse(
-      ParkingLotResponseDto,
-      "Apartment's parking lots retrieved successfully",
-    ),
+    responseType: GetApartmentParkingLotsResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
     requireAuth: true,
@@ -190,10 +184,7 @@ export class ApartmentsController {
   @SetResponseMessageDecorator('Apartment vehicles retrieved successfully')
   @EndpointSwaggerDecorator({
     summary: "Get apartment's vehicles",
-    responseType: createDataResponse(
-      VehicleResponseDto,
-      "Apartment's vehicles retrieved successfully",
-    ),
+    responseType: GetApartmentVehiclesResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
     requireAuth: true,
@@ -212,7 +203,7 @@ export class ApartmentsController {
   @SetResponseMessageDecorator('Apartment pets retrieved successfully')
   @EndpointSwaggerDecorator({
     summary: "Get apartment's pets",
-    responseType: createDataResponse(PetResponseDto, "Apartment's pets retrieved successfully"),
+    responseType: GetApartmentPetsResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
     requireAuth: true,
@@ -229,10 +220,7 @@ export class ApartmentsController {
   @SetResponseMessageDecorator('Apartment useful rooms retrieved successfully')
   @EndpointSwaggerDecorator({
     summary: "Get apartment's useful rooms",
-    responseType: createDataResponse(
-      UsefulRoomResponseDto,
-      "Apartment's useful rooms retrieved successfully",
-    ),
+    responseType: GetApartmentUsefulRoomsResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
     requireAuth: true,

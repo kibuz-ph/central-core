@@ -17,7 +17,6 @@ import { Throttle } from '@nestjs/throttler';
 import { SetResponseMessageDecorator } from '../../common/decorators/set-response-message.decorator';
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
-import { createBaseResponse, createDataResponse } from '../../common/dtos/base-response.dto';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { CreatePetsDto } from '../application/dto/create-pets.dto';
 import { PetResponseDto } from '../application/dto/pet-response.dto';
@@ -45,7 +44,7 @@ export class PetsController {
   @SetResponseMessageDecorator('Pet retrieved successfully')
   @EndpointSwaggerDecorator({
     summary: "Get apartment's pet",
-    responseType: createDataResponse(PetResponseDto, "Apartment's pet retrieved successfully"),
+    responseType: PetResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Pet not found' }],
     requireAuth: true,
@@ -65,7 +64,6 @@ export class PetsController {
   @SetResponseMessageDecorator('Pets added to apartment successfully')
   @EndpointSwaggerDecorator({
     summary: 'Create pets',
-    responseType: createBaseResponse('Pets added to apartment successfully'),
     bodyType: CreatePetsDto,
     successStatus: HttpStatus.CREATED,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],

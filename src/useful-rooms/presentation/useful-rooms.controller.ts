@@ -17,7 +17,6 @@ import { Throttle } from '@nestjs/throttler';
 import { SetResponseMessageDecorator } from '../../common/decorators/set-response-message.decorator';
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
-import { createBaseResponse, createDataResponse } from '../../common/dtos/base-response.dto';
 import { ComplexRoleGuard, RequiredComplexRoles } from '../../common/guards/complex-role.guard';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { userRoleTypes } from '../../role/domain/enums/user-role-types.enum';
@@ -47,10 +46,7 @@ export class UsefulRoomsController {
   @SetResponseMessageDecorator('Useful room retrieved successfully')
   @EndpointSwaggerDecorator({
     summary: "Get apartment's useful room",
-    responseType: createDataResponse(
-      UsefulRoomResponseDto,
-      "Apartment's useful room retrieved successfully",
-    ),
+    responseType: UsefulRoomResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Useful room not found' }],
     requireAuth: true,
@@ -71,7 +67,6 @@ export class UsefulRoomsController {
   @SetResponseMessageDecorator('Useful rooms added to apartment successfully')
   @EndpointSwaggerDecorator({
     summary: 'Create useful rooms',
-    responseType: createBaseResponse('Useful rooms added to apartment successfully'),
     bodyType: CreateUsefulRoomsDto,
     successStatus: HttpStatus.CREATED,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],

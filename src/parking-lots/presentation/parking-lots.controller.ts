@@ -17,7 +17,6 @@ import { Throttle } from '@nestjs/throttler';
 import { SetResponseMessageDecorator } from '../../common/decorators/set-response-message.decorator';
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
-import { createBaseResponse, createDataResponse } from '../../common/dtos/base-response.dto';
 import { ComplexRoleGuard, RequiredComplexRoles } from '../../common/guards/complex-role.guard';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { userRoleTypes } from '../../role/domain/enums/user-role-types.enum';
@@ -47,10 +46,7 @@ export class ParkingLotsController {
   @SetResponseMessageDecorator('Parking lot retrieved successfully')
   @EndpointSwaggerDecorator({
     summary: "Get residential complex's parking lot",
-    responseType: createDataResponse(
-      ParkingLotResponseDto,
-      "Residential complex's parking lot retrieved successfully",
-    ),
+    responseType: ParkingLotResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Parking lot not found' }],
     requireAuth: true,
@@ -71,7 +67,6 @@ export class ParkingLotsController {
   @SetResponseMessageDecorator('Parking lots added to residential complex successfully')
   @EndpointSwaggerDecorator({
     summary: 'Create parking lots',
-    responseType: createBaseResponse('Parking lots added to residential complex successfully'),
     bodyType: CreateParkingLotsDto,
     successStatus: HttpStatus.CREATED,
     extraResponses: [
