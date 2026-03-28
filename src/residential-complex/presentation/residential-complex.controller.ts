@@ -16,19 +16,44 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
+import { ApartmentResponseDto } from '../../apartments/application/dto/apartment-response.dto';
+import { CreateApartmentsDto } from '../../apartments/application/dto/create-apartments.dto';
+import { UpdateApartmentDto } from '../../apartments/application/dto/update-apartment.dto';
+import { CreateApartmentsUseCase } from '../../apartments/application/services/create-apartments.use-case';
+import { DeleteApartmentUseCase } from '../../apartments/application/services/delete-apartment.use-case';
+import { FindApartmentUseCase } from '../../apartments/application/services/find-apartment.use-case';
+import { UpdateApartmentUseCase } from '../../apartments/application/services/update-apartment.use-case';
 import { CommonAreaResponseDto } from '../../common-area/application/dto/common-area-response.dto';
+import { CreateCommonAreasDto } from '../../common-area/application/dto/create-common-areas.dto';
+import { UpdateCommonAreaDto } from '../../common-area/application/dto/update-common-area.dto';
+import { CreateCommonAreaUseCase } from '../../common-area/application/services/create-common-area.use-case';
+import { DeleteCommonAreaUseCase } from '../../common-area/application/services/delete-common-area.use-case';
 import { FindCommonAreasByResidentialComplexUseCase } from '../../common-area/application/services/find-common-areas-by-residential-complex.use-case';
+import { GetCommonAreaUseCase } from '../../common-area/application/services/get-common-area.use-case';
+import { UpdateCommonAreaUseCase } from '../../common-area/application/services/update-common-area.use-case';
 import { SetResponseMessageDecorator } from '../../common/decorators/set-response-message.decorator';
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
 import { ComplexRoleGuard, RequiredComplexRoles } from '../../common/guards/complex-role.guard';
 import { RequiredUserTypes, UserTypeGuard } from '../../common/guards/user-type.guard';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
+import { CreateParkingLotsDto } from '../../parking-lots/application/dto/create-parking-lots.dto';
 import { ParkingLotResponseDto } from '../../parking-lots/application/dto/parking-lot-response.dto';
+import { UpdateParkingLotDto } from '../../parking-lots/application/dto/update-parking-lot.dto';
+import { CreateParkingLotsUseCase } from '../../parking-lots/application/services/create-parking-lots.use-case';
+import { DeleteParkingLotUseCase } from '../../parking-lots/application/services/delete-parking-lot.use-case';
+import { FindParkingLotUseCase } from '../../parking-lots/application/services/find-parking-lot.use-case';
 import { FindParkingLotsByResidentialComplexUseCase } from '../../parking-lots/application/services/find-parking-lots-by-residential-complex.use-case';
+import { UpdateParkingLotUseCase } from '../../parking-lots/application/services/update-parking-lot.use-case';
 import { userRoleTypes } from '../../role/domain/enums/user-role-types.enum';
+import { CreateTowersDto } from '../../towers/application/dto/create-towers.dto';
 import { TowerResponseDto } from '../../towers/application/dto/tower-response.dto';
+import { UpdateTowerDto } from '../../towers/application/dto/update-tower.dto';
+import { CreateTowerUseCase } from '../../towers/application/services/create-tower.use-case';
+import { DeleteTowerUseCase } from '../../towers/application/services/delete-tower.use-case';
 import { FindTowersByResidentialComplexUseCase } from '../../towers/application/services/find-towers-by-residential-complex.use-case';
+import { FindTowersUseCase } from '../../towers/application/services/find-towers.use-case';
+import { UpdateTowerUseCase } from '../../towers/application/services/update-tower.use-case';
 import { CreateUserDto } from '../../users/application/dto/create-user.dto';
 import { UserResponseDto } from '../../users/application/dto/user-response.dto';
 import { UserProps } from '../../users/domain/entities/user.entity';
@@ -57,73 +82,32 @@ export class ResidentialComplexController {
     private readonly updateResidentialComplexUseCase: UpdateResidentialComplexUseCase,
     private readonly deleteResidentialComplexUseCase: DeleteResidentialComplexUseCase,
     private readonly registerUserToComplexUseCase: RegisterUserToComplexUseCase,
+    // Common areas
     private readonly findCommonAreasByResidentialComplexUseCase: FindCommonAreasByResidentialComplexUseCase,
-    private readonly findParkingLotsByResidentialComplexUseCase: FindParkingLotsByResidentialComplexUseCase,
+    private readonly getCommonAreaUseCase: GetCommonAreaUseCase,
+    private readonly createCommonAreaUseCase: CreateCommonAreaUseCase,
+    private readonly updateCommonAreaUseCase: UpdateCommonAreaUseCase,
+    private readonly deleteCommonAreaUseCase: DeleteCommonAreaUseCase,
+    // Towers
     private readonly findTowersByResidentialComplexUseCase: FindTowersByResidentialComplexUseCase,
+    private readonly findTowersUseCase: FindTowersUseCase,
+    private readonly createTowerUseCase: CreateTowerUseCase,
+    private readonly updateTowerUseCase: UpdateTowerUseCase,
+    private readonly deleteTowerUseCase: DeleteTowerUseCase,
+    // Parking lots
+    private readonly findParkingLotsByResidentialComplexUseCase: FindParkingLotsByResidentialComplexUseCase,
+    private readonly findParkingLotUseCase: FindParkingLotUseCase,
+    private readonly createParkingLotsUseCase: CreateParkingLotsUseCase,
+    private readonly updateParkingLotUseCase: UpdateParkingLotUseCase,
+    private readonly deleteParkingLotUseCase: DeleteParkingLotUseCase,
+    // Apartments
+    private readonly findApartmentUseCase: FindApartmentUseCase,
+    private readonly createApartmentsUseCase: CreateApartmentsUseCase,
+    private readonly updateApartmentUseCase: UpdateApartmentUseCase,
+    private readonly deleteApartmentUseCase: DeleteApartmentUseCase,
   ) {}
 
-  @Get('/:id/common-areas')
-  @UseGuards(AuthGuard(), ComplexRoleGuard)
-  @Throttle({ default: { limit: 5, ttl: 60 } })
-  @HttpCode(HttpStatus.OK)
-  @WrapResponse(true)
-  @SetResponseMessageDecorator("Residential complex's common areas retrieved successfully")
-  @EndpointSwaggerDecorator({
-    summary: "Get residential complex's common areas",
-    responseType: GetResidentialComplexCommonAreasResponseDto,
-    successStatus: HttpStatus.OK,
-    extraResponses: [
-      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
-    ],
-    requireAuth: true,
-  })
-  async getResidentialComplexCommonAreas(
-    @Param('id', new ParseUUIDPipe()) id: string,
-  ): Promise<CommonAreaResponseDto[]> {
-    return this.findCommonAreasByResidentialComplexUseCase.execute(id);
-  }
-
-  @Get('/:id/towers')
-  @UseGuards(AuthGuard(), ComplexRoleGuard)
-  @Throttle({ default: { limit: 5, ttl: 60 } })
-  @HttpCode(HttpStatus.OK)
-  @WrapResponse(true)
-  @SetResponseMessageDecorator("Residential complex's towers retrieved successfully")
-  @EndpointSwaggerDecorator({
-    summary: "Get residential complex's towers",
-    responseType: GetResidentialComplexTowersResponseDto,
-    successStatus: HttpStatus.OK,
-    extraResponses: [
-      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
-    ],
-    requireAuth: true,
-  })
-  async getResidentialComplexTowers(
-    @Param('id', new ParseUUIDPipe()) id: string,
-  ): Promise<TowerResponseDto[]> {
-    return this.findTowersByResidentialComplexUseCase.execute(id);
-  }
-
-  @Get('/:id/parking-lots')
-  @UseGuards(AuthGuard())
-  @Throttle({ default: { limit: 5, ttl: 60 } })
-  @HttpCode(HttpStatus.OK)
-  @WrapResponse(true)
-  @SetResponseMessageDecorator("Residential complex's parking lots retrieved successfully")
-  @EndpointSwaggerDecorator({
-    summary: "Get residential complex's parking lots",
-    responseType: GetResidentialComplexParkingLotsResponseDto,
-    successStatus: HttpStatus.OK,
-    extraResponses: [
-      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
-    ],
-    requireAuth: true,
-  })
-  async getResidentialComplexParkingLots(
-    @Param('id', new ParseUUIDPipe()) id: string,
-  ): Promise<ParkingLotResponseDto[]> {
-    return this.findParkingLotsByResidentialComplexUseCase.execute(id);
-  }
+  // ─── Residential Complex ──────────────────────────────────────────────────
 
   @Get('/me')
   @UseGuards(AuthGuard())
@@ -154,10 +138,7 @@ export class ResidentialComplexController {
     responseType: ResidentialComplexResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [
-      {
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Residential complex not found',
-      },
+      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
     ],
     requireAuth: true,
   })
@@ -178,10 +159,7 @@ export class ResidentialComplexController {
     bodyType: CreateResidentialComplexDto,
     successStatus: HttpStatus.CREATED,
     extraResponses: [
-      {
-        status: HttpStatus.CONFLICT,
-        description: 'Residential Complex already exists',
-      },
+      { status: HttpStatus.CONFLICT, description: 'Residential Complex already exists' },
     ],
     requireAuth: true,
   })
@@ -205,14 +183,8 @@ export class ResidentialComplexController {
     bodyType: UpdateResidentialComplexDto,
     successStatus: HttpStatus.OK,
     extraResponses: [
-      {
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Residential complex not found',
-      },
-      {
-        status: HttpStatus.CONFLICT,
-        description: 'Residential Complex already exists',
-      },
+      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
+      { status: HttpStatus.CONFLICT, description: 'Residential Complex already exists' },
     ],
     requireAuth: true,
   })
@@ -227,18 +199,15 @@ export class ResidentialComplexController {
   @UseGuards(AuthGuard(), UserTypeGuard)
   @RequiredUserTypes(userTypes.KIBUZ)
   @Throttle({ default: { limit: 5, ttl: 60 } })
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @WrapResponse(false)
   @SetResponseMessageDecorator('Residential complex deleted successfully')
   @EndpointSwaggerDecorator({
-    summary: 'Create residential complex',
+    summary: 'Delete residential complex',
     bodyType: UpdateResidentialComplexDto,
     successStatus: HttpStatus.NO_CONTENT,
     extraResponses: [
-      {
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Residential complex not found',
-      },
+      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
     ],
     requireAuth: true,
   })
@@ -300,5 +269,416 @@ export class ResidentialComplexController {
     @Body() createUserDto: CreateUserDto,
   ): Promise<UserResponseDto> {
     return this.registerUserToComplexUseCase.execute(createUserDto, id, userRoleTypes.ADMIN);
+  }
+
+  // ─── Common Areas ─────────────────────────────────────────────────────────
+
+  @Get('/:id/common-areas')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator("Residential complex's common areas retrieved successfully")
+  @EndpointSwaggerDecorator({
+    summary: "Get residential complex's common areas",
+    responseType: GetResidentialComplexCommonAreasResponseDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [
+      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
+    ],
+    requireAuth: true,
+  })
+  async getResidentialComplexCommonAreas(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<CommonAreaResponseDto[]> {
+    return this.findCommonAreasByResidentialComplexUseCase.execute(id);
+  }
+
+  @Get('/:id/common-areas/:commonAreaId')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator('Common area retrieved successfully')
+  @EndpointSwaggerDecorator({
+    summary: "Get residential complex's common area",
+    responseType: CommonAreaResponseDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Common area not found' }],
+    requireAuth: true,
+  })
+  async getCommonAreaById(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('commonAreaId', new ParseUUIDPipe()) commonAreaId: string,
+  ): Promise<CommonAreaResponseDto> {
+    return this.getCommonAreaUseCase.execute(commonAreaId, id);
+  }
+
+  @Post('/:id/common-areas')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.CREATED)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Common areas added to residential complex successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Create common areas',
+    bodyType: CreateCommonAreasDto,
+    successStatus: HttpStatus.CREATED,
+    extraResponses: [
+      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
+    ],
+    requireAuth: true,
+  })
+  async createCommonArea(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() createCommonAreasDto: CreateCommonAreasDto,
+  ): Promise<CommonAreaResponseDto[]> {
+    const { items } = createCommonAreasDto;
+    return this.createCommonAreaUseCase.execute(id, items);
+  }
+
+  @Patch('/:id/common-areas/:commonAreaId')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Common area updated successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Update a common area',
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Common area not found' }],
+    requireAuth: true,
+  })
+  async updateCommonArea(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('commonAreaId', new ParseUUIDPipe()) commonAreaId: string,
+    @Body() updateCommonAreaDto: UpdateCommonAreaDto,
+  ): Promise<boolean> {
+    return this.updateCommonAreaUseCase.execute(commonAreaId, id, updateCommonAreaDto);
+  }
+
+  @Delete('/:id/common-areas/:commonAreaId')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Common area deleted successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Delete a common area',
+    successStatus: HttpStatus.NO_CONTENT,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Common area not found' }],
+    requireAuth: true,
+  })
+  async deleteCommonArea(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('commonAreaId', new ParseUUIDPipe()) commonAreaId: string,
+  ): Promise<boolean> {
+    return this.deleteCommonAreaUseCase.execute(commonAreaId, id);
+  }
+
+  // ─── Towers ───────────────────────────────────────────────────────────────
+
+  @Get('/:id/towers')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator("Residential complex's towers retrieved successfully")
+  @EndpointSwaggerDecorator({
+    summary: "Get residential complex's towers",
+    responseType: GetResidentialComplexTowersResponseDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [
+      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
+    ],
+    requireAuth: true,
+  })
+  async getResidentialComplexTowers(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<TowerResponseDto[]> {
+    return this.findTowersByResidentialComplexUseCase.execute(id);
+  }
+
+  @Get('/:id/towers/:towerId')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator('Tower retrieved successfully')
+  @EndpointSwaggerDecorator({
+    summary: "Get residential complex's tower",
+    responseType: TowerResponseDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Tower not found' }],
+    requireAuth: true,
+  })
+  async getTowerById(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('towerId', new ParseUUIDPipe()) towerId: string,
+  ): Promise<TowerResponseDto> {
+    return this.findTowersUseCase.execute(id, towerId);
+  }
+
+  @Post('/:id/towers')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.CREATED)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Towers added to residential complex successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Create towers',
+    bodyType: CreateTowersDto,
+    successStatus: HttpStatus.CREATED,
+    extraResponses: [
+      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
+    ],
+    requireAuth: true,
+  })
+  async createTowers(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() createTowersDto: CreateTowersDto,
+  ): Promise<TowerResponseDto[]> {
+    const { items } = createTowersDto;
+    return this.createTowerUseCase.execute(id, items);
+  }
+
+  @Patch('/:id/towers/:towerId')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Tower updated successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Update a tower',
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Tower not found' }],
+    requireAuth: true,
+  })
+  async updateTower(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('towerId', new ParseUUIDPipe()) towerId: string,
+    @Body() updateTowerDto: UpdateTowerDto,
+  ): Promise<boolean> {
+    return this.updateTowerUseCase.execute(towerId, id, updateTowerDto);
+  }
+
+  @Delete('/:id/towers/:towerId')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Tower deleted successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Delete a tower',
+    successStatus: HttpStatus.NO_CONTENT,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Tower not found' }],
+    requireAuth: true,
+  })
+  async deleteTower(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('towerId', new ParseUUIDPipe()) towerId: string,
+  ): Promise<boolean> {
+    return this.deleteTowerUseCase.execute(towerId, id);
+  }
+
+  // ─── Parking Lots ─────────────────────────────────────────────────────────
+
+  @Get('/:id/parking-lots')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator("Residential complex's parking lots retrieved successfully")
+  @EndpointSwaggerDecorator({
+    summary: "Get residential complex's parking lots",
+    responseType: GetResidentialComplexParkingLotsResponseDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [
+      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
+    ],
+    requireAuth: true,
+  })
+  async getResidentialComplexParkingLots(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<ParkingLotResponseDto[]> {
+    return this.findParkingLotsByResidentialComplexUseCase.execute(id);
+  }
+
+  @Get('/:id/parking-lots/:parkingLotId')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator('Parking lot retrieved successfully')
+  @EndpointSwaggerDecorator({
+    summary: "Get residential complex's parking lot",
+    responseType: ParkingLotResponseDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Parking lot not found' }],
+    requireAuth: true,
+  })
+  async getParkingLotById(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('parkingLotId', new ParseUUIDPipe()) parkingLotId: string,
+  ): Promise<ParkingLotResponseDto> {
+    return this.findParkingLotUseCase.execute(parkingLotId, id);
+  }
+
+  @Post('/:id/parking-lots')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.CREATED)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Parking lots added to residential complex successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Create parking lots',
+    bodyType: CreateParkingLotsDto,
+    successStatus: HttpStatus.CREATED,
+    extraResponses: [
+      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
+    ],
+    requireAuth: true,
+  })
+  async createParkingLots(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() createParkingLotsDto: CreateParkingLotsDto,
+  ): Promise<ParkingLotResponseDto[]> {
+    const { items } = createParkingLotsDto;
+    return this.createParkingLotsUseCase.execute(id, items);
+  }
+
+  @Patch('/:id/parking-lots/:parkingLotId')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Parking lot updated successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Update a parking lot',
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Parking lot not found' }],
+    requireAuth: true,
+  })
+  async updateParkingLot(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('parkingLotId', new ParseUUIDPipe()) parkingLotId: string,
+    @Body() updateParkingLotDto: UpdateParkingLotDto,
+  ): Promise<boolean> {
+    return this.updateParkingLotUseCase.execute(parkingLotId, id, updateParkingLotDto);
+  }
+
+  @Delete('/:id/parking-lots/:parkingLotId')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Parking lot deleted successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Delete a parking lot',
+    successStatus: HttpStatus.NO_CONTENT,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Parking lot not found' }],
+    requireAuth: true,
+  })
+  async deleteParkingLot(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('parkingLotId', new ParseUUIDPipe()) parkingLotId: string,
+  ): Promise<boolean> {
+    return this.deleteParkingLotUseCase.execute(parkingLotId, id);
+  }
+
+  // ─── Apartments ───────────────────────────────────────────────────────────
+
+  @Get('/:id/apartments/:apartmentId')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator('Apartment retrieved successfully')
+  @EndpointSwaggerDecorator({
+    summary: "Get residential complex's apartment",
+    responseType: ApartmentResponseDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
+    requireAuth: true,
+  })
+  async getApartmentById(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('apartmentId', new ParseUUIDPipe()) apartmentId: string,
+  ): Promise<ApartmentResponseDto> {
+    return this.findApartmentUseCase.execute(apartmentId, id);
+  }
+
+  @Post('/:id/apartments')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.CREATED)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Apartments added to residential complex successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Create apartments',
+    bodyType: CreateApartmentsDto,
+    successStatus: HttpStatus.CREATED,
+    extraResponses: [
+      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
+    ],
+    requireAuth: true,
+  })
+  async createApartments(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() createApartmentsDto: CreateApartmentsDto,
+  ): Promise<ApartmentResponseDto[]> {
+    const { items } = createApartmentsDto;
+    return this.createApartmentsUseCase.execute(id, items);
+  }
+
+  @Patch('/:id/apartments/:apartmentId')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Apartment updated successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Update an apartment',
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
+    requireAuth: true,
+  })
+  async updateApartment(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('apartmentId', new ParseUUIDPipe()) apartmentId: string,
+    @Body() updateApartmentDto: UpdateApartmentDto,
+  ): Promise<boolean> {
+    return this.updateApartmentUseCase.execute(apartmentId, id, updateApartmentDto);
+  }
+
+  @Delete('/:id/apartments/:apartmentId')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Apartment deleted successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Delete an apartment',
+    successStatus: HttpStatus.NO_CONTENT,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
+    requireAuth: true,
+  })
+  async deleteApartment(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('apartmentId', new ParseUUIDPipe()) apartmentId: string,
+  ): Promise<boolean> {
+    return this.deleteApartmentUseCase.execute(apartmentId, id);
   }
 }
