@@ -3,7 +3,7 @@ export interface ApartmentProps {
   floor: number;
   reference: string;
   size: string;
-  towerId?: string;
+  towerId?: string | null;
   residentialComplexId: string;
 }
 
@@ -20,18 +20,11 @@ export class Apartment {
     this.floor = props.floor;
     this.reference = props.reference;
     this.size = props.size;
-    this.towerId = props.towerId;
+    this.towerId = props.towerId ?? undefined;
     this.residentialComplexId = props.residentialComplexId;
   }
 
   static fromPrisma(data: ApartmentProps): Apartment {
-    return new Apartment({
-      id: data.id,
-      floor: data.floor,
-      reference: data.reference,
-      size: data.size,
-      towerId: data.towerId,
-      residentialComplexId: data.residentialComplexId,
-    });
+    return new Apartment(data);
   }
 }
