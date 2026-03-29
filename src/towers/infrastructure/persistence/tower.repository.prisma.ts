@@ -12,55 +12,44 @@ export class TowerPrismaRepository implements TowerRepositoryInterface {
   ) {}
 
   async findMany({ conditions }: { conditions: Prisma.TowerWhereInput }): Promise<Tower[]> {
-    const towers = await this.prisma.tower.findMany({
-      where: conditions,
-    });
-
+    const towers = await this.prisma.tower.findMany({ where: conditions });
     if (!towers) return [];
-
-    return towers.map(tower => Tower.fromPrisma(tower as TowerProps));
+    return towers.map(tower => Tower.fromPrisma(tower));
   }
 
   async findUnique({ conditions }: { conditions: Prisma.TowerWhereInput }): Promise<Tower | null> {
-    const tower = await this.prisma.tower.findFirst({
-      where: conditions,
-    });
-
+    const tower = await this.prisma.tower.findFirst({ where: conditions });
     if (!tower) return null;
-
-    return Tower.fromPrisma({
-      ...tower,
-      description: tower.description ?? undefined,
-    });
+    return Tower.fromPrisma(tower);
   }
 
-  async createMany(towers: TowerProps[]): Promise<Tower[]> {
-    const towersCreated = await this.prisma.tower.createManyAndReturn({
-      data: towers,
-    });
-
-    return towersCreated.map(tower =>
-      Tower.fromPrisma({
-        ...tower,
-        description: tower.description ?? undefined,
-      }),
-    );
+  async createMany(towers: TowerProps[], tx?: Prisma.TransactionClient): Promise<Tower[]> {
+    const client = tx ?? this.prisma;
+    const created = await client.tower.createManyAndReturn({ data: towers });
+    return created.map(tower => Tower.fromPrisma(tower));
   }
 
-  async update(id: string, residentialComplexId: string, tower: Partial<Tower>): Promise<Tower> {
-    const { ...updateData } = tower;
-    const towerUpdated = await this.prisma.tower.update({
+  async update(
+    id: string,
+    residentialComplexId: string,
+    tower: Partial<Tower>,
+    tx?: Prisma.TransactionClient,
+  ): Promise<Tower> {
+    const client = tx ?? this.prisma;
+    const updated = await client.tower.update({
       where: { id, residentialComplexId },
-      data: updateData,
+      data: tower,
     });
-    return Tower.fromPrisma({
-      ...towerUpdated,
-      description: tower.description ?? undefined,
-    });
+    return Tower.fromPrisma(updated);
   }
 
-  async delete(id: string, residentialComplexId: string): Promise<boolean> {
-    await this.prisma.tower.update({
+  async delete(
+    id: string,
+    residentialComplexId: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<boolean> {
+    const client = tx ?? this.prisma;
+    await client.tower.update({
       where: { id, residentialComplexId },
       data: { deletedAt: new Date() },
     });

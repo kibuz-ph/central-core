@@ -1,3 +1,4 @@
+import { Prisma } from '../../../prisma/prisma-client/client';
 import { Apartment } from '../../../apartments/domain/entities/apartment.entity';
 
 export interface ApartmentRepositoryInterface {
@@ -8,7 +9,11 @@ export interface ApartmentRepositoryInterface {
     conditions: any;
     include?: any;
   }): Promise<Apartment | null>;
-  createMany(apartments: Apartment[]): Promise<Apartment[]>;
-  update(id: string, apartment: Partial<Apartment>): Promise<Apartment>;
-  delete(id: string, residentialComplexId: string): Promise<boolean>;
+  createMany(apartments: Apartment[], tx?: Prisma.TransactionClient): Promise<Apartment[]>;
+  update(
+    id: string,
+    apartment: Partial<Apartment>,
+    tx?: Prisma.TransactionClient,
+  ): Promise<Apartment>;
+  delete(id: string, residentialComplexId: string, tx?: Prisma.TransactionClient): Promise<boolean>;
 }

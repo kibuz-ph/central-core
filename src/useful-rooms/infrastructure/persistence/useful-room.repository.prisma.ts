@@ -22,10 +22,7 @@ export class UsefulRoomPrismaRepository implements UsefulRoomRepositoryInterface
 
     if (!usefulRoom) return null;
 
-    return UsefulRoom.fromPrisma({
-      ...usefulRoom,
-      description: usefulRoom.description ?? undefined,
-    });
+    return UsefulRoom.fromPrisma(usefulRoom);
   }
 
   async findMany({
@@ -37,32 +34,38 @@ export class UsefulRoomPrismaRepository implements UsefulRoomRepositoryInterface
       where: conditions,
     });
 
-    return usefulRooms.map(usefulRoom =>
-      UsefulRoom.fromPrisma({ ...usefulRoom, description: usefulRoom.description ?? undefined }),
-    );
+    return usefulRooms.map(usefulRoom => UsefulRoom.fromPrisma(usefulRoom));
   }
 
-  async createMany(usefulRooms: UsefulRoomProps[]): Promise<UsefulRoom[]> {
-    const created = await this.prisma.usefulRoom.createManyAndReturn({
+  async createMany(
+    usefulRooms: UsefulRoomProps[],
+    tx?: Prisma.TransactionClient,
+  ): Promise<UsefulRoom[]> {
+    const client = tx ?? this.prisma;
+    const created = await client.usefulRoom.createManyAndReturn({
       data: usefulRooms,
     });
 
-    return created.map(usefulRoom =>
-      UsefulRoom.fromPrisma({ ...usefulRoom, description: usefulRoom.description ?? undefined }),
-    );
+    return created.map(usefulRoom => UsefulRoom.fromPrisma(usefulRoom));
   }
 
-  async update(id: string, usefulRoom: Partial<UsefulRoom>): Promise<UsefulRoom> {
-    const updated = await this.prisma.usefulRoom.update({
+  async update(
+    id: string,
+    usefulRoom: Partial<UsefulRoom>,
+    tx?: Prisma.TransactionClient,
+  ): Promise<UsefulRoom> {
+    const client = tx ?? this.prisma;
+    const updated = await client.usefulRoom.update({
       where: { id },
       data: usefulRoom,
     });
 
-    return UsefulRoom.fromPrisma({ ...updated, description: updated.description ?? undefined });
+    return UsefulRoom.fromPrisma(updated);
   }
 
-  async delete(id: string, apartmentId: string): Promise<boolean> {
-    await this.prisma.usefulRoom.update({
+  async delete(id: string, apartmentId: string, tx?: Prisma.TransactionClient): Promise<boolean> {
+    const client = tx ?? this.prisma;
+    await client.usefulRoom.update({
       where: { id, apartmentId },
       data: { deletedAt: new Date() },
     });

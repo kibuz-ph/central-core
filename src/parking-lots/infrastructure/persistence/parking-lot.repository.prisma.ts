@@ -11,36 +11,14 @@ export class ParkingLotPrismaRepository implements ParkingLotRepositoryInterface
     private readonly prisma: PrismaService,
   ) {}
 
-  private toDomain(parkingLot: {
-    id: string;
-    reference: string;
-    description: string | null;
-    type: ParkingLotProps['type'];
-    apartmentId: string | null;
-    residentialComplexId: string;
-  }): ParkingLot {
-    return ParkingLot.fromPrisma({
-      id: parkingLot.id,
-      reference: parkingLot.reference,
-      description: parkingLot.description ?? undefined,
-      type: parkingLot.type,
-      apartmentId: parkingLot.apartmentId ?? undefined,
-      residentialComplexId: parkingLot.residentialComplexId,
-    });
-  }
-
   async findUnique({
     conditions,
   }: {
     conditions: Prisma.ParkingLotWhereInput;
   }): Promise<ParkingLot | null> {
-    const parkingLot = await this.prisma.parkingLot.findFirst({
-      where: conditions,
-    });
-
+    const parkingLot = await this.prisma.parkingLot.findFirst({ where: conditions });
     if (!parkingLot) return null;
-
-    return this.toDomain(parkingLot);
+    return ParkingLot.fromPrisma(parkingLot);
   }
 
   async findMany({
@@ -48,32 +26,36 @@ export class ParkingLotPrismaRepository implements ParkingLotRepositoryInterface
   }: {
     conditions: Prisma.ParkingLotWhereInput;
   }): Promise<ParkingLot[]> {
-    const parkingLots = await this.prisma.parkingLot.findMany({
-      where: conditions,
-    });
-
-    return parkingLots.map(parkingLot => this.toDomain(parkingLot));
+    const parkingLots = await this.prisma.parkingLot.findMany({ where: conditions });
+    return parkingLots.map(parkingLot => ParkingLot.fromPrisma(parkingLot));
   }
 
-  async createMany(parkingLots: ParkingLotProps[]): Promise<ParkingLot[]> {
-    const created = await this.prisma.parkingLot.createManyAndReturn({
-      data: parkingLots,
-    });
-
-    return created.map(parkingLot => this.toDomain(parkingLot));
+  async createMany(
+    parkingLots: ParkingLotProps[],
+    tx?: Prisma.TransactionClient,
+  ): Promise<ParkingLot[]> {
+    const client = tx ?? this.prisma;
+    const created = await client.parkingLot.createManyAndReturn({ data: parkingLots });
+    return created.map(parkingLot => ParkingLot.fromPrisma(parkingLot));
   }
 
-  async update(id: string, parkingLot: Partial<ParkingLot>): Promise<ParkingLot> {
-    const updated = await this.prisma.parkingLot.update({
-      where: { id },
-      data: parkingLot,
-    });
-
-    return this.toDomain(updated);
+  async update(
+    id: string,
+    parkingLot: Partial<ParkingLot>,
+    tx?: Prisma.TransactionClient,
+  ): Promise<ParkingLot> {
+    const client = tx ?? this.prisma;
+    const updated = await client.parkingLot.update({ where: { id }, data: parkingLot });
+    return ParkingLot.fromPrisma(updated);
   }
 
-  async delete(id: string, residentialComplexId: string): Promise<boolean> {
-    await this.prisma.parkingLot.update({
+  async delete(
+    id: string,
+    residentialComplexId: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<boolean> {
+    const client = tx ?? this.prisma;
+    await client.parkingLot.update({
       where: { id, residentialComplexId },
       data: { deletedAt: new Date() },
     });

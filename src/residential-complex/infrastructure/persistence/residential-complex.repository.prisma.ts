@@ -25,12 +25,7 @@ export class ResidentialComplexPrismaRepository implements ResidentialComplexInt
 
     if (!residentialComplex) return null;
 
-    return ResidentialComplex.fromPrisma({
-      ...residentialComplex,
-      logo: residentialComplex.logo ?? undefined,
-      primaryColor: residentialComplex.primaryColor ?? undefined,
-      secondaryColor: residentialComplex.secondaryColor ?? undefined,
-    });
+    return ResidentialComplex.fromPrisma(residentialComplex);
   }
 
   async findManyByUserId(userId: string): Promise<ResidentialComplex[]> {
@@ -40,48 +35,37 @@ export class ResidentialComplexPrismaRepository implements ResidentialComplexInt
       },
     });
 
-    return results.map(rc =>
-      ResidentialComplex.fromPrisma({
-        ...rc,
-        logo: rc.logo ?? undefined,
-        primaryColor: rc.primaryColor ?? undefined,
-        secondaryColor: rc.secondaryColor ?? undefined,
-      }),
-    );
+    return results.map(rc => ResidentialComplex.fromPrisma(rc));
   }
 
-  async create(residentialComplex: ResidentialComplexProps): Promise<ResidentialComplex> {
+  async create(
+    residentialComplex: ResidentialComplexProps,
+    tx?: Prisma.TransactionClient,
+  ): Promise<ResidentialComplex> {
+    const client = tx ?? this.prisma;
     const { id: _id, ...residentialComplexData } = residentialComplex;
-    const residentialComplexCreated = await this.prisma.residentialComplex.create({
+    const residentialComplexCreated = await client.residentialComplex.create({
       data: residentialComplexData,
     });
-    return ResidentialComplex.fromPrisma({
-      ...residentialComplexCreated,
-      logo: residentialComplexCreated.logo ?? undefined,
-      primaryColor: residentialComplexCreated.primaryColor ?? undefined,
-      secondaryColor: residentialComplexCreated.secondaryColor ?? undefined,
-    });
+    return ResidentialComplex.fromPrisma(residentialComplexCreated);
   }
 
   async update(
     id: string,
     residentialComplex: Partial<ResidentialComplex>,
+    tx?: Prisma.TransactionClient,
   ): Promise<ResidentialComplex> {
-    const { ...updateData } = residentialComplex;
-    const residentialComplexUpdated = await this.prisma.residentialComplex.update({
+    const client = tx ?? this.prisma;
+    const residentialComplexUpdated = await client.residentialComplex.update({
       where: { id },
-      data: updateData,
+      data: residentialComplex,
     });
-    return ResidentialComplex.fromPrisma({
-      ...residentialComplexUpdated,
-      logo: residentialComplexUpdated.logo ?? undefined,
-      primaryColor: residentialComplexUpdated.primaryColor ?? undefined,
-      secondaryColor: residentialComplexUpdated.secondaryColor ?? undefined,
-    });
+    return ResidentialComplex.fromPrisma(residentialComplexUpdated);
   }
 
-  async delete(id: string): Promise<boolean> {
-    await this.prisma.residentialComplex.update({
+  async delete(id: string, tx?: Prisma.TransactionClient): Promise<boolean> {
+    const client = tx ?? this.prisma;
+    await client.residentialComplex.update({
       where: { id },
       data: {
         deletedAt: new Date(),

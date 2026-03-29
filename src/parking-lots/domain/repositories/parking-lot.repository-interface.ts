@@ -1,9 +1,14 @@
+import { Prisma } from '../../../prisma/prisma-client/client';
 import { ParkingLot } from '../entities/parking-lot.entity';
 
 export interface ParkingLotRepositoryInterface {
   findUnique({ conditions }: { conditions: any }): Promise<ParkingLot | null>;
   findMany({ conditions }: { conditions: any }): Promise<ParkingLot[]>;
-  createMany(parkingLots: ParkingLot[]): Promise<ParkingLot[]>;
-  update(id: string, parkingLot: Partial<ParkingLot>): Promise<ParkingLot>;
-  delete(id: string, residentialComplexId: string): Promise<boolean>;
+  createMany(parkingLots: ParkingLot[], tx?: Prisma.TransactionClient): Promise<ParkingLot[]>;
+  update(
+    id: string,
+    parkingLot: Partial<ParkingLot>,
+    tx?: Prisma.TransactionClient,
+  ): Promise<ParkingLot>;
+  delete(id: string, residentialComplexId: string, tx?: Prisma.TransactionClient): Promise<boolean>;
 }
