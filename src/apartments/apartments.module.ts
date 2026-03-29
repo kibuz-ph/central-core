@@ -1,56 +1,64 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
+import { ComplexRoleGuard } from '../common/guards/complex-role.guard';
 import { FindParkingLotsByApartmentUseCase } from '../parking-lots/application/services/find-parking-lots-by-apartment.use-case';
 import { ParkingLotPrismaRepository } from '../parking-lots/infrastructure/persistence/parking-lot.repository.prisma';
+import { CreatePetsUseCase } from '../pets/application/services/create-pets.use-case';
+import { DeletePetUseCase } from '../pets/application/services/delete-pet.use-case';
+import { FindPetUseCase } from '../pets/application/services/find-pet.use-case';
 import { FindPetsByApartmentUseCase } from '../pets/application/services/find-pets-by-apartment.use-case';
+import { UpdatePetUseCase } from '../pets/application/services/update-pet.use-case';
 import { PetPrismaRepository } from '../pets/infrastructure/persistence/pet.repository.prisma';
 import { PrismaModule } from '../prisma/prisma.module';
-import { ResidentialComplexPrismaRepository } from '../residential-complex/infrastructure/persistence/residential-complex.repository.prisma';
-import { TowerPrismaRepository } from '../towers/infrastructure/persistence/tower.repository.prisma';
+import { RoleModule } from '../role/role.module';
+import { CreateUsefulRoomsUseCase } from '../useful-rooms/application/services/create-useful-rooms.use-case';
+import { DeleteUsefulRoomUseCase } from '../useful-rooms/application/services/delete-useful-room.use-case';
+import { FindUsefulRoomUseCase } from '../useful-rooms/application/services/find-useful-room.use-case';
 import { FindUsefulRoomsByApartmentUseCase } from '../useful-rooms/application/services/find-useful-rooms-by-apartment.use-case';
+import { UpdateUsefulRoomUseCase } from '../useful-rooms/application/services/update-useful-room.use-case';
 import { UsefulRoomPrismaRepository } from '../useful-rooms/infrastructure/persistence/useful-room.repository.prisma';
+import { UserRoleModule } from '../user-role/user-role.module';
+import { CreateVehiclesUseCase } from '../vehicles/application/services/create-vehicles.use-case';
+import { DeleteVehicleUseCase } from '../vehicles/application/services/delete-vehicle.use-case';
 import { FindVehicleUseCase } from '../vehicles/application/services/find-vehicle.use-case';
 import { FindVehiclesByApartmentUseCase } from '../vehicles/application/services/find-vehicles-by-apartment.use-case';
+import { UpdateVehicleUseCase } from '../vehicles/application/services/update-vehicle.use-case';
 import { VehiclePrismaRepository } from '../vehicles/infrastructure/persistence/vehicle.repository.prisma';
-import { CreateApartmentsUseCase } from './application/services/create-apartments.use-case';
-import { DeleteApartmentUseCase } from './application/services/delete-apartment.use-case';
-import { FindApartmentUseCase } from './application/services/find-apartment.use-case';
-import { UpdateApartmentUseCase } from './application/services/update-apartment.use-case';
 import { ApartmentPrismaRepository } from './infrastructure/persistence/apartment.repository.prisma';
 import { ApartmentsController } from './presentation/apartments.controller';
 
 @Module({
   controllers: [ApartmentsController],
-  imports: [PrismaModule, PassportModule.register({ defaultStrategy: 'jwt' })],
+  imports: [
+    PrismaModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    RoleModule,
+    UserRoleModule,
+  ],
   providers: [
-    FindApartmentUseCase,
-    CreateApartmentsUseCase,
-    UpdateApartmentUseCase,
-    DeleteApartmentUseCase,
-    FindVehicleUseCase,
-    FindUsefulRoomsByApartmentUseCase,
+    ComplexRoleGuard,
     FindParkingLotsByApartmentUseCase,
-    FindVehiclesByApartmentUseCase,
+    // Pets
     FindPetsByApartmentUseCase,
+    FindPetUseCase,
+    CreatePetsUseCase,
+    UpdatePetUseCase,
+    DeletePetUseCase,
+    // Vehicles
+    FindVehiclesByApartmentUseCase,
+    FindVehicleUseCase,
+    CreateVehiclesUseCase,
+    UpdateVehicleUseCase,
+    DeleteVehicleUseCase,
+    // Useful rooms
+    FindUsefulRoomsByApartmentUseCase,
+    FindUsefulRoomUseCase,
+    CreateUsefulRoomsUseCase,
+    UpdateUsefulRoomUseCase,
+    DeleteUsefulRoomUseCase,
     {
       provide: 'ApartmentRepositoryInterface',
       useClass: ApartmentPrismaRepository,
-    },
-    {
-      provide: 'TowerRepositoryInterface',
-      useClass: TowerPrismaRepository,
-    },
-    {
-      provide: 'ResidentialComplexInterface',
-      useClass: ResidentialComplexPrismaRepository,
-    },
-    {
-      provide: 'VehicleRepositoryInterface',
-      useClass: VehiclePrismaRepository,
-    },
-    {
-      provide: 'UsefulRoomRepositoryInterface',
-      useClass: UsefulRoomPrismaRepository,
     },
     {
       provide: 'ParkingLotRepositoryInterface',
@@ -59,6 +67,14 @@ import { ApartmentsController } from './presentation/apartments.controller';
     {
       provide: 'PetRepositoryInterface',
       useClass: PetPrismaRepository,
+    },
+    {
+      provide: 'VehicleRepositoryInterface',
+      useClass: VehiclePrismaRepository,
+    },
+    {
+      provide: 'UsefulRoomRepositoryInterface',
+      useClass: UsefulRoomPrismaRepository,
     },
   ],
   exports: [

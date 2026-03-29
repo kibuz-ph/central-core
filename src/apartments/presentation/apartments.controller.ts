@@ -21,141 +21,62 @@ import { ComplexRoleGuard, RequiredComplexRoles } from '../../common/guards/comp
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { ParkingLotResponseDto } from '../../parking-lots/application/dto/parking-lot-response.dto';
 import { FindParkingLotsByApartmentUseCase } from '../../parking-lots/application/services/find-parking-lots-by-apartment.use-case';
+import { CreatePetsDto } from '../../pets/application/dto/create-pets.dto';
 import { PetResponseDto } from '../../pets/application/dto/pet-response.dto';
+import { UpdatePetDto } from '../../pets/application/dto/update-pet.dto';
+import { CreatePetsUseCase } from '../../pets/application/services/create-pets.use-case';
+import { DeletePetUseCase } from '../../pets/application/services/delete-pet.use-case';
+import { FindPetUseCase } from '../../pets/application/services/find-pet.use-case';
 import { FindPetsByApartmentUseCase } from '../../pets/application/services/find-pets-by-apartment.use-case';
+import { UpdatePetUseCase } from '../../pets/application/services/update-pet.use-case';
 import { userRoleTypes } from '../../role/domain/enums/user-role-types.enum';
+import { CreateUsefulRoomsDto } from '../../useful-rooms/application/dto/create-useful-rooms.dto';
+import { UpdateUsefulRoomDto } from '../../useful-rooms/application/dto/update-useful-room.dto';
 import { UsefulRoomResponseDto } from '../../useful-rooms/application/dto/useful-room-response.dto';
+import { CreateUsefulRoomsUseCase } from '../../useful-rooms/application/services/create-useful-rooms.use-case';
+import { DeleteUsefulRoomUseCase } from '../../useful-rooms/application/services/delete-useful-room.use-case';
+import { FindUsefulRoomUseCase } from '../../useful-rooms/application/services/find-useful-room.use-case';
 import { FindUsefulRoomsByApartmentUseCase } from '../../useful-rooms/application/services/find-useful-rooms-by-apartment.use-case';
+import { UpdateUsefulRoomUseCase } from '../../useful-rooms/application/services/update-useful-room.use-case';
+import { CreateVehiclesDto } from '../../vehicles/application/dto/create-vehicles.dto';
+import { UpdateVehicleDto } from '../../vehicles/application/dto/update-vehicle.dto';
 import { VehicleResponseDto } from '../../vehicles/application/dto/vehicle-response.dto';
+import { CreateVehiclesUseCase } from '../../vehicles/application/services/create-vehicles.use-case';
+import { DeleteVehicleUseCase } from '../../vehicles/application/services/delete-vehicle.use-case';
+import { FindVehicleUseCase } from '../../vehicles/application/services/find-vehicle.use-case';
 import { FindVehiclesByApartmentUseCase } from '../../vehicles/application/services/find-vehicles-by-apartment.use-case';
-import { ApartmentResponseDto } from '../application/dto/apartment-response.dto';
+import { UpdateVehicleUseCase } from '../../vehicles/application/services/update-vehicle.use-case';
 import { GetApartmentParkingLotsResponseDto } from '../application/dto/get-apartment-parking-lots-response.dto';
 import { GetApartmentPetsResponseDto } from '../application/dto/get-apartment-pets-response.dto';
 import { GetApartmentUsefulRoomsResponseDto } from '../application/dto/get-apartment-useful-rooms-response.dto';
 import { GetApartmentVehiclesResponseDto } from '../application/dto/get-apartment-vehicles-response.dto';
-import { CreateApartmentsDto } from '../application/dto/create-apartments.dto';
-import { UpdateApartmentDto } from '../application/dto/update-apartment.dto';
-import { CreateApartmentsUseCase } from '../application/services/create-apartments.use-case';
-import { DeleteApartmentUseCase } from '../application/services/delete-apartment.use-case';
-import { FindApartmentUseCase } from '../application/services/find-apartment.use-case';
-import { UpdateApartmentUseCase } from '../application/services/update-apartment.use-case';
 
 @Controller('apartments')
 @UseInterceptors(ResponseWrapperInterceptor)
 export class ApartmentsController {
   constructor(
-    private readonly findApartmentUseCase: FindApartmentUseCase,
-    private readonly createApartmentsUseCase: CreateApartmentsUseCase,
-    private readonly updateApartmentUseCase: UpdateApartmentUseCase,
-    private readonly deleteApartmentUseCase: DeleteApartmentUseCase,
     private readonly findParkingLotsByApartmentUseCase: FindParkingLotsByApartmentUseCase,
-    private readonly findUsefulRoomsByApartmentUseCase: FindUsefulRoomsByApartmentUseCase,
-    private readonly findVehiclesByApartmentUseCase: FindVehiclesByApartmentUseCase,
+    // Pets
     private readonly findPetsByApartmentUseCase: FindPetsByApartmentUseCase,
+    private readonly findPetUseCase: FindPetUseCase,
+    private readonly createPetsUseCase: CreatePetsUseCase,
+    private readonly updatePetUseCase: UpdatePetUseCase,
+    private readonly deletePetUseCase: DeletePetUseCase,
+    // Vehicles
+    private readonly findVehiclesByApartmentUseCase: FindVehiclesByApartmentUseCase,
+    private readonly findVehicleUseCase: FindVehicleUseCase,
+    private readonly createVehiclesUseCase: CreateVehiclesUseCase,
+    private readonly updateVehicleUseCase: UpdateVehicleUseCase,
+    private readonly deleteVehicleUseCase: DeleteVehicleUseCase,
+    // Useful rooms
+    private readonly findUsefulRoomsByApartmentUseCase: FindUsefulRoomsByApartmentUseCase,
+    private readonly findUsefulRoomUseCase: FindUsefulRoomUseCase,
+    private readonly createUsefulRoomsUseCase: CreateUsefulRoomsUseCase,
+    private readonly updateUsefulRoomUseCase: UpdateUsefulRoomUseCase,
+    private readonly deleteUsefulRoomUseCase: DeleteUsefulRoomUseCase,
   ) {}
 
-  @Get('/:id/residential-complex/:residentialComplexId')
-  @UseGuards(AuthGuard())
-  @Throttle({ default: { limit: 5, ttl: 60 } })
-  @HttpCode(HttpStatus.OK)
-  @WrapResponse(true)
-  @SetResponseMessageDecorator('Apartment retrieved successfully')
-  @EndpointSwaggerDecorator({
-    summary: "Get tower's or residential complex's apartments",
-    responseType: ApartmentResponseDto,
-    successStatus: HttpStatus.OK,
-    extraResponses: [
-      {
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Apartment not found',
-      },
-    ],
-    requireAuth: true,
-  })
-  async getApartmentById(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('residentialComplexId', new ParseUUIDPipe()) residentialComplexId: string,
-  ): Promise<ApartmentResponseDto> {
-    return this.findApartmentUseCase.execute(id, residentialComplexId);
-  }
-
-  @Post('/residential-complex/:residentialComplexId')
-  @UseGuards(AuthGuard(), ComplexRoleGuard)
-  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
-  @Throttle({ default: { limit: 5, ttl: 60 } })
-  @HttpCode(HttpStatus.CREATED)
-  @WrapResponse(false)
-  @SetResponseMessageDecorator('Apartments added to tower or residential complex successfully')
-  @EndpointSwaggerDecorator({
-    summary: 'Create apartment',
-    bodyType: ApartmentResponseDto,
-    successStatus: HttpStatus.CREATED,
-    extraResponses: [
-      {
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Residential complex not found',
-      },
-    ],
-    requireAuth: true,
-  })
-  async createApartments(
-    @Param('residentialComplexId', new ParseUUIDPipe()) residentialComplexId: string,
-    @Body() createApartments: CreateApartmentsDto,
-  ): Promise<ApartmentResponseDto[]> {
-    const { items } = createApartments;
-    return this.createApartmentsUseCase.execute(residentialComplexId, items);
-  }
-
-  @Patch('/:id/residential-complex/:residentialComplexId')
-  @UseGuards(AuthGuard(), ComplexRoleGuard)
-  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
-  @Throttle({ default: { limit: 5, ttl: 60 } })
-  @HttpCode(HttpStatus.OK)
-  @WrapResponse(false)
-  @SetResponseMessageDecorator('Apartment updated successfully')
-  @EndpointSwaggerDecorator({
-    summary: 'Updated a apartment',
-    successStatus: HttpStatus.OK,
-    extraResponses: [
-      {
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Apartment not found',
-      },
-    ],
-    requireAuth: true,
-  })
-  async updateApartment(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('residentialComplexId', new ParseUUIDPipe()) residentialComplexId: string,
-    @Body() updateApartment: UpdateApartmentDto,
-  ): Promise<boolean> {
-    return this.updateApartmentUseCase.execute(id, residentialComplexId, updateApartment);
-  }
-
-  @Delete('/:id/residential-complex/:residentialComplexId')
-  @UseGuards(AuthGuard(), ComplexRoleGuard)
-  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
-  @Throttle({ default: { limit: 5, ttl: 60 } })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @WrapResponse(false)
-  @SetResponseMessageDecorator('Apartment deleted successfully')
-  @EndpointSwaggerDecorator({
-    summary: 'Delete a Apartment',
-    successStatus: HttpStatus.NO_CONTENT,
-    extraResponses: [
-      {
-        status: HttpStatus.BAD_REQUEST,
-        description: 'Apartment not found',
-      },
-    ],
-    requireAuth: true,
-  })
-  async deleteApartment(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('residentialComplexId', new ParseUUIDPipe()) residentialComplexId: string,
-  ): Promise<boolean> {
-    return this.deleteApartmentUseCase.execute(id, residentialComplexId);
-  }
+  // ─── Parking Lots ─────────────────────────────────────────────────────────
 
   @Get('/:id/parking-lots')
   @UseGuards(AuthGuard())
@@ -176,6 +97,110 @@ export class ApartmentsController {
     return this.findParkingLotsByApartmentUseCase.execute(id);
   }
 
+  // ─── Pets ─────────────────────────────────────────────────────────────────
+
+  @Get('/:id/pets')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator('Apartment pets retrieved successfully')
+  @EndpointSwaggerDecorator({
+    summary: "Get apartment's pets",
+    responseType: GetApartmentPetsResponseDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
+    requireAuth: true,
+  })
+  async getApartmentPets(@Param('id', new ParseUUIDPipe()) id: string): Promise<PetResponseDto[]> {
+    return this.findPetsByApartmentUseCase.execute(id);
+  }
+
+  @Get('/:id/pets/:petId')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator('Pet retrieved successfully')
+  @EndpointSwaggerDecorator({
+    summary: "Get apartment's pet",
+    responseType: PetResponseDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Pet not found' }],
+    requireAuth: true,
+  })
+  async getPetById(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('petId', new ParseUUIDPipe()) petId: string,
+  ): Promise<PetResponseDto> {
+    return this.findPetUseCase.execute(petId, id);
+  }
+
+  @Post('/:id/pets')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.CREATED)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Pets added to apartment successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Create pets',
+    bodyType: CreatePetsDto,
+    successStatus: HttpStatus.CREATED,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
+    requireAuth: true,
+  })
+  async createPets(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() createPetsDto: CreatePetsDto,
+  ): Promise<PetResponseDto[]> {
+    const { items } = createPetsDto;
+    return this.createPetsUseCase.execute(id, items);
+  }
+
+  @Patch('/:id/pets/:petId')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Pet updated successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Update a pet',
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Pet not found' }],
+    requireAuth: true,
+  })
+  async updatePet(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('petId', new ParseUUIDPipe()) petId: string,
+    @Body() updatePetDto: UpdatePetDto,
+  ): Promise<boolean> {
+    return this.updatePetUseCase.execute(petId, id, updatePetDto);
+  }
+
+  @Delete('/:id/pets/:petId')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Pet deleted successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Delete a pet',
+    successStatus: HttpStatus.NO_CONTENT,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Pet not found' }],
+    requireAuth: true,
+  })
+  async deletePet(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('petId', new ParseUUIDPipe()) petId: string,
+  ): Promise<boolean> {
+    return this.deletePetUseCase.execute(petId, id);
+  }
+
+  // ─── Vehicles ─────────────────────────────────────────────────────────────
+
   @Get('/:id/vehicles')
   @UseGuards(AuthGuard())
   @Throttle({ default: { limit: 5, ttl: 60 } })
@@ -195,22 +220,90 @@ export class ApartmentsController {
     return this.findVehiclesByApartmentUseCase.execute(id);
   }
 
-  @Get('/:id/pets')
+  @Get('/:id/vehicles/:vehicleId')
   @UseGuards(AuthGuard())
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.OK)
   @WrapResponse(true)
-  @SetResponseMessageDecorator('Apartment pets retrieved successfully')
+  @SetResponseMessageDecorator('Vehicle retrieved successfully')
   @EndpointSwaggerDecorator({
-    summary: "Get apartment's pets",
-    responseType: GetApartmentPetsResponseDto,
+    summary: "Get apartment's vehicle",
+    responseType: VehicleResponseDto,
     successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Vehicle not found' }],
+    requireAuth: true,
+  })
+  async getVehicleById(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('vehicleId', new ParseUUIDPipe()) vehicleId: string,
+  ): Promise<VehicleResponseDto> {
+    return this.findVehicleUseCase.execute(vehicleId, id);
+  }
+
+  @Post('/:id/vehicles')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.CREATED)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Vehicles added to apartment successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Create vehicles',
+    bodyType: CreateVehiclesDto,
+    successStatus: HttpStatus.CREATED,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
     requireAuth: true,
   })
-  async getApartmentPets(@Param('id', new ParseUUIDPipe()) id: string): Promise<PetResponseDto[]> {
-    return this.findPetsByApartmentUseCase.execute(id);
+  async createVehicles(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() createVehiclesDto: CreateVehiclesDto,
+  ): Promise<VehicleResponseDto[]> {
+    const { items } = createVehiclesDto;
+    return this.createVehiclesUseCase.execute(id, items);
   }
+
+  @Patch('/:id/vehicles/:vehicleId')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Vehicle updated successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Update a vehicle',
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Vehicle not found' }],
+    requireAuth: true,
+  })
+  async updateVehicle(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('vehicleId', new ParseUUIDPipe()) vehicleId: string,
+    @Body() updateVehicleDto: UpdateVehicleDto,
+  ): Promise<boolean> {
+    return this.updateVehicleUseCase.execute(vehicleId, id, updateVehicleDto);
+  }
+
+  @Delete('/:id/vehicles/:vehicleId')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Vehicle deleted successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Delete a vehicle',
+    successStatus: HttpStatus.NO_CONTENT,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Vehicle not found' }],
+    requireAuth: true,
+  })
+  async deleteVehicle(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('vehicleId', new ParseUUIDPipe()) vehicleId: string,
+  ): Promise<boolean> {
+    return this.deleteVehicleUseCase.execute(vehicleId, id);
+  }
+
+  // ─── Useful Rooms ─────────────────────────────────────────────────────────
 
   @Get('/:id/useful-rooms')
   @UseGuards(AuthGuard())
@@ -229,5 +322,88 @@ export class ApartmentsController {
     @Param('id', new ParseUUIDPipe()) id: string,
   ): Promise<UsefulRoomResponseDto[]> {
     return this.findUsefulRoomsByApartmentUseCase.execute(id);
+  }
+
+  @Get('/:id/useful-rooms/:usefulRoomId')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator('Useful room retrieved successfully')
+  @EndpointSwaggerDecorator({
+    summary: "Get apartment's useful room",
+    responseType: UsefulRoomResponseDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Useful room not found' }],
+    requireAuth: true,
+  })
+  async getUsefulRoomById(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('usefulRoomId', new ParseUUIDPipe()) usefulRoomId: string,
+  ): Promise<UsefulRoomResponseDto> {
+    return this.findUsefulRoomUseCase.execute(usefulRoomId, id);
+  }
+
+  @Post('/:id/useful-rooms')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.CREATED)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Useful rooms added to apartment successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Create useful rooms',
+    bodyType: CreateUsefulRoomsDto,
+    successStatus: HttpStatus.CREATED,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
+    requireAuth: true,
+  })
+  async createUsefulRooms(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() createUsefulRoomsDto: CreateUsefulRoomsDto,
+  ): Promise<UsefulRoomResponseDto[]> {
+    const { items } = createUsefulRoomsDto;
+    return this.createUsefulRoomsUseCase.execute(id, items);
+  }
+
+  @Patch('/:id/useful-rooms/:usefulRoomId')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Useful room updated successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Update a useful room',
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Useful room not found' }],
+    requireAuth: true,
+  })
+  async updateUsefulRoom(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('usefulRoomId', new ParseUUIDPipe()) usefulRoomId: string,
+    @Body() updateUsefulRoomDto: UpdateUsefulRoomDto,
+  ): Promise<boolean> {
+    return this.updateUsefulRoomUseCase.execute(usefulRoomId, id, updateUsefulRoomDto);
+  }
+
+  @Delete('/:id/useful-rooms/:usefulRoomId')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Useful room deleted successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Delete a useful room',
+    successStatus: HttpStatus.NO_CONTENT,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Useful room not found' }],
+    requireAuth: true,
+  })
+  async deleteUsefulRoom(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('usefulRoomId', new ParseUUIDPipe()) usefulRoomId: string,
+  ): Promise<boolean> {
+    return this.deleteUsefulRoomUseCase.execute(usefulRoomId, id);
   }
 }
