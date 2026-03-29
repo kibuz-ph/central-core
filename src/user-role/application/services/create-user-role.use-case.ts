@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { Prisma } from '../../../prisma/prisma-client/client';
 import { UserRole } from '../../domain/entities/user-role.entity';
 import { UserRoleRepositoryInterface } from '../../domain/repositories/user-role.repository-interface';
 
@@ -9,7 +10,7 @@ export class CreateUserRoleUseCase {
     private readonly userRoleRepository: UserRoleRepositoryInterface,
   ) {}
 
-  async create(userRole: UserRole): Promise<UserRole> {
-    return this.userRoleRepository.create(userRole);
+  async create(userRole: UserRole, tx?: Prisma.TransactionClient): Promise<UserRole> {
+    return this.userRoleRepository.create(userRole, tx);
   }
 }

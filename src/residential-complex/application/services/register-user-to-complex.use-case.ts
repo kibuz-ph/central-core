@@ -1,6 +1,7 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 import { DomainException } from '../../../modules/pino/domain/exceptions/domain.exception';
+import { TransactionManager } from '../../../modules/transaction-manager/infrastructure/persistence/transaction-manager.prisma';
 import { FindRoleByNameUseCase } from '../../../role/application/services/find-role-by-name.use-case';
 import { userRoleTypes, UserRoleTypes } from '../../../role/domain/enums/user-role-types.enum';
 import { CreateUserRoleUseCase } from '../../../user-role/application/services/create-user-role.use-case';
@@ -23,6 +24,7 @@ export class RegisterUserToComplexUseCase {
     private readonly createUserUseCase: CreateUserUseCase,
     private readonly findRoleByNameUseCase: FindRoleByNameUseCase,
     private readonly createUserRoleUseCase: CreateUserRoleUseCase,
+    private readonly transactionManager: TransactionManager,
   ) {}
 
   async execute(
@@ -83,18 +85,24 @@ export class RegisterUserToComplexUseCase {
 
     // TODO: send generatedPassword via email
     const generatedPassword = `Kbz${randomBytes(8).toString('hex')}!`;
-    const createdUser = await this.createUserUseCase.create({
-      ...userData,
-      password: generatedPassword,
-    });
 
-    await this.createUserRoleUseCase.create(
-      new UserRole({
-        userId: createdUser.id as string,
-        roleId: foundRole.id as string,
-        residentialComplexId,
-      }),
-    );
+    const createdUser = await this.transactionManager.run(async tx => {
+      const user = await this.createUserUseCase.create(
+        { ...userData, password: generatedPassword },
+        tx,
+      );
+
+      await this.createUserRoleUseCase.create(
+        new UserRole({
+          userId: user.id as string,
+          roleId: foundRole.id as string,
+          residentialComplexId,
+        }),
+        tx,
+      );
+
+      return user;
+    });
 
     return UserResponseDto.fromEntities({ ...createdUser, userDetail: undefined });
   }

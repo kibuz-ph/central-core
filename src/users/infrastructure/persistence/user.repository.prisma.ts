@@ -43,10 +43,11 @@ export class UserPrismaRepository implements UserRepositoryInterface {
     return User.fromPrisma(user as UserProps);
   }
 
-  async create(user: User): Promise<User> {
+  async create(user: User, tx?: Prisma.TransactionClient): Promise<User> {
     const { userDetail, ...userInfo } = user;
     const _userDetail = userDetail;
-    const createdUser = await this.prisma.user.create({
+    const client = tx ?? this.prisma;
+    const createdUser = await client.user.create({
       data: {
         ...userInfo,
         password: user.getPassword(),
