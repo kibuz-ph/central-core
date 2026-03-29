@@ -17,7 +17,6 @@ import { Throttle } from '@nestjs/throttler';
 import { SetResponseMessageDecorator } from '../../common/decorators/set-response-message.decorator';
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
-import { createBaseResponse, createDataResponse } from '../../common/dtos/base-response.dto';
 import { ComplexRoleGuard, RequiredComplexRoles } from '../../common/guards/complex-role.guard';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { userRoleTypes } from '../../role/domain/enums/user-role-types.enum';
@@ -47,10 +46,7 @@ export class CommonAreaController {
   @SetResponseMessageDecorator('Common area retrieved successfully')
   @EndpointSwaggerDecorator({
     summary: "Get residential complex's common area",
-    responseType: createDataResponse(
-      CommonAreaResponseDto,
-      "Residential complex's common area retrieved successfully",
-    ),
+    responseType: CommonAreaResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Common area not found' }],
     requireAuth: true,
@@ -71,7 +67,6 @@ export class CommonAreaController {
   @SetResponseMessageDecorator('Common areas added to residential complex successfully')
   @EndpointSwaggerDecorator({
     summary: 'Create common areas',
-    responseType: createBaseResponse('Common areas added to residential complex successfully'),
     bodyType: CreateCommonAreasDto,
     successStatus: HttpStatus.CREATED,
     extraResponses: [

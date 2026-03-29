@@ -17,7 +17,6 @@ import { Throttle } from '@nestjs/throttler';
 import { SetResponseMessageDecorator } from '../../common/decorators/set-response-message.decorator';
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
-import { createBaseResponse, createDataResponse } from '../../common/dtos/base-response.dto';
 import { ComplexRoleGuard, RequiredComplexRoles } from '../../common/guards/complex-role.guard';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { userRoleTypes } from '../../role/domain/enums/user-role-types.enum';
@@ -47,10 +46,7 @@ export class TowersController {
   @SetResponseMessageDecorator('Tower retrieved successfully')
   @EndpointSwaggerDecorator({
     summary: "Get residential complex's towers",
-    responseType: createDataResponse(
-      TowerResponseDto,
-      "Residential complex's tower retrieved successfully",
-    ),
+    responseType: TowerResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [
       {
@@ -76,7 +72,6 @@ export class TowersController {
   @SetResponseMessageDecorator('Towers added to residential complex successfully')
   @EndpointSwaggerDecorator({
     summary: 'Create tower',
-    responseType: createBaseResponse('Towers added to residential complex successfully'),
     bodyType: TowerResponseDto,
     successStatus: HttpStatus.CREATED,
     extraResponses: [

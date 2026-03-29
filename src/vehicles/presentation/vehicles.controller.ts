@@ -17,7 +17,6 @@ import { Throttle } from '@nestjs/throttler';
 import { SetResponseMessageDecorator } from '../../common/decorators/set-response-message.decorator';
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
-import { createBaseResponse, createDataResponse } from '../../common/dtos/base-response.dto';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { CreateVehiclesDto } from '../application/dto/create-vehicles.dto';
 import { UpdateVehicleDto } from '../application/dto/update-vehicle.dto';
@@ -45,10 +44,7 @@ export class VehiclesController {
   @SetResponseMessageDecorator('Vehicle retrieved successfully')
   @EndpointSwaggerDecorator({
     summary: "Get apartment's vehicle",
-    responseType: createDataResponse(
-      VehicleResponseDto,
-      "Apartment's vehicle retrieved successfully",
-    ),
+    responseType: VehicleResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Vehicle not found' }],
     requireAuth: true,
@@ -68,7 +64,6 @@ export class VehiclesController {
   @SetResponseMessageDecorator('Vehicles added to apartment successfully')
   @EndpointSwaggerDecorator({
     summary: 'Create vehicles',
-    responseType: createBaseResponse('Vehicles added to apartment successfully'),
     bodyType: CreateVehiclesDto,
     successStatus: HttpStatus.CREATED,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],

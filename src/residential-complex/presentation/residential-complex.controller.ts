@@ -21,7 +21,6 @@ import { FindCommonAreasByResidentialComplexUseCase } from '../../common-area/ap
 import { SetResponseMessageDecorator } from '../../common/decorators/set-response-message.decorator';
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
-import { createBaseResponse, createDataResponse } from '../../common/dtos/base-response.dto';
 import { ComplexRoleGuard, RequiredComplexRoles } from '../../common/guards/complex-role.guard';
 import { RequiredUserTypes, UserTypeGuard } from '../../common/guards/user-type.guard';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
@@ -35,6 +34,10 @@ import { UserResponseDto } from '../../users/application/dto/user-response.dto';
 import { UserProps } from '../../users/domain/entities/user.entity';
 import { userTypes } from '../../users/domain/enums/user-types.enum';
 import { CreateResidentialComplexDto } from '../application/dto/create-residential-complex.dto';
+import { GetMyResidentialComplexesResponseDto } from '../application/dto/get-my-residential-complexes-response.dto';
+import { GetResidentialComplexCommonAreasResponseDto } from '../application/dto/get-residential-complex-common-areas-response.dto';
+import { GetResidentialComplexParkingLotsResponseDto } from '../application/dto/get-residential-complex-parking-lots-response.dto';
+import { GetResidentialComplexTowersResponseDto } from '../application/dto/get-residential-complex-towers-response.dto';
 import { ResidentialComplexResponseDto } from '../application/dto/residential-complex-response.dto';
 import { UpdateResidentialComplexDto } from '../application/dto/update-residential-complex.dto';
 import { CreateResidentialComplexUseCase } from '../application/services/create-residential-complex.use-case';
@@ -67,10 +70,7 @@ export class ResidentialComplexController {
   @SetResponseMessageDecorator("Residential complex's common areas retrieved successfully")
   @EndpointSwaggerDecorator({
     summary: "Get residential complex's common areas",
-    responseType: createDataResponse(
-      CommonAreaResponseDto,
-      "Residential complex's common areas retrieved successfully",
-    ),
+    responseType: GetResidentialComplexCommonAreasResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [
       { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
@@ -91,10 +91,7 @@ export class ResidentialComplexController {
   @SetResponseMessageDecorator("Residential complex's towers retrieved successfully")
   @EndpointSwaggerDecorator({
     summary: "Get residential complex's towers",
-    responseType: createDataResponse(
-      TowerResponseDto,
-      "Residential complex's towers retrieved successfully",
-    ),
+    responseType: GetResidentialComplexTowersResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [
       { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
@@ -115,10 +112,7 @@ export class ResidentialComplexController {
   @SetResponseMessageDecorator("Residential complex's parking lots retrieved successfully")
   @EndpointSwaggerDecorator({
     summary: "Get residential complex's parking lots",
-    responseType: createDataResponse(
-      ParkingLotResponseDto,
-      "Residential complex's parking lots retrieved successfully",
-    ),
+    responseType: GetResidentialComplexParkingLotsResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [
       { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
@@ -139,10 +133,7 @@ export class ResidentialComplexController {
   @SetResponseMessageDecorator('Residential complexes retrieved successfully')
   @EndpointSwaggerDecorator({
     summary: 'Get residential complexes for the authenticated user',
-    responseType: createDataResponse(
-      ResidentialComplexResponseDto,
-      'Residential complexes retrieved successfully',
-    ),
+    responseType: GetMyResidentialComplexesResponseDto,
     successStatus: HttpStatus.OK,
     requireAuth: true,
   })
@@ -160,10 +151,7 @@ export class ResidentialComplexController {
   @SetResponseMessageDecorator('Residential complex retrieved successfully')
   @EndpointSwaggerDecorator({
     summary: 'Get residential complex by slug',
-    responseType: createDataResponse(
-      ResidentialComplexResponseDto,
-      'Residential complex retrieved successfully',
-    ),
+    responseType: ResidentialComplexResponseDto,
     successStatus: HttpStatus.OK,
     extraResponses: [
       {
@@ -186,7 +174,7 @@ export class ResidentialComplexController {
   @SetResponseMessageDecorator('Residential complex created successfully')
   @EndpointSwaggerDecorator({
     summary: 'Create residential complex',
-    responseType: createBaseResponse('Residential complex created successfully'),
+    responseType: ResidentialComplexResponseDto,
     bodyType: CreateResidentialComplexDto,
     successStatus: HttpStatus.CREATED,
     extraResponses: [
@@ -213,7 +201,7 @@ export class ResidentialComplexController {
   @SetResponseMessageDecorator('Residential complex updated successfully')
   @EndpointSwaggerDecorator({
     summary: 'Update a residential complex',
-    responseType: createBaseResponse('Residential complex updated successfully'),
+    responseType: ResidentialComplexResponseDto,
     bodyType: UpdateResidentialComplexDto,
     successStatus: HttpStatus.OK,
     extraResponses: [
@@ -244,7 +232,6 @@ export class ResidentialComplexController {
   @SetResponseMessageDecorator('Residential complex deleted successfully')
   @EndpointSwaggerDecorator({
     summary: 'Create residential complex',
-    responseType: createBaseResponse('Residential complex deleted successfully'),
     bodyType: UpdateResidentialComplexDto,
     successStatus: HttpStatus.NO_CONTENT,
     extraResponses: [
