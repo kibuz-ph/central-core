@@ -12,6 +12,6 @@ export interface UserRepositoryInterface {
   }): Promise<User[]>;
   findUnique({ conditions, include }: { conditions: any; include?: any }): Promise<User | null>;
   create(user: User, tx?: Prisma.TransactionClient): Promise<User>;
-  update(id: string, user: Partial<User>): Promise<User>;
+  update(id: string, user: User, tx?: Prisma.TransactionClient): Promise<User>;
   delete(id: string): Promise<boolean>;
 }

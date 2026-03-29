@@ -43,6 +43,17 @@ export class User {
     return this.password ? bcrypt.compare(plainPassword, this.password) : false;
   }
 
+  toDatabaseInput() {
+    return {
+      id: this.id,
+      username: this.username,
+      email: this.email,
+      password: this.getPassword() || undefined,
+      type: this.type,
+      isActive: this.isActive,
+    };
+  }
+
   // This method looks like it's unused, but it's used for security reason on data convertion
   toJSON(): Omit<UserProps, 'password'> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

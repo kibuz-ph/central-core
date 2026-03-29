@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
+import { TransactionManagerModule } from '../modules/transaction-manager/transaction-manager.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { CreateUserDetailUseCase } from '../user-details/application/services/create-user-detail.use-case';
 import { UpdateUserDetailUseCase } from '../user-details/application/services/update-user-detail.use-case';
@@ -16,7 +17,12 @@ import { UsersController } from './presentation/users.controller';
 
 @Module({
   controllers: [UsersController],
-  imports: [PrismaModule, PassportModule.register({ defaultStrategy: 'jwt' }), UserRoleModule],
+  imports: [
+    PrismaModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    UserRoleModule,
+    TransactionManagerModule,
+  ],
   providers: [
     FindUsersUseCase,
     CreateUserUseCase,
