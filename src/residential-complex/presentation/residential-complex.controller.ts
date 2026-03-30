@@ -58,6 +58,7 @@ import { CreateUserDto } from '../../users/application/dto/create-user.dto';
 import { UserResponseDto } from '../../users/application/dto/user-response.dto';
 import { UserProps } from '../../users/domain/entities/user.entity';
 import { userTypes } from '../../users/domain/enums/user-types.enum';
+import { AssignUserToComplexDto } from '../application/dto/assign-user-to-complex.dto';
 import { CreateResidentialComplexDto } from '../application/dto/create-residential-complex.dto';
 import { GetMyResidentialComplexesResponseDto } from '../application/dto/get-my-residential-complexes-response.dto';
 import { GetResidentialComplexCommonAreasResponseDto } from '../application/dto/get-residential-complex-common-areas-response.dto';
@@ -67,6 +68,7 @@ import { ResidentialComplexResponseDto } from '../application/dto/residential-co
 import { UpdateResidentialComplexDto } from '../application/dto/update-residential-complex.dto';
 import { CreateResidentialComplexUseCase } from '../application/services/create-residential-complex.use-case';
 import { DeleteResidentialComplexUseCase } from '../application/services/delete-residential-complex.use-case';
+import { AssignUserToComplexUseCase } from '../application/services/assign-user-to-complex.use-case';
 import { FindResidentialComplexUseCase } from '../application/services/find-residential-complex.use-case';
 import { FindResidentialComplexesByUserUseCase } from '../application/services/find-residential-complexes-by-user.use-case';
 import { RegisterUserToComplexUseCase } from '../application/services/register-user-to-complex.use-case';
@@ -82,6 +84,7 @@ export class ResidentialComplexController {
     private readonly updateResidentialComplexUseCase: UpdateResidentialComplexUseCase,
     private readonly deleteResidentialComplexUseCase: DeleteResidentialComplexUseCase,
     private readonly registerUserToComplexUseCase: RegisterUserToComplexUseCase,
+    private readonly assignUserToComplexUseCase: AssignUserToComplexUseCase,
     // Common areas
     private readonly findCommonAreasByResidentialComplexUseCase: FindCommonAreasByResidentialComplexUseCase,
     private readonly getCommonAreaUseCase: GetCommonAreaUseCase,
@@ -243,6 +246,33 @@ export class ResidentialComplexController {
     return this.registerUserToComplexUseCase.execute(createUserDto, id, userRoleTypes.USER);
   }
 
+  @Post('/:id/users/assign')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 10, ttl: 60 } })
+  @HttpCode(HttpStatus.CREATED)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('User assigned to residential complex successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Assign an existing user with USER role to a residential complex',
+    description: `Assigns the USER role to an existing user for the given residential complex.
+      Requires ADMIN or MASTER role in the residential complex.`,
+    bodyType: AssignUserToComplexDto,
+    successStatus: HttpStatus.CREATED,
+    extraResponses: [
+      { status: HttpStatus.NOT_FOUND, description: 'User or residential complex not found' },
+      { status: HttpStatus.CONFLICT, description: 'User already has USER role in the complex' },
+      { status: HttpStatus.FORBIDDEN, description: 'Insufficient permissions' },
+    ],
+    requireAuth: true,
+  })
+  async assignUserToComplex(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() assignUserToComplexDto: AssignUserToComplexDto,
+  ): Promise<UserResponseDto> {
+    return this.assignUserToComplexUseCase.execute(assignUserToComplexDto.userId, id);
+  }
+
   @Post('/:id/admins')
   @UseGuards(AuthGuard(), UserTypeGuard)
   @RequiredUserTypes(userTypes.KIBUZ)
@@ -269,6 +299,37 @@ export class ResidentialComplexController {
     @Body() createUserDto: CreateUserDto,
   ): Promise<UserResponseDto> {
     return this.registerUserToComplexUseCase.execute(createUserDto, id, userRoleTypes.ADMIN);
+  }
+
+  @Post('/:id/admins/assign')
+  @UseGuards(AuthGuard(), UserTypeGuard)
+  @RequiredUserTypes(userTypes.KIBUZ)
+  @Throttle({ default: { limit: 10, ttl: 60 } })
+  @HttpCode(HttpStatus.CREATED)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('Admin assigned to residential complex successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Assign an existing user with ADMIN role to a residential complex',
+    description: `Assigns the ADMIN role to an existing user for the given residential complex.
+      Requires KIBUZ user type.`,
+    bodyType: AssignUserToComplexDto,
+    successStatus: HttpStatus.CREATED,
+    extraResponses: [
+      { status: HttpStatus.NOT_FOUND, description: 'User or residential complex not found' },
+      { status: HttpStatus.CONFLICT, description: 'User already has ADMIN role in the complex' },
+      { status: HttpStatus.FORBIDDEN, description: 'Insufficient permissions' },
+    ],
+    requireAuth: true,
+  })
+  async assignAdminToComplex(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() assignUserToComplexDto: AssignUserToComplexDto,
+  ): Promise<UserResponseDto> {
+    return this.assignUserToComplexUseCase.execute(
+      assignUserToComplexDto.userId,
+      id,
+      userRoleTypes.ADMIN,
+    );
   }
 
   // ─── Common Areas ─────────────────────────────────────────────────────────

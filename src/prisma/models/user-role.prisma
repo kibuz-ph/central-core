@@ -8,6 +8,9 @@ model UserRole {
   role               Role               @relation(fields: [roleId], references: [id])
   residentialComplex ResidentialComplex @relation(fields: [residentialComplexId], references: [id])
 
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
+
   @@unique([userId, roleId, residentialComplexId])
   @@map("users_roles")
 }

@@ -24,7 +24,7 @@ export class UserPrismaRepository implements UserRepositoryInterface {
       },
       where: conditions,
       take: paginationQueryDto.perPage,
-      skip: paginationQueryDto.page,
+      skip: (paginationQueryDto.page - 1) * paginationQueryDto.perPage,
     });
 
     return users.map(user => User.fromPrisma(user as UserProps));
