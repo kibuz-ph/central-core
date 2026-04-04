@@ -24,18 +24,21 @@ export class PetPrismaRepository implements PetRepositoryInterface {
     return pets.map(pet => Pet.fromPrisma(pet));
   }
 
-  async createMany(pets: PetProps[]): Promise<Pet[]> {
-    const created = await this.prisma.pet.createManyAndReturn({ data: pets });
+  async createMany(pets: PetProps[], tx?: Prisma.TransactionClient): Promise<Pet[]> {
+    const client = tx ?? this.prisma;
+    const created = await client.pet.createManyAndReturn({ data: pets });
     return created.map(pet => Pet.fromPrisma(pet));
   }
 
-  async update(id: string, pet: Partial<Pet>): Promise<Pet> {
-    const updated = await this.prisma.pet.update({ where: { id }, data: pet });
+  async update(id: string, pet: Partial<Pet>, tx?: Prisma.TransactionClient): Promise<Pet> {
+    const client = tx ?? this.prisma;
+    const updated = await client.pet.update({ where: { id }, data: pet });
     return Pet.fromPrisma(updated);
   }
 
-  async delete(id: string, apartmentId: string): Promise<boolean> {
-    await this.prisma.pet.update({
+  async delete(id: string, apartmentId: string, tx?: Prisma.TransactionClient): Promise<boolean> {
+    const client = tx ?? this.prisma;
+    await client.pet.update({
       where: { id, apartmentId },
       data: { deletedAt: new Date() },
     });

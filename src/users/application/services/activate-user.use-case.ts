@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DomainException } from '../../../modules/pino/domain/exceptions/domain.exception';
+import { User } from '../../domain/entities/user.entity';
 import { UserRepositoryInterface } from '../../domain/repositories/user.repository-interface';
-import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Injectable()
 export class ActivateUserUseCase {
@@ -19,11 +19,14 @@ export class ActivateUserUseCase {
       throw new DomainException('User not found');
     }
 
-    const user: UpdateUserDto = {
+    const user = new User({
+      username: userExists.username,
+      email: userExists.email,
+      type: userExists.type,
       isActive: true,
-    };
+    });
 
-    const userDetail = await this.userRepository.update(id, user);
-    return userDetail ? true : false;
+    const updated = await this.userRepository.update(id, user);
+    return !!updated;
   }
 }

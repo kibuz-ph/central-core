@@ -8,9 +8,9 @@ export interface ResidentialComplexProps {
   city: string;
   state: string;
   country: string;
-  logo?: string;
-  primaryColor?: string;
-  secondaryColor?: string;
+  logo?: string | null;
+  primaryColor?: string | null;
+  secondaryColor?: string | null;
   isActive: boolean;
 }
 
@@ -39,27 +39,13 @@ export class ResidentialComplex {
     this.city = props.city;
     this.state = props.state;
     this.country = props.country;
-    this.logo = props.logo;
-    this.primaryColor = props.primaryColor;
-    this.secondaryColor = props.secondaryColor;
+    this.logo = props.logo ?? undefined;
+    this.primaryColor = props.primaryColor ?? undefined;
+    this.secondaryColor = props.secondaryColor ?? undefined;
     this.isActive = props.isActive;
   }
 
-  static fromPrisma(data: ResidentialComplexProps) {
-    return new ResidentialComplex({
-      id: data.id,
-      nit: data.nit,
-      name: data.name,
-      slug: data.slug,
-      phone: data.phone,
-      address: data.address,
-      city: data.city,
-      state: data.state,
-      country: data.country,
-      logo: data.logo,
-      primaryColor: data.primaryColor,
-      secondaryColor: data.secondaryColor,
-      isActive: data.isActive,
-    });
+  static fromPrisma(data: ResidentialComplexProps): ResidentialComplex {
+    return new ResidentialComplex(data);
   }
 }

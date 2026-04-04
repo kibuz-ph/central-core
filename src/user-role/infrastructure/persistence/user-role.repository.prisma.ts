@@ -38,8 +38,9 @@ export class UserRolePrismaRepository implements UserRoleRepositoryInterface {
     return UserRole.fromPrisma(userRole);
   }
 
-  async create(userRole: UserRole): Promise<UserRole> {
-    const created = await this.prisma.userRole.create({
+  async create(userRole: UserRole, tx?: Prisma.TransactionClient): Promise<UserRole> {
+    const client = tx ?? this.prisma;
+    const created = await client.userRole.create({
       data: userRole,
     });
 

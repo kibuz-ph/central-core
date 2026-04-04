@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
-import { ParkingLotType } from '../../domain/entities/parking-lot.entity';
+import { ParkingLotType } from '../../../prisma/prisma-client/client';
 
 export class CreateParkingLotDto {
   @ApiProperty({

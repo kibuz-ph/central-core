@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { Prisma } from '../../../prisma/prisma-client/client';
 import { DomainException } from '../../../modules/pino/domain/exceptions/domain.exception';
 import { CreateUserDetailUseCase } from '../../../user-details/application/services/create-user-detail.use-case';
 import { UserDetail } from '../../../user-details/domain/entities/user-detail.entity';
@@ -14,7 +15,7 @@ export class CreateUserUseCase {
     private readonly createUserDetailUseCase: CreateUserDetailUseCase,
   ) {}
 
-  async create(userData: CreateUserDto): Promise<User> {
+  async create(userData: CreateUserDto, tx?: Prisma.TransactionClient): Promise<User> {
     const existingEmail = await this.userRepository.findUnique({
       conditions: { email: userData.email },
     });
@@ -31,10 +32,11 @@ export class CreateUserUseCase {
     const user = new User({ ...userData, isActive: true });
     await user.setPassword(userData.password);
 
-    const createdUser = await this.userRepository.create(user);
+    const createdUser = await this.userRepository.create(user, tx);
 
     await this.createUserDetailUseCase.create(
       new UserDetail({ ...userData, userId: createdUser.id as string }),
+      tx,
     );
 
     return createdUser;

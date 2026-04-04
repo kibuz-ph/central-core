@@ -24,17 +24,23 @@ export class UserDetailPrismaRepository implements UserDetailRepositoryInterface
     return UserDetail.fromPrisma(userDetail as UserDetailProps);
   }
 
-  async create(userDetail: UserDetail): Promise<UserDetail> {
-    const createUserDetail = await this.prisma.userDetail.create({
+  async create(userDetail: UserDetail, tx?: Prisma.TransactionClient): Promise<UserDetail> {
+    const client = tx ?? this.prisma;
+    const createUserDetail = await client.userDetail.create({
       data: userDetail,
     });
 
     return UserDetail.fromPrisma(createUserDetail as UserDetail);
   }
 
-  async update(id: string, userDetail: Partial<UserDetail>): Promise<UserDetail> {
-    const updateUserDetail = await this.prisma.userDetail.update({
-      where: { userId: id },
+  async update(
+    userId: string,
+    userDetail: Partial<UserDetail>,
+    tx?: Prisma.TransactionClient,
+  ): Promise<UserDetail> {
+    const client = tx ?? this.prisma;
+    const updateUserDetail = await client.userDetail.update({
+      where: { userId },
       data: userDetail,
     });
 

@@ -1,7 +1,7 @@
 export interface UsefulRoomProps {
   id?: string;
   reference: string;
-  description?: string;
+  description?: string | null;
   apartmentId: string;
 }
 
@@ -14,16 +14,11 @@ export class UsefulRoom {
   constructor(props: UsefulRoomProps) {
     this.id = props.id;
     this.reference = props.reference;
-    this.description = props.description;
+    this.description = props.description ?? undefined;
     this.apartmentId = props.apartmentId;
   }
 
   static fromPrisma(data: UsefulRoomProps): UsefulRoom {
-    return new UsefulRoom({
-      id: data.id,
-      reference: data.reference,
-      description: data.description,
-      apartmentId: data.apartmentId,
-    });
+    return new UsefulRoom(data);
   }
 }

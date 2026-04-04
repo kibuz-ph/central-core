@@ -1,5 +1,6 @@
 import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { generateSlug } from '../../../common/utils/slug-generator.util';
+import { TransactionManager } from '../../../modules/transaction-manager/infrastructure/persistence/transaction-manager.prisma';
 import { DomainException } from '../../../modules/pino/domain/exceptions/domain.exception';
 import { FindRoleByNameUseCase } from '../../../role/application/services/find-role-by-name.use-case';
 import { userRoleTypes } from '../../../role/domain/enums/user-role-types.enum';
@@ -16,6 +17,7 @@ export class CreateResidentialComplexUseCase {
     private readonly residentialComplexInterface: ResidentialComplexInterface,
     private readonly findRoleByNameUseCase: FindRoleByNameUseCase,
     private readonly createUserRoleUseCase: CreateUserRoleUseCase,
+    private readonly transactionManager: TransactionManager,
   ) {}
 
   async execute(
@@ -34,22 +36,25 @@ export class CreateResidentialComplexUseCase {
       });
     }
 
-    const residentialComplexCreated = await this.residentialComplexInterface.create({
-      ...createResidentialComplexDto,
-      slug,
-      isActive: true,
-    });
-
     const masterRole = await this.findRoleByNameUseCase.findByName(userRoleTypes.MASTER);
     if (!masterRole) throw new DomainException('Role MASTER not found. Run seeds first.');
 
-    const userRole = new UserRole({
-      userId,
-      roleId: masterRole.id as string,
-      residentialComplexId: residentialComplexCreated.id as string,
-    });
+    const residentialComplexCreated = await this.transactionManager.run(async tx => {
+      const created = await this.residentialComplexInterface.create(
+        { ...createResidentialComplexDto, slug, isActive: true },
+        tx,
+      );
 
-    await this.createUserRoleUseCase.create(userRole);
+      const userRole = new UserRole({
+        userId,
+        roleId: masterRole.id as string,
+        residentialComplexId: created.id as string,
+      });
+
+      await this.createUserRoleUseCase.create(userRole, tx);
+
+      return created;
+    });
 
     return ResidentialComplexResponseDto.fromEntities(residentialComplexCreated);
   }

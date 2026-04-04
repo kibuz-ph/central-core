@@ -1,8 +1,8 @@
 export interface CommonAreaProps {
   id?: string;
   name: string;
-  icon?: string;
-  description?: string;
+  icon?: string | null;
+  description?: string | null;
   residentialComplexId: string;
 }
 
@@ -16,18 +16,12 @@ export class CommonArea {
   constructor(props: CommonAreaProps) {
     this.id = props.id;
     this.name = props.name;
-    this.icon = props.icon;
-    this.description = props.description;
+    this.icon = props.icon ?? undefined;
+    this.description = props.description ?? undefined;
     this.residentialComplexId = props.residentialComplexId;
   }
 
-  static fromPrisma(data: CommonAreaProps) {
-    return new CommonArea({
-      id: data.id,
-      name: data.name,
-      icon: data.icon,
-      description: data.description,
-      residentialComplexId: data.residentialComplexId,
-    });
+  static fromPrisma(data: CommonAreaProps): CommonArea {
+    return new CommonArea(data);
   }
 }

@@ -22,40 +22,42 @@ export class ApartmentPrismaRepository implements ApartmentRepositoryInterface {
 
     if (!apartment) return null;
 
-    return Apartment.fromPrisma({
-      ...apartment,
-      towerId: apartment.towerId ?? undefined,
-    });
+    return Apartment.fromPrisma(apartment);
   }
 
-  async createMany(apartments: ApartmentProps[]): Promise<Apartment[]> {
-    const apartmentsCreated = await this.prisma.apartment.createManyAndReturn({
+  async createMany(
+    apartments: ApartmentProps[],
+    tx?: Prisma.TransactionClient,
+  ): Promise<Apartment[]> {
+    const client = tx ?? this.prisma;
+    const created = await client.apartment.createManyAndReturn({
       data: apartments,
     });
 
-    return apartmentsCreated.map(apartment =>
-      Apartment.fromPrisma({
-        ...apartment,
-        towerId: apartment.towerId ?? undefined,
-      }),
-    );
+    return created.map(apartment => Apartment.fromPrisma(apartment));
   }
 
-  async update(id: string, apartment: Partial<Apartment>): Promise<Apartment> {
-    const { ...updateData } = apartment;
-    const apartmentUpdated = await this.prisma.apartment.update({
+  async update(
+    id: string,
+    apartment: Partial<Apartment>,
+    tx?: Prisma.TransactionClient,
+  ): Promise<Apartment> {
+    const client = tx ?? this.prisma;
+    const updated = await client.apartment.update({
       where: { id },
-      data: updateData,
+      data: apartment,
     });
 
-    return Apartment.fromPrisma({
-      ...apartmentUpdated,
-      towerId: apartment.towerId ?? undefined,
-    });
+    return Apartment.fromPrisma(updated);
   }
 
-  async delete(id: string, residentialComplexId: string): Promise<boolean> {
-    await this.prisma.apartment.update({
+  async delete(
+    id: string,
+    residentialComplexId: string,
+    tx?: Prisma.TransactionClient,
+  ): Promise<boolean> {
+    const client = tx ?? this.prisma;
+    await client.apartment.update({
       where: { id, residentialComplexId },
       data: { deletedAt: new Date() },
     });

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
+import { TransactionManagerModule } from '../modules/transaction-manager/transaction-manager.module';
 import { ApartmentPrismaRepository } from '../apartments/infrastructure/persistence/apartment.repository.prisma';
 import { CreateCommonAreaUseCase } from '../common-area/application/services/create-common-area.use-case';
 import { DeleteCommonAreaUseCase } from '../common-area/application/services/delete-common-area.use-case';
@@ -49,6 +50,7 @@ import { ResidentialComplexController } from './presentation/residential-complex
     PassportModule.register({ defaultStrategy: 'jwt' }),
     RoleModule,
     UserRoleModule,
+    TransactionManagerModule,
   ],
   providers: [
     UserTypeGuard,

@@ -1,7 +1,7 @@
 export interface TowerProps {
   id?: string;
   name: string;
-  description?: string;
+  description?: string | null;
   residentialComplexId: string;
 }
 
@@ -14,16 +14,11 @@ export class Tower {
   constructor(props: TowerProps) {
     this.id = props.id;
     this.name = props.name;
-    this.description = props.description;
+    this.description = props.description ?? undefined;
     this.residentialComplexId = props.residentialComplexId;
   }
 
   static fromPrisma(data: TowerProps): Tower {
-    return new Tower({
-      id: data.id,
-      name: data.name,
-      description: data.description,
-      residentialComplexId: data.residentialComplexId,
-    });
+    return new Tower(data);
   }
 }

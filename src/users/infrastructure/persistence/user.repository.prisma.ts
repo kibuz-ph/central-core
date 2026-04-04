@@ -43,27 +43,20 @@ export class UserPrismaRepository implements UserRepositoryInterface {
     return User.fromPrisma(user as UserProps);
   }
 
-  async create(user: User): Promise<User> {
-    const { userDetail, ...userInfo } = user;
-    const _userDetail = userDetail;
-    const createdUser = await this.prisma.user.create({
-      data: {
-        ...userInfo,
-        password: user.getPassword(),
-      },
+  async create(user: User, tx?: Prisma.TransactionClient): Promise<User> {
+    const client = tx ?? this.prisma;
+    const createdUser = await client.user.create({
+      data: { ...user.toDatabaseInput(), password: user.getPassword() },
     });
-
     return User.fromPrisma(createdUser);
   }
 
-  async update(id: string, user: Partial<User>): Promise<User> {
-    const { userDetail, ...userInfo } = user;
-    const _userDetail = userDetail;
-    const updatedUser = await this.prisma.user.update({
+  async update(id: string, user: User, tx?: Prisma.TransactionClient): Promise<User> {
+    const client = tx ?? this.prisma;
+    const updatedUser = await client.user.update({
       where: { id },
-      data: { ...userInfo },
+      data: user.toDatabaseInput(),
     });
-
     return User.fromPrisma(updatedUser);
   }
 
