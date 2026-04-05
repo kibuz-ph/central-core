@@ -34,6 +34,7 @@ import { CreateApartmentsUseCase } from '../apartments/application/services/crea
 import { DeleteApartmentUseCase } from '../apartments/application/services/delete-apartment.use-case';
 import { FindApartmentUseCase } from '../apartments/application/services/find-apartment.use-case';
 import { UpdateApartmentUseCase } from '../apartments/application/services/update-apartment.use-case';
+import { AssignUserToComplexUseCase } from './application/services/assign-user-to-complex.use-case';
 import { CreateResidentialComplexUseCase } from './application/services/create-residential-complex.use-case';
 import { DeleteResidentialComplexUseCase } from './application/services/delete-residential-complex.use-case';
 import { FindResidentialComplexesByUserUseCase } from './application/services/find-residential-complexes-by-user.use-case';
@@ -62,6 +63,7 @@ import { ResidentialComplexController } from './presentation/residential-complex
     UpdateResidentialComplexUseCase,
     DeleteResidentialComplexUseCase,
     RegisterUserToComplexUseCase,
+    AssignUserToComplexUseCase,
     CreateUserUseCase,
     CreateUserDetailUseCase,
     // Common areas
