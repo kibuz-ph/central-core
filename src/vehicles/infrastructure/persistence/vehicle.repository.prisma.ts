@@ -58,7 +58,10 @@ export class VehiclePrismaRepository implements VehicleRepositoryInterface {
     tx?: Prisma.TransactionClient,
   ): Promise<Vehicle> {
     const client = tx ?? this.prisma;
-    const updated = await client.vehicle.update({ where: { id }, data: vehicle as Prisma.VehicleUpdateInput });
+    const updated = await client.vehicle.update({
+      where: { id },
+      data: vehicle as Prisma.VehicleUpdateInput,
+    });
     return Vehicle.fromPrisma(updated);
   }
 

@@ -37,6 +37,10 @@ import { FindApartmentsByResidentialComplexUseCase } from '../apartments/applica
 import { UpdateApartmentUseCase } from '../apartments/application/services/update-apartment.use-case';
 import { FindUsefulRoomsByResidentialComplexUseCase } from '../useful-rooms/application/services/find-useful-rooms-by-residential-complex.use-case';
 import { UsefulRoomPrismaRepository } from '../useful-rooms/infrastructure/persistence/useful-room.repository.prisma';
+import { FindVehiclesByResidentialComplexUseCase } from '../vehicles/application/services/find-vehicles-by-residential-complex.use-case';
+import { VehiclePrismaRepository } from '../vehicles/infrastructure/persistence/vehicle.repository.prisma';
+import { FindPetsByResidentialComplexUseCase } from '../pets/application/services/find-pets-by-residential-complex.use-case';
+import { PetPrismaRepository } from '../pets/infrastructure/persistence/pet.repository.prisma';
 import { AssignUserToComplexUseCase } from './application/services/assign-user-to-complex.use-case';
 import { CreateResidentialComplexUseCase } from './application/services/create-residential-complex.use-case';
 import { DeleteResidentialComplexUseCase } from './application/services/delete-residential-complex.use-case';
@@ -95,6 +99,10 @@ import { ResidentialComplexController } from './presentation/residential-complex
     DeleteApartmentUseCase,
     // Useful rooms
     FindUsefulRoomsByResidentialComplexUseCase,
+    // Vehicles
+    FindVehiclesByResidentialComplexUseCase,
+    // Pets
+    FindPetsByResidentialComplexUseCase,
     {
       provide: 'ResidentialComplexInterface',
       useClass: ResidentialComplexPrismaRepository,
@@ -130,6 +138,14 @@ import { ResidentialComplexController } from './presentation/residential-complex
     {
       provide: 'UsefulRoomRepositoryInterface',
       useClass: UsefulRoomPrismaRepository,
+    },
+    {
+      provide: 'VehicleRepositoryInterface',
+      useClass: VehiclePrismaRepository,
+    },
+    {
+      provide: 'PetRepositoryInterface',
+      useClass: PetPrismaRepository,
     },
   ],
   exports: [

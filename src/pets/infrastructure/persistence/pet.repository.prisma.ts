@@ -19,9 +19,29 @@ export class PetPrismaRepository implements PetRepositoryInterface {
     return Pet.fromPrisma(pet);
   }
 
-  async findMany({ conditions }: { conditions: Prisma.PetWhereInput }): Promise<Pet[]> {
-    const pets = await this.prisma.pet.findMany({ where: conditions });
-    return pets.map(pet => Pet.fromPrisma(pet));
+  async findMany({
+    conditions,
+    include,
+    page,
+    perPage,
+  }: {
+    conditions: Prisma.PetWhereInput;
+    include?: Prisma.PetInclude;
+    page?: number;
+    perPage?: number;
+  }): Promise<Pet[]> {
+    const skip = page && perPage ? (page - 1) * perPage : undefined;
+    const pets = await this.prisma.pet.findMany({
+      where: conditions,
+      include,
+      skip,
+      take: perPage,
+    });
+    return pets.map(pet => Pet.fromPrisma(pet as PetProps));
+  }
+
+  async count(conditions: Prisma.PetWhereInput): Promise<number> {
+    return this.prisma.pet.count({ where: conditions });
   }
 
   async createMany(pets: PetProps[], tx?: Prisma.TransactionClient): Promise<Pet[]> {
@@ -32,7 +52,7 @@ export class PetPrismaRepository implements PetRepositoryInterface {
 
   async update(id: string, pet: Partial<Pet>, tx?: Prisma.TransactionClient): Promise<Pet> {
     const client = tx ?? this.prisma;
-    const updated = await client.pet.update({ where: { id }, data: pet });
+    const updated = await client.pet.update({ where: { id }, data: pet as Prisma.PetUpdateInput });
     return Pet.fromPrisma(updated);
   }
 
