@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ParkingLotType } from '../../../prisma/prisma-client/client';
 
@@ -11,7 +11,7 @@ export class CreateParkingLotDto {
   @IsNotEmpty()
   reference: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'Near the entrance',
     description: 'Parking lot description',
   })
@@ -28,7 +28,7 @@ export class CreateParkingLotDto {
   @IsNotEmpty()
   type: ParkingLotType;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: '0f48881f-6e53-4170-93bd-c575e2e33c38',
     description: 'Apartment ID (optional)',
     required: false,

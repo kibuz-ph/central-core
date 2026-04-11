@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsHexColor, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateResidentialComplexDto {
@@ -58,7 +58,7 @@ export class CreateResidentialComplexDto {
   @IsNotEmpty()
   country: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'www.some-url.com',
     description: "Residentail complex's logo",
   })
@@ -66,7 +66,7 @@ export class CreateResidentialComplexDto {
   @IsOptional()
   logo?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: '#fff',
     description: "Residentail complex's primary color",
   })
@@ -74,7 +74,7 @@ export class CreateResidentialComplexDto {
   @IsOptional()
   primaryColor?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: '#000',
     description: "Residentail complex's secondary color",
   })

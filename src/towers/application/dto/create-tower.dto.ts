@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateTowerDto {
@@ -10,7 +10,7 @@ export class CreateTowerDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'Some tower description',
     description: 'Some description to tower',
   })

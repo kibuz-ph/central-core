@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { userRoleTypes, UserRoleTypes } from '../../../role/domain/enums/user-role-types.enum';
 import { UserRole } from '../../domain/entities/user-role.entity';
@@ -23,7 +23,7 @@ export class UserRoleResponseDto {
   @IsString()
   residentialComplexId: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     enum: userRoleTypes,
     example: userRoleTypes.USER,
     description: "Role's name",
