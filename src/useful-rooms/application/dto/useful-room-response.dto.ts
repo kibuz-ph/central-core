@@ -28,7 +28,7 @@ export class UsefulRoomResponseDto {
   })
   apartmentId: string;
 
-  @ApiProperty({ type: ApartmentResponseDto, nullable: true, description: "Assigned apartment" })
+  @ApiProperty({ type: ApartmentResponseDto, nullable: true, description: 'Assigned apartment' })
   apartment: ApartmentResponseDto | null;
 
   constructor(usefulRoom: UsefulRoom) {
@@ -36,7 +36,9 @@ export class UsefulRoomResponseDto {
     this.reference = usefulRoom.reference;
     this.description = usefulRoom.description ?? undefined;
     this.apartmentId = usefulRoom.apartmentId;
-    this.apartment = usefulRoom.apartment ? ApartmentResponseDto.fromEntities(usefulRoom.apartment) : null;
+    this.apartment = usefulRoom.apartment
+      ? ApartmentResponseDto.fromEntities(usefulRoom.apartment)
+      : null;
   }
 
   static fromEntities(usefulRoom: UsefulRoom): UsefulRoomResponseDto {
