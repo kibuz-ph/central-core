@@ -1,3 +1,4 @@
+import { Apartment, ApartmentProps } from '../../../apartments/domain/entities/apartment.entity';
 import { VehicleTypes } from '../enums/vehicle-types.enum';
 
 export interface VehicleProps {
@@ -8,6 +9,7 @@ export interface VehicleProps {
   color: string;
   reference: string;
   apartmentId: string;
+  apartment?: ApartmentProps;
 }
 
 export class Vehicle {
@@ -18,6 +20,7 @@ export class Vehicle {
   public readonly color: string;
   public readonly reference: string;
   public readonly apartmentId: string;
+  public readonly apartment?: Apartment;
 
   constructor(props: VehicleProps) {
     this.id = props.id;
@@ -27,6 +30,7 @@ export class Vehicle {
     this.color = props.color;
     this.reference = props.reference;
     this.apartmentId = props.apartmentId;
+    this.apartment = props.apartment ? Apartment.fromPrisma(props.apartment) : undefined;
   }
 
   static fromPrisma(data: VehicleProps): Vehicle {
@@ -38,6 +42,7 @@ export class Vehicle {
       color: data.color,
       reference: data.reference,
       apartmentId: data.apartmentId,
+      apartment: data.apartment,
     });
   }
 }
