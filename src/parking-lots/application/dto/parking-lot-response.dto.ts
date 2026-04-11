@@ -42,7 +42,7 @@ export class ParkingLotResponseDto {
   })
   residentialComplexId: string;
 
-  @ApiProperty({ type: ApartmentResponseDto, nullable: true, description: "Assigned apartment" })
+  @ApiProperty({ type: ApartmentResponseDto, nullable: true, description: 'Assigned apartment' })
   apartment: ApartmentResponseDto | null;
 
   constructor(parkingLot: ParkingLot) {
@@ -52,7 +52,9 @@ export class ParkingLotResponseDto {
     this.type = parkingLot.type;
     this.apartmentId = parkingLot.apartmentId;
     this.residentialComplexId = parkingLot.residentialComplexId;
-    this.apartment = parkingLot.apartment ? ApartmentResponseDto.fromEntities(parkingLot.apartment) : null;
+    this.apartment = parkingLot.apartment
+      ? ApartmentResponseDto.fromEntities(parkingLot.apartment)
+      : null;
   }
 
   static fromEntities(parkingLot: ParkingLot): ParkingLotResponseDto {

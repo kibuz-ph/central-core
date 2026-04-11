@@ -61,7 +61,10 @@ export class ParkingLotPrismaRepository implements ParkingLotRepositoryInterface
     tx?: Prisma.TransactionClient,
   ): Promise<ParkingLot> {
     const client = tx ?? this.prisma;
-    const updated = await client.parkingLot.update({ where: { id }, data: parkingLot as Prisma.ParkingLotUpdateInput });
+    const updated = await client.parkingLot.update({
+      where: { id },
+      data: parkingLot as Prisma.ParkingLotUpdateInput,
+    });
     return ParkingLot.fromPrisma(updated);
   }
 
