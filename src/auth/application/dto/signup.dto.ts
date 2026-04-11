@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
@@ -19,7 +19,7 @@ export class SignupDto {
   @IsNotEmpty()
   firstName: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'Alex',
     description: 'Second name of the user',
   })
@@ -35,7 +35,7 @@ export class SignupDto {
   @IsNotEmpty()
   lastName: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'Castano',
     description: 'Second last name of the user',
   })

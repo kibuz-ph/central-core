@@ -1,8 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
 export class UpdateUsefulRoomDto {
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'Laundry Room',
     description: 'Useful room reference',
     required: false,
@@ -11,7 +11,7 @@ export class UpdateUsefulRoomDto {
   @IsOptional()
   reference?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'Shared laundry room on floor 3',
     description: 'Useful room description',
     required: false,

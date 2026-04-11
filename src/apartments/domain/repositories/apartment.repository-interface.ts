@@ -9,6 +9,18 @@ export interface ApartmentRepositoryInterface {
     conditions: any;
     include?: any;
   }): Promise<Apartment | null>;
+  findMany({
+    conditions,
+    include,
+    page,
+    perPage,
+  }: {
+    conditions: any;
+    include?: any;
+    page?: number;
+    perPage?: number;
+  }): Promise<Apartment[]>;
+  count(conditions: any): Promise<number>;
   createMany(apartments: Apartment[], tx?: Prisma.TransactionClient): Promise<Apartment[]>;
   update(
     id: string,

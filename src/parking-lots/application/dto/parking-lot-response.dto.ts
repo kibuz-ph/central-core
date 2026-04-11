@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ApartmentResponseDto } from '../../../apartments/application/dto/apartment-response.dto';
 import { ParkingLot } from '../../domain/entities/parking-lot.entity';
 import { parkingLotTypes, ParkingLotTypes } from '../../domain/enums/parking-lot-types.enum';
 
@@ -41,6 +42,9 @@ export class ParkingLotResponseDto {
   })
   residentialComplexId: string;
 
+  @ApiProperty({ type: ApartmentResponseDto, nullable: true, description: 'Assigned apartment' })
+  apartment: ApartmentResponseDto | null;
+
   constructor(parkingLot: ParkingLot) {
     this.id = parkingLot.id || '';
     this.reference = parkingLot.reference;
@@ -48,6 +52,9 @@ export class ParkingLotResponseDto {
     this.type = parkingLot.type;
     this.apartmentId = parkingLot.apartmentId;
     this.residentialComplexId = parkingLot.residentialComplexId;
+    this.apartment = parkingLot.apartment
+      ? ApartmentResponseDto.fromEntities(parkingLot.apartment)
+      : null;
   }
 
   static fromEntities(parkingLot: ParkingLot): ParkingLotResponseDto {

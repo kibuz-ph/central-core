@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateCommonAreaDto {
@@ -10,7 +10,7 @@ export class CreateCommonAreaDto {
   @IsNotEmpty()
   name: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'icon-swimming',
     description: "Common area's icon",
   })
@@ -19,7 +19,7 @@ export class CreateCommonAreaDto {
   @IsOptional()
   icon?: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'Some swimming description',
     description: 'Some description to common area',
   })

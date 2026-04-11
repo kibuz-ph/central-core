@@ -9,6 +9,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
   UseInterceptors,
@@ -17,11 +18,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
 import { ApartmentResponseDto } from '../../apartments/application/dto/apartment-response.dto';
+import { ApartmentFilterQueryDto } from '../../apartments/application/dto/apartment-filter-query.dto';
 import { CreateApartmentsDto } from '../../apartments/application/dto/create-apartments.dto';
 import { UpdateApartmentDto } from '../../apartments/application/dto/update-apartment.dto';
 import { CreateApartmentsUseCase } from '../../apartments/application/services/create-apartments.use-case';
 import { DeleteApartmentUseCase } from '../../apartments/application/services/delete-apartment.use-case';
 import { FindApartmentUseCase } from '../../apartments/application/services/find-apartment.use-case';
+import { FindApartmentsByResidentialComplexUseCase } from '../../apartments/application/services/find-apartments-by-residential-complex.use-case';
 import { UpdateApartmentUseCase } from '../../apartments/application/services/update-apartment.use-case';
 import { CommonAreaResponseDto } from '../../common-area/application/dto/common-area-response.dto';
 import { CreateCommonAreasDto } from '../../common-area/application/dto/create-common-areas.dto';
@@ -34,10 +37,12 @@ import { UpdateCommonAreaUseCase } from '../../common-area/application/services/
 import { SetResponseMessageDecorator } from '../../common/decorators/set-response-message.decorator';
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
+import { PaginatedResponseDto } from '../../common/dtos/paginates-response.dto';
 import { ComplexRoleGuard, RequiredComplexRoles } from '../../common/guards/complex-role.guard';
 import { RequiredUserTypes, UserTypeGuard } from '../../common/guards/user-type.guard';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { CreateParkingLotsDto } from '../../parking-lots/application/dto/create-parking-lots.dto';
+import { ParkingLotFilterQueryDto } from '../../parking-lots/application/dto/parking-lot-filter-query.dto';
 import { ParkingLotResponseDto } from '../../parking-lots/application/dto/parking-lot-response.dto';
 import { UpdateParkingLotDto } from '../../parking-lots/application/dto/update-parking-lot.dto';
 import { CreateParkingLotsUseCase } from '../../parking-lots/application/services/create-parking-lots.use-case';
@@ -61,14 +66,15 @@ import { userTypes } from '../../users/domain/enums/user-types.enum';
 import { AssignUserToComplexDto } from '../application/dto/assign-user-to-complex.dto';
 import { CreateResidentialComplexDto } from '../application/dto/create-residential-complex.dto';
 import { GetMyResidentialComplexesResponseDto } from '../application/dto/get-my-residential-complexes-response.dto';
+import { GetResidentialComplexApartmentsResponseDto } from '../application/dto/get-residential-complex-apartments-response.dto';
 import { GetResidentialComplexCommonAreasResponseDto } from '../application/dto/get-residential-complex-common-areas-response.dto';
 import { GetResidentialComplexParkingLotsResponseDto } from '../application/dto/get-residential-complex-parking-lots-response.dto';
 import { GetResidentialComplexTowersResponseDto } from '../application/dto/get-residential-complex-towers-response.dto';
 import { ResidentialComplexResponseDto } from '../application/dto/residential-complex-response.dto';
 import { UpdateResidentialComplexDto } from '../application/dto/update-residential-complex.dto';
+import { AssignUserToComplexUseCase } from '../application/services/assign-user-to-complex.use-case';
 import { CreateResidentialComplexUseCase } from '../application/services/create-residential-complex.use-case';
 import { DeleteResidentialComplexUseCase } from '../application/services/delete-residential-complex.use-case';
-import { AssignUserToComplexUseCase } from '../application/services/assign-user-to-complex.use-case';
 import { FindResidentialComplexUseCase } from '../application/services/find-residential-complex.use-case';
 import { FindResidentialComplexesByUserUseCase } from '../application/services/find-residential-complexes-by-user.use-case';
 import { RegisterUserToComplexUseCase } from '../application/services/register-user-to-complex.use-case';
@@ -105,6 +111,7 @@ export class ResidentialComplexController {
     private readonly deleteParkingLotUseCase: DeleteParkingLotUseCase,
     // Apartments
     private readonly findApartmentUseCase: FindApartmentUseCase,
+    private readonly findApartmentsByResidentialComplexUseCase: FindApartmentsByResidentialComplexUseCase,
     private readonly createApartmentsUseCase: CreateApartmentsUseCase,
     private readonly updateApartmentUseCase: UpdateApartmentUseCase,
     private readonly deleteApartmentUseCase: DeleteApartmentUseCase,
@@ -551,24 +558,25 @@ export class ResidentialComplexController {
   // ─── Parking Lots ─────────────────────────────────────────────────────────
 
   @Get('/:id/parking-lots')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.OK)
   @WrapResponse(true)
   @SetResponseMessageDecorator("Residential complex's parking lots retrieved successfully")
   @EndpointSwaggerDecorator({
-    summary: "Get residential complex's parking lots",
+    summary: "Get residential complex's parking lots (paginated)",
     responseType: GetResidentialComplexParkingLotsResponseDto,
+    queryType: ParkingLotFilterQueryDto,
     successStatus: HttpStatus.OK,
-    extraResponses: [
-      { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
-    ],
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Page is out of the range' }],
     requireAuth: true,
   })
   async getResidentialComplexParkingLots(
     @Param('id', new ParseUUIDPipe()) id: string,
-  ): Promise<ParkingLotResponseDto[]> {
-    return this.findParkingLotsByResidentialComplexUseCase.execute(id);
+    @Query() query: ParkingLotFilterQueryDto,
+  ): Promise<PaginatedResponseDto<ParkingLotResponseDto>> {
+    return this.findParkingLotsByResidentialComplexUseCase.execute(id, query);
   }
 
   @Get('/:id/parking-lots/:parkingLotId')
@@ -657,6 +665,28 @@ export class ResidentialComplexController {
   }
 
   // ─── Apartments ───────────────────────────────────────────────────────────
+
+  @Get('/:id/apartments')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator("Residential complex's apartments retrieved successfully")
+  @EndpointSwaggerDecorator({
+    summary: "Get residential complex's apartments (paginated)",
+    responseType: GetResidentialComplexApartmentsResponseDto,
+    queryType: ApartmentFilterQueryDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Page is out of the range' }],
+    requireAuth: true,
+  })
+  async getResidentialComplexApartments(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Query() query: ApartmentFilterQueryDto,
+  ): Promise<PaginatedResponseDto<ApartmentResponseDto>> {
+    return this.findApartmentsByResidentialComplexUseCase.execute(id, query);
+  }
 
   @Get('/:id/apartments/:apartmentId')
   @UseGuards(AuthGuard())
