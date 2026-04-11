@@ -33,6 +33,7 @@ import { UserPrismaRepository } from '../users/infrastructure/persistence/user.r
 import { CreateApartmentsUseCase } from '../apartments/application/services/create-apartments.use-case';
 import { DeleteApartmentUseCase } from '../apartments/application/services/delete-apartment.use-case';
 import { FindApartmentUseCase } from '../apartments/application/services/find-apartment.use-case';
+import { FindApartmentsByResidentialComplexUseCase } from '../apartments/application/services/find-apartments-by-residential-complex.use-case';
 import { UpdateApartmentUseCase } from '../apartments/application/services/update-apartment.use-case';
 import { AssignUserToComplexUseCase } from './application/services/assign-user-to-complex.use-case';
 import { CreateResidentialComplexUseCase } from './application/services/create-residential-complex.use-case';
@@ -86,6 +87,7 @@ import { ResidentialComplexController } from './presentation/residential-complex
     DeleteParkingLotUseCase,
     // Apartments
     FindApartmentUseCase,
+    FindApartmentsByResidentialComplexUseCase,
     CreateApartmentsUseCase,
     UpdateApartmentUseCase,
     DeleteApartmentUseCase,

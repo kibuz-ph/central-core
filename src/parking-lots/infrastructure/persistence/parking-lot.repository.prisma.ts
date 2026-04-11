@@ -23,11 +23,27 @@ export class ParkingLotPrismaRepository implements ParkingLotRepositoryInterface
 
   async findMany({
     conditions,
+    include,
+    page,
+    perPage,
   }: {
     conditions: Prisma.ParkingLotWhereInput;
+    include?: Prisma.ParkingLotInclude;
+    page?: number;
+    perPage?: number;
   }): Promise<ParkingLot[]> {
-    const parkingLots = await this.prisma.parkingLot.findMany({ where: conditions });
-    return parkingLots.map(parkingLot => ParkingLot.fromPrisma(parkingLot));
+    const skip = page && perPage ? (page - 1) * perPage : undefined;
+    const parkingLots = await this.prisma.parkingLot.findMany({
+      where: conditions,
+      include,
+      skip,
+      take: perPage,
+    });
+    return parkingLots.map(parkingLot => ParkingLot.fromPrisma(parkingLot as any));
+  }
+
+  async count(conditions: Prisma.ParkingLotWhereInput): Promise<number> {
+    return this.prisma.parkingLot.count({ where: conditions });
   }
 
   async createMany(
@@ -45,7 +61,7 @@ export class ParkingLotPrismaRepository implements ParkingLotRepositoryInterface
     tx?: Prisma.TransactionClient,
   ): Promise<ParkingLot> {
     const client = tx ?? this.prisma;
-    const updated = await client.parkingLot.update({ where: { id }, data: parkingLot });
+    const updated = await client.parkingLot.update({ where: { id }, data: parkingLot as Prisma.ParkingLotUpdateInput });
     return ParkingLot.fromPrisma(updated);
   }
 

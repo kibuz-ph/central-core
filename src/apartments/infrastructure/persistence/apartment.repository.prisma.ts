@@ -25,6 +25,31 @@ export class ApartmentPrismaRepository implements ApartmentRepositoryInterface {
     return Apartment.fromPrisma(apartment);
   }
 
+  async findMany({
+    conditions,
+    include,
+    page,
+    perPage,
+  }: {
+    conditions: Prisma.ApartmentWhereInput;
+    include?: Prisma.ApartmentInclude;
+    page?: number;
+    perPage?: number;
+  }): Promise<Apartment[]> {
+    const skip = page && perPage ? (page - 1) * perPage : undefined;
+    const apartments = await this.prisma.apartment.findMany({
+      where: conditions,
+      include,
+      skip,
+      take: perPage,
+    });
+    return apartments.map(apartment => Apartment.fromPrisma(apartment as any));
+  }
+
+  async count(conditions: Prisma.ApartmentWhereInput): Promise<number> {
+    return this.prisma.apartment.count({ where: conditions });
+  }
+
   async createMany(
     apartments: ApartmentProps[],
     tx?: Prisma.TransactionClient,
@@ -45,7 +70,7 @@ export class ApartmentPrismaRepository implements ApartmentRepositoryInterface {
     const client = tx ?? this.prisma;
     const updated = await client.apartment.update({
       where: { id },
-      data: apartment,
+      data: apartment as Prisma.ApartmentUpdateInput,
     });
 
     return Apartment.fromPrisma(updated);
