@@ -1,22 +1,13 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-  SetMetadata,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserRoleTypes } from '../../role/domain/enums/user-role-types.enum';
 import { UserProps } from '../../users/domain/entities/user.entity';
-
-export const COMPLEX_ROLE_KEY = 'complexRoles';
-export const RequiredComplexRoles = (...roles: UserRoleTypes[]) =>
-  SetMetadata(COMPLEX_ROLE_KEY, roles);
+import { COMPLEX_ROLE_KEY } from './complex-role.guard';
 
 @Injectable()
-export class ComplexRoleGuard implements CanActivate {
+export class ApartmentComplexRoleGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly prisma: PrismaService,
@@ -30,13 +21,19 @@ export class ComplexRoleGuard implements CanActivate {
     if (!requiredRoles) return true;
 
     const request = context.switchToHttp().getRequest<
-      Request<{ id: string; residentialComplexId: string }> & {
+      Request<{ id: string }> & {
         user: Omit<UserProps, 'password'> & { id: string };
       }
     >();
 
     const { user, params } = request;
-    const residentialComplexId = params.residentialComplexId || params.id;
+
+    const apartment = await this.prisma.apartment.findUnique({
+      where: { id: params.id },
+      select: { residentialComplexId: true },
+    });
+
+    const residentialComplexId = apartment?.residentialComplexId;
 
     if (!user || !residentialComplexId) {
       throw new ForbiddenException('Access denied: insufficient permissions');

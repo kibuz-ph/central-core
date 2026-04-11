@@ -3,7 +3,18 @@ import { UsefulRoom } from '../entities/useful-room.entity';
 
 export interface UsefulRoomRepositoryInterface {
   findUnique({ conditions }: { conditions: any }): Promise<UsefulRoom | null>;
-  findMany({ conditions }: { conditions: any }): Promise<UsefulRoom[]>;
+  findMany({
+    conditions,
+    include,
+    page,
+    perPage,
+  }: {
+    conditions: any;
+    include?: any;
+    page?: number;
+    perPage?: number;
+  }): Promise<UsefulRoom[]>;
+  count(conditions: any): Promise<number>;
   createMany(usefulRooms: UsefulRoom[], tx?: Prisma.TransactionClient): Promise<UsefulRoom[]>;
   update(
     id: string,

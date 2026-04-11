@@ -70,6 +70,10 @@ import { GetResidentialComplexApartmentsResponseDto } from '../application/dto/g
 import { GetResidentialComplexCommonAreasResponseDto } from '../application/dto/get-residential-complex-common-areas-response.dto';
 import { GetResidentialComplexParkingLotsResponseDto } from '../application/dto/get-residential-complex-parking-lots-response.dto';
 import { GetResidentialComplexTowersResponseDto } from '../application/dto/get-residential-complex-towers-response.dto';
+import { GetResidentialComplexUsefulRoomsResponseDto } from '../application/dto/get-residential-complex-useful-rooms-response.dto';
+import { UsefulRoomFilterQueryDto } from '../../useful-rooms/application/dto/useful-room-filter-query.dto';
+import { UsefulRoomResponseDto } from '../../useful-rooms/application/dto/useful-room-response.dto';
+import { FindUsefulRoomsByResidentialComplexUseCase } from '../../useful-rooms/application/services/find-useful-rooms-by-residential-complex.use-case';
 import { ResidentialComplexResponseDto } from '../application/dto/residential-complex-response.dto';
 import { UpdateResidentialComplexDto } from '../application/dto/update-residential-complex.dto';
 import { AssignUserToComplexUseCase } from '../application/services/assign-user-to-complex.use-case';
@@ -115,6 +119,8 @@ export class ResidentialComplexController {
     private readonly createApartmentsUseCase: CreateApartmentsUseCase,
     private readonly updateApartmentUseCase: UpdateApartmentUseCase,
     private readonly deleteApartmentUseCase: DeleteApartmentUseCase,
+    // Useful rooms
+    private readonly findUsefulRoomsByResidentialComplexUseCase: FindUsefulRoomsByResidentialComplexUseCase,
   ) {}
 
   // ─── Residential Complex ──────────────────────────────────────────────────
@@ -771,5 +777,29 @@ export class ResidentialComplexController {
     @Param('apartmentId', new ParseUUIDPipe()) apartmentId: string,
   ): Promise<boolean> {
     return this.deleteApartmentUseCase.execute(apartmentId, id);
+  }
+
+  // ─── Useful Rooms ─────────────────────────────────────────────────────────
+
+  @Get('/:id/useful-rooms')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator("Residential complex's useful rooms retrieved successfully")
+  @EndpointSwaggerDecorator({
+    summary: "Get residential complex's useful rooms (paginated)",
+    responseType: GetResidentialComplexUsefulRoomsResponseDto,
+    queryType: UsefulRoomFilterQueryDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Page is out of the range' }],
+    requireAuth: true,
+  })
+  async getResidentialComplexUsefulRooms(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Query() query: UsefulRoomFilterQueryDto,
+  ): Promise<PaginatedResponseDto<UsefulRoomResponseDto>> {
+    return this.findUsefulRoomsByResidentialComplexUseCase.execute(id, query);
   }
 }

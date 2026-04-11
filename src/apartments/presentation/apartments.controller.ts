@@ -17,7 +17,8 @@ import { Throttle } from '@nestjs/throttler';
 import { SetResponseMessageDecorator } from '../../common/decorators/set-response-message.decorator';
 import { EndpointSwaggerDecorator } from '../../common/decorators/swagger.decorator';
 import { WrapResponse } from '../../common/decorators/wrap-response.decorator';
-import { ComplexRoleGuard, RequiredComplexRoles } from '../../common/guards/complex-role.guard';
+import { ApartmentComplexRoleGuard } from '../../common/guards/apartment-complex-role.guard';
+import { RequiredComplexRoles } from '../../common/guards/complex-role.guard';
 import { ResponseWrapperInterceptor } from '../../common/interceptors/response-wrapper.interceptor';
 import { ParkingLotResponseDto } from '../../parking-lots/application/dto/parking-lot-response.dto';
 import { FindParkingLotsByApartmentUseCase } from '../../parking-lots/application/services/find-parking-lots-by-apartment.use-case';
@@ -137,7 +138,7 @@ export class ApartmentsController {
   }
 
   @Post('/:id/pets')
-  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @UseGuards(AuthGuard(), ApartmentComplexRoleGuard)
   @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.CREATED)
@@ -159,7 +160,7 @@ export class ApartmentsController {
   }
 
   @Patch('/:id/pets/:petId')
-  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @UseGuards(AuthGuard(), ApartmentComplexRoleGuard)
   @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.OK)
@@ -180,7 +181,7 @@ export class ApartmentsController {
   }
 
   @Delete('/:id/pets/:petId')
-  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @UseGuards(AuthGuard(), ApartmentComplexRoleGuard)
   @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -241,7 +242,7 @@ export class ApartmentsController {
   }
 
   @Post('/:id/vehicles')
-  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @UseGuards(AuthGuard(), ApartmentComplexRoleGuard)
   @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.CREATED)
@@ -263,7 +264,7 @@ export class ApartmentsController {
   }
 
   @Patch('/:id/vehicles/:vehicleId')
-  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @UseGuards(AuthGuard(), ApartmentComplexRoleGuard)
   @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.OK)
@@ -284,7 +285,7 @@ export class ApartmentsController {
   }
 
   @Delete('/:id/vehicles/:vehicleId')
-  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @UseGuards(AuthGuard(), ApartmentComplexRoleGuard)
   @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -345,7 +346,7 @@ export class ApartmentsController {
   }
 
   @Post('/:id/useful-rooms')
-  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @UseGuards(AuthGuard(), ApartmentComplexRoleGuard)
   @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.CREATED)
@@ -367,7 +368,7 @@ export class ApartmentsController {
   }
 
   @Patch('/:id/useful-rooms/:usefulRoomId')
-  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @UseGuards(AuthGuard(), ApartmentComplexRoleGuard)
   @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.OK)
@@ -388,7 +389,7 @@ export class ApartmentsController {
   }
 
   @Delete('/:id/useful-rooms/:usefulRoomId')
-  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @UseGuards(AuthGuard(), ApartmentComplexRoleGuard)
   @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
   @Throttle({ default: { limit: 5, ttl: 60 } })
   @HttpCode(HttpStatus.NO_CONTENT)

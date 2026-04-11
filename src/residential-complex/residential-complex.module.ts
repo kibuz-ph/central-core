@@ -35,6 +35,8 @@ import { DeleteApartmentUseCase } from '../apartments/application/services/delet
 import { FindApartmentUseCase } from '../apartments/application/services/find-apartment.use-case';
 import { FindApartmentsByResidentialComplexUseCase } from '../apartments/application/services/find-apartments-by-residential-complex.use-case';
 import { UpdateApartmentUseCase } from '../apartments/application/services/update-apartment.use-case';
+import { FindUsefulRoomsByResidentialComplexUseCase } from '../useful-rooms/application/services/find-useful-rooms-by-residential-complex.use-case';
+import { UsefulRoomPrismaRepository } from '../useful-rooms/infrastructure/persistence/useful-room.repository.prisma';
 import { AssignUserToComplexUseCase } from './application/services/assign-user-to-complex.use-case';
 import { CreateResidentialComplexUseCase } from './application/services/create-residential-complex.use-case';
 import { DeleteResidentialComplexUseCase } from './application/services/delete-residential-complex.use-case';
@@ -91,6 +93,8 @@ import { ResidentialComplexController } from './presentation/residential-complex
     CreateApartmentsUseCase,
     UpdateApartmentUseCase,
     DeleteApartmentUseCase,
+    // Useful rooms
+    FindUsefulRoomsByResidentialComplexUseCase,
     {
       provide: 'ResidentialComplexInterface',
       useClass: ResidentialComplexPrismaRepository,
@@ -122,6 +126,10 @@ import { ResidentialComplexController } from './presentation/residential-complex
     {
       provide: 'ApartmentRepositoryInterface',
       useClass: ApartmentPrismaRepository,
+    },
+    {
+      provide: 'UsefulRoomRepositoryInterface',
+      useClass: UsefulRoomPrismaRepository,
     },
   ],
   exports: [
