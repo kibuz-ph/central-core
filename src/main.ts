@@ -30,8 +30,25 @@ async function bootstrap() {
     .setDescription('Kibuz API endpoints')
     .setVersion('1.0')
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+
+  const document = SwaggerModule.createDocument(app, config);
+
+  // For any operation with a subsection tag (format: "Parent / SubSection"),
+  // remove the parent tag so the endpoint appears only in the subsection,
+  // not duplicated in the top-level controller section.
+  for (const pathItem of Object.values(document.paths ?? {})) {
+    for (const operation of Object.values(pathItem ?? {}) as { tags?: string[] }[]) {
+      if (!Array.isArray(operation?.tags)) continue;
+      const parentTagsToRemove = new Set(
+        operation.tags.filter(t => t.includes(' / ')).map(t => t.substring(0, t.indexOf(' / '))),
+      );
+      if (parentTagsToRemove.size > 0) {
+        operation.tags = operation.tags.filter(t => !parentTagsToRemove.has(t));
+      }
+    }
+  }
+
+  SwaggerModule.setup('api', app, document);
 
   app.enableCors({
     origin: corsOrigins,

@@ -1,5 +1,12 @@
 import { HttpStatus, Type, applyDecorators } from '@nestjs/common';
-import { ApiBody, ApiCookieAuth, ApiExtraModels, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiCookieAuth,
+  ApiExtraModels,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 /**
  * custom Swagger decorator for automating API documentation.
@@ -19,6 +26,7 @@ export function EndpointSwaggerDecorator({
   successStatus = HttpStatus.OK,
   extraResponses = [],
   requireAuth = true,
+  tags,
 }: {
   summary: string;
   description?: string;
@@ -28,9 +36,13 @@ export function EndpointSwaggerDecorator({
   successStatus?: HttpStatus;
   extraResponses?: { status: number; description: string; type?: Type<unknown> }[];
   requireAuth?: boolean;
+  tags?: string[];
 }) {
   const decorators = [
     ApiOperation({ summary, description }),
+
+    // Tags
+    ...(tags?.length ? [ApiTags(...tags)] : []),
 
     // Security Decorators
     ...(requireAuth ? [ApiCookieAuth()] : []),
