@@ -82,6 +82,10 @@ import { FindVehiclesByResidentialComplexUseCase } from '../../vehicles/applicat
 import { PetFilterQueryDto } from '../../pets/application/dto/pet-filter-query.dto';
 import { PetResponseDto } from '../../pets/application/dto/pet-response.dto';
 import { FindPetsByResidentialComplexUseCase } from '../../pets/application/services/find-pets-by-residential-complex.use-case';
+import { FindUsersByResidentialComplexUseCase } from '../../user-apartment/application/services/find-users-by-residential-complex.use-case';
+import { GetResidentialComplexUsersResponseDto } from '../application/dto/get-residential-complex-users-response.dto';
+import { ResidentialComplexUserResponseDto } from '../application/dto/residential-complex-user-response.dto';
+import { ResidentialComplexUsersFilterQueryDto } from '../application/dto/residential-complex-users-filter-query.dto';
 import { ResidentialComplexResponseDto } from '../application/dto/residential-complex-response.dto';
 import { UpdateResidentialComplexDto } from '../application/dto/update-residential-complex.dto';
 import { AssignUserToComplexUseCase } from '../application/services/assign-user-to-complex.use-case';
@@ -133,6 +137,8 @@ export class ResidentialComplexController {
     private readonly findVehiclesByResidentialComplexUseCase: FindVehiclesByResidentialComplexUseCase,
     // Pets
     private readonly findPetsByResidentialComplexUseCase: FindPetsByResidentialComplexUseCase,
+    // Users
+    private readonly findUsersByResidentialComplexUseCase: FindUsersByResidentialComplexUseCase,
   ) {}
 
   // ─── Residential Complex ──────────────────────────────────────────────────
@@ -861,5 +867,30 @@ export class ResidentialComplexController {
     @Query() query: PetFilterQueryDto,
   ): Promise<PaginatedResponseDto<PetResponseDto>> {
     return this.findPetsByResidentialComplexUseCase.execute(id, query);
+  }
+
+  // ─── Users ────────────────────────────────────────────────────────────────
+
+  @Get('/:id/users')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator("Residential complex's users retrieved successfully")
+  @EndpointSwaggerDecorator({
+    summary: "Get residential complex's users with their apartments and roles (paginated)",
+    responseType: GetResidentialComplexUsersResponseDto,
+    queryType: ResidentialComplexUsersFilterQueryDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Page is out of the range' }],
+    requireAuth: true,
+  })
+  async getResidentialComplexUsers(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Query() query: ResidentialComplexUsersFilterQueryDto,
+  ): Promise<PaginatedResponseDto<ResidentialComplexUserResponseDto>> {
+    const { page, perPage, ...filters } = query;
+    return this.findUsersByResidentialComplexUseCase.execute(id, page, perPage, filters);
   }
 }

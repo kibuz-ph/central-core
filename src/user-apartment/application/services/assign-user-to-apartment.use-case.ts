@@ -25,9 +25,14 @@ export class AssignUserToApartmentUseCase {
     userId: string,
     categoryUserName: UserApartmentTypes,
   ): Promise<UserApartmentResponseDto> {
-    const apartment = await this.apartmentRepository.findUnique({ conditions: { id: apartmentId } });
+    const apartment = await this.apartmentRepository.findUnique({
+      conditions: { id: apartmentId },
+    });
     if (!apartment) {
-      throw new DomainException({ message: 'Apartment not found', statusCode: HttpStatus.NOT_FOUND });
+      throw new DomainException({
+        message: 'Apartment not found',
+        statusCode: HttpStatus.NOT_FOUND,
+      });
     }
 
     const user = await this.userRepository.findUnique({ conditions: { id: userId } });

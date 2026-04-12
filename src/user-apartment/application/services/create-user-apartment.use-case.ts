@@ -10,7 +10,10 @@ export class CreateUserApartmentUseCase {
     private readonly userApartmentRepository: UserApartmentRepositoryInterface,
   ) {}
 
-  async create(userApartment: UserApartment, tx?: Prisma.TransactionClient): Promise<UserApartment> {
+  async create(
+    userApartment: UserApartment,
+    tx?: Prisma.TransactionClient,
+  ): Promise<UserApartment> {
     return this.userApartmentRepository.create(userApartment, tx);
   }
 }

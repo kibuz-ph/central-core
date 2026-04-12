@@ -5,10 +5,7 @@ import { FindCategoryUserByNameUseCase } from './application/services/find-categ
 import { CategoryUserPrismaRepository } from './infrastructure/persistence/category-user.repository.prisma';
 
 @Module({
-  imports: [
-    PrismaModule,
-    PassportModule.register({ defaultStrategy: 'jwt' }),
-  ],
+  imports: [PrismaModule, PassportModule.register({ defaultStrategy: 'jwt' })],
   providers: [
     FindCategoryUserByNameUseCase,
     {

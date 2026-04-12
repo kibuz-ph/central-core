@@ -1,7 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { ApartmentResponseDto } from '../../../apartments/application/dto/apartment-response.dto';
-import { userApartmentTypes, UserApartmentTypes } from '../../../category-user/domain/enums/user-apartment-type.enum';
+import {
+  userApartmentTypes,
+  UserApartmentTypes,
+} from '../../../category-user/domain/enums/user-apartment-type.enum';
 import { UserResponseDto } from '../../../users/application/dto/user-response.dto';
 import { UserApartment } from '../../domain/entities/user-apartment.entity';
 
@@ -37,7 +40,9 @@ export class UserApartmentResponseDto {
           userDetail: userApartment.user.userDetail ?? undefined,
         })
       : undefined;
-    this.apartment = userApartment.apartment ? ApartmentResponseDto.fromEntities(userApartment.apartment) : undefined;
+    this.apartment = userApartment.apartment
+      ? ApartmentResponseDto.fromEntities(userApartment.apartment)
+      : undefined;
   }
 
   static fromEntity(userApartment: UserApartment): UserApartmentResponseDto {

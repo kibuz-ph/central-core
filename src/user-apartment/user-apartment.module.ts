@@ -7,10 +7,7 @@ import { FindUserApartmentsByApartmentUseCase } from './application/services/fin
 import { UserApartmentPrismaRepository } from './infrastructure/persistence/user-apartment.repository.prisma';
 
 @Module({
-  imports: [
-    PrismaModule,
-    PassportModule.register({ defaultStrategy: 'jwt' }),
-  ],
+  imports: [PrismaModule, PassportModule.register({ defaultStrategy: 'jwt' })],
   providers: [
     CreateUserApartmentUseCase,
     DeleteUserApartmentUseCase,
@@ -20,6 +17,10 @@ import { UserApartmentPrismaRepository } from './infrastructure/persistence/user
       useClass: UserApartmentPrismaRepository,
     },
   ],
-  exports: [CreateUserApartmentUseCase, DeleteUserApartmentUseCase, FindUserApartmentsByApartmentUseCase],
+  exports: [
+    CreateUserApartmentUseCase,
+    DeleteUserApartmentUseCase,
+    FindUserApartmentsByApartmentUseCase,
+  ],
 })
 export class UserApartmentModule {}

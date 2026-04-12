@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsString } from 'class-validator';
 import { CategoryUser } from '../../domain/entities/category-user.entity';
-import { userApartmentTypes, UserApartmentTypes } from '../../domain/enums/user-apartment-type.enum';
+import {
+  userApartmentTypes,
+  UserApartmentTypes,
+} from '../../domain/enums/user-apartment-type.enum';
 
 export class CategoryUserResponseDto {
   @ApiProperty({
