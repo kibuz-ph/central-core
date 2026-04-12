@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ApartmentResponseDto } from '../../../apartments/application/dto/apartment-response.dto';
 import { UsefulRoom } from '../../domain/entities/useful-room.entity';
 
 export class UsefulRoomResponseDto {
@@ -27,11 +28,17 @@ export class UsefulRoomResponseDto {
   })
   apartmentId: string;
 
+  @ApiProperty({ type: ApartmentResponseDto, nullable: true, description: 'Assigned apartment' })
+  apartment: ApartmentResponseDto | null;
+
   constructor(usefulRoom: UsefulRoom) {
     this.id = usefulRoom.id || '';
     this.reference = usefulRoom.reference;
     this.description = usefulRoom.description ?? undefined;
     this.apartmentId = usefulRoom.apartmentId;
+    this.apartment = usefulRoom.apartment
+      ? ApartmentResponseDto.fromEntities(usefulRoom.apartment)
+      : null;
   }
 
   static fromEntities(usefulRoom: UsefulRoom): UsefulRoomResponseDto {

@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ApartmentResponseDto } from '../../../apartments/application/dto/apartment-response.dto';
 import { Vehicle } from '../../domain/entities/vehicle.entity';
 import { vehicleTypes, VehicleTypes } from '../../domain/enums/vehicle-types.enum';
 
@@ -30,6 +31,9 @@ export class VehicleResponseDto {
   })
   apartmentId: string;
 
+  @ApiProperty({ type: ApartmentResponseDto, nullable: true, description: 'Assigned apartment' })
+  apartment: ApartmentResponseDto | null;
+
   constructor(vehicle: Vehicle) {
     this.id = vehicle.id || '';
     this.type = vehicle.type;
@@ -38,6 +42,9 @@ export class VehicleResponseDto {
     this.color = vehicle.color;
     this.reference = vehicle.reference;
     this.apartmentId = vehicle.apartmentId;
+    this.apartment = vehicle.apartment
+      ? ApartmentResponseDto.fromEntities(vehicle.apartment)
+      : null;
   }
 
   static fromEntities(vehicle: Vehicle): VehicleResponseDto {

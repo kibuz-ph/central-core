@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { ComplexRoleGuard } from '../common/guards/complex-role.guard';
+import { ApartmentComplexRoleGuard } from '../common/guards/apartment-complex-role.guard';
 import { FindParkingLotsByApartmentUseCase } from '../parking-lots/application/services/find-parking-lots-by-apartment.use-case';
 import { ParkingLotPrismaRepository } from '../parking-lots/infrastructure/persistence/parking-lot.repository.prisma';
 import { CreatePetsUseCase } from '../pets/application/services/create-pets.use-case';
@@ -36,7 +36,7 @@ import { ApartmentsController } from './presentation/apartments.controller';
     UserRoleModule,
   ],
   providers: [
-    ComplexRoleGuard,
+    ApartmentComplexRoleGuard,
     FindParkingLotsByApartmentUseCase,
     // Pets
     FindPetsByApartmentUseCase,

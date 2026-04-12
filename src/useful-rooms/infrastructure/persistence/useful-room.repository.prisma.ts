@@ -27,14 +27,28 @@ export class UsefulRoomPrismaRepository implements UsefulRoomRepositoryInterface
 
   async findMany({
     conditions,
+    include,
+    page,
+    perPage,
   }: {
     conditions: Prisma.UsefulRoomWhereInput;
+    include?: Prisma.UsefulRoomInclude;
+    page?: number;
+    perPage?: number;
   }): Promise<UsefulRoom[]> {
+    const skip = page && perPage ? (page - 1) * perPage : undefined;
     const usefulRooms = await this.prisma.usefulRoom.findMany({
       where: conditions,
+      include,
+      skip,
+      take: perPage,
     });
 
-    return usefulRooms.map(usefulRoom => UsefulRoom.fromPrisma(usefulRoom));
+    return usefulRooms.map(usefulRoom => UsefulRoom.fromPrisma(usefulRoom as any));
+  }
+
+  async count(conditions: Prisma.UsefulRoomWhereInput): Promise<number> {
+    return this.prisma.usefulRoom.count({ where: conditions });
   }
 
   async createMany(
@@ -57,7 +71,7 @@ export class UsefulRoomPrismaRepository implements UsefulRoomRepositoryInterface
     const client = tx ?? this.prisma;
     const updated = await client.usefulRoom.update({
       where: { id },
-      data: usefulRoom,
+      data: usefulRoom as Prisma.UsefulRoomUpdateInput,
     });
 
     return UsefulRoom.fromPrisma(updated);

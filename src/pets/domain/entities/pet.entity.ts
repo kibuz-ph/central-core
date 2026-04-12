@@ -1,3 +1,4 @@
+import { Apartment, ApartmentProps } from '../../../apartments/domain/entities/apartment.entity';
 import { PetSpeciesType } from '../enums/pet-species.enum';
 
 export interface PetProps {
@@ -5,6 +6,7 @@ export interface PetProps {
   name: string;
   species: PetSpeciesType;
   apartmentId: string;
+  apartment?: ApartmentProps;
 }
 
 export class Pet {
@@ -12,12 +14,14 @@ export class Pet {
   public readonly name: string;
   public readonly species: PetSpeciesType;
   public readonly apartmentId: string;
+  public readonly apartment?: Apartment;
 
   constructor(props: PetProps) {
     this.id = props.id;
     this.name = props.name;
     this.species = props.species;
     this.apartmentId = props.apartmentId;
+    this.apartment = props.apartment ? Apartment.fromPrisma(props.apartment) : undefined;
   }
 
   static fromPrisma(data: PetProps): Pet {
@@ -26,6 +30,7 @@ export class Pet {
       name: data.name,
       species: data.species,
       apartmentId: data.apartmentId,
+      apartment: data.apartment,
     });
   }
 }

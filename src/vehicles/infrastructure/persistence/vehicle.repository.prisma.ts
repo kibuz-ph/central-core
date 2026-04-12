@@ -21,9 +21,29 @@ export class VehiclePrismaRepository implements VehicleRepositoryInterface {
     return Vehicle.fromPrisma(vehicle);
   }
 
-  async findMany({ conditions }: { conditions: Prisma.VehicleWhereInput }): Promise<Vehicle[]> {
-    const vehicles = await this.prisma.vehicle.findMany({ where: conditions });
-    return vehicles.map(vehicle => Vehicle.fromPrisma(vehicle));
+  async findMany({
+    conditions,
+    include,
+    page,
+    perPage,
+  }: {
+    conditions: Prisma.VehicleWhereInput;
+    include?: Prisma.VehicleInclude;
+    page?: number;
+    perPage?: number;
+  }): Promise<Vehicle[]> {
+    const skip = page && perPage ? (page - 1) * perPage : undefined;
+    const vehicles = await this.prisma.vehicle.findMany({
+      where: conditions,
+      include,
+      skip,
+      take: perPage,
+    });
+    return vehicles.map(vehicle => Vehicle.fromPrisma(vehicle as VehicleProps));
+  }
+
+  async count(conditions: Prisma.VehicleWhereInput): Promise<number> {
+    return this.prisma.vehicle.count({ where: conditions });
   }
 
   async createMany(vehicles: VehicleProps[], tx?: Prisma.TransactionClient): Promise<Vehicle[]> {
@@ -38,7 +58,10 @@ export class VehiclePrismaRepository implements VehicleRepositoryInterface {
     tx?: Prisma.TransactionClient,
   ): Promise<Vehicle> {
     const client = tx ?? this.prisma;
-    const updated = await client.vehicle.update({ where: { id }, data: vehicle });
+    const updated = await client.vehicle.update({
+      where: { id },
+      data: vehicle as Prisma.VehicleUpdateInput,
+    });
     return Vehicle.fromPrisma(updated);
   }
 

@@ -70,6 +70,18 @@ import { GetResidentialComplexApartmentsResponseDto } from '../application/dto/g
 import { GetResidentialComplexCommonAreasResponseDto } from '../application/dto/get-residential-complex-common-areas-response.dto';
 import { GetResidentialComplexParkingLotsResponseDto } from '../application/dto/get-residential-complex-parking-lots-response.dto';
 import { GetResidentialComplexTowersResponseDto } from '../application/dto/get-residential-complex-towers-response.dto';
+import { GetResidentialComplexUsefulRoomsResponseDto } from '../application/dto/get-residential-complex-useful-rooms-response.dto';
+import { GetResidentialComplexVehiclesResponseDto } from '../application/dto/get-residential-complex-vehicles-response.dto';
+import { GetResidentialComplexPetsResponseDto } from '../application/dto/get-residential-complex-pets-response.dto';
+import { UsefulRoomFilterQueryDto } from '../../useful-rooms/application/dto/useful-room-filter-query.dto';
+import { UsefulRoomResponseDto } from '../../useful-rooms/application/dto/useful-room-response.dto';
+import { FindUsefulRoomsByResidentialComplexUseCase } from '../../useful-rooms/application/services/find-useful-rooms-by-residential-complex.use-case';
+import { VehicleFilterQueryDto } from '../../vehicles/application/dto/vehicle-filter-query.dto';
+import { VehicleResponseDto } from '../../vehicles/application/dto/vehicle-response.dto';
+import { FindVehiclesByResidentialComplexUseCase } from '../../vehicles/application/services/find-vehicles-by-residential-complex.use-case';
+import { PetFilterQueryDto } from '../../pets/application/dto/pet-filter-query.dto';
+import { PetResponseDto } from '../../pets/application/dto/pet-response.dto';
+import { FindPetsByResidentialComplexUseCase } from '../../pets/application/services/find-pets-by-residential-complex.use-case';
 import { ResidentialComplexResponseDto } from '../application/dto/residential-complex-response.dto';
 import { UpdateResidentialComplexDto } from '../application/dto/update-residential-complex.dto';
 import { AssignUserToComplexUseCase } from '../application/services/assign-user-to-complex.use-case';
@@ -115,6 +127,12 @@ export class ResidentialComplexController {
     private readonly createApartmentsUseCase: CreateApartmentsUseCase,
     private readonly updateApartmentUseCase: UpdateApartmentUseCase,
     private readonly deleteApartmentUseCase: DeleteApartmentUseCase,
+    // Useful rooms
+    private readonly findUsefulRoomsByResidentialComplexUseCase: FindUsefulRoomsByResidentialComplexUseCase,
+    // Vehicles
+    private readonly findVehiclesByResidentialComplexUseCase: FindVehiclesByResidentialComplexUseCase,
+    // Pets
+    private readonly findPetsByResidentialComplexUseCase: FindPetsByResidentialComplexUseCase,
   ) {}
 
   // ─── Residential Complex ──────────────────────────────────────────────────
@@ -771,5 +789,77 @@ export class ResidentialComplexController {
     @Param('apartmentId', new ParseUUIDPipe()) apartmentId: string,
   ): Promise<boolean> {
     return this.deleteApartmentUseCase.execute(apartmentId, id);
+  }
+
+  // ─── Useful Rooms ─────────────────────────────────────────────────────────
+
+  @Get('/:id/useful-rooms')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator("Residential complex's useful rooms retrieved successfully")
+  @EndpointSwaggerDecorator({
+    summary: "Get residential complex's useful rooms (paginated)",
+    responseType: GetResidentialComplexUsefulRoomsResponseDto,
+    queryType: UsefulRoomFilterQueryDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Page is out of the range' }],
+    requireAuth: true,
+  })
+  async getResidentialComplexUsefulRooms(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Query() query: UsefulRoomFilterQueryDto,
+  ): Promise<PaginatedResponseDto<UsefulRoomResponseDto>> {
+    return this.findUsefulRoomsByResidentialComplexUseCase.execute(id, query);
+  }
+
+  // ─── Vehicles ─────────────────────────────────────────────────────────────
+
+  @Get('/:id/vehicles')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator("Residential complex's vehicles retrieved successfully")
+  @EndpointSwaggerDecorator({
+    summary: "Get residential complex's vehicles (paginated)",
+    responseType: GetResidentialComplexVehiclesResponseDto,
+    queryType: VehicleFilterQueryDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Page is out of the range' }],
+    requireAuth: true,
+  })
+  async getResidentialComplexVehicles(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Query() query: VehicleFilterQueryDto,
+  ): Promise<PaginatedResponseDto<VehicleResponseDto>> {
+    return this.findVehiclesByResidentialComplexUseCase.execute(id, query);
+  }
+
+  // ─── Pets ─────────────────────────────────────────────────────────────────
+
+  @Get('/:id/pets')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator("Residential complex's pets retrieved successfully")
+  @EndpointSwaggerDecorator({
+    summary: "Get residential complex's pets (paginated)",
+    responseType: GetResidentialComplexPetsResponseDto,
+    queryType: PetFilterQueryDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Page is out of the range' }],
+    requireAuth: true,
+  })
+  async getResidentialComplexPets(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Query() query: PetFilterQueryDto,
+  ): Promise<PaginatedResponseDto<PetResponseDto>> {
+    return this.findPetsByResidentialComplexUseCase.execute(id, query);
   }
 }
