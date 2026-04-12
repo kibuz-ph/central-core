@@ -1,6 +1,6 @@
 model CategoryUser {
   id   String            @id @default(uuid())
-  name UserApartmentType
+  name UserApartmentType @unique
 
   userApartments UserApartment[]
 

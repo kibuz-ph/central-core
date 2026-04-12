@@ -31,6 +31,12 @@ import { FindPetUseCase } from '../../pets/application/services/find-pet.use-cas
 import { FindPetsByApartmentUseCase } from '../../pets/application/services/find-pets-by-apartment.use-case';
 import { UpdatePetUseCase } from '../../pets/application/services/update-pet.use-case';
 import { userRoleTypes } from '../../role/domain/enums/user-role-types.enum';
+import { AssignUserToApartmentUseCase } from '../../user-apartment/application/services/assign-user-to-apartment.use-case';
+import { DeleteUserApartmentUseCase } from '../../user-apartment/application/services/delete-user-apartment.use-case';
+import { FindUserApartmentsByApartmentUseCase } from '../../user-apartment/application/services/find-user-apartments-by-apartment.use-case';
+import { CreateUserApartmentDto } from '../../user-apartment/application/dto/create-user-apartment.dto';
+import { UserApartmentResponseDto } from '../../user-apartment/application/dto/user-apartment-response.dto';
+import { GetApartmentUsersResponseDto } from '../application/dto/get-apartment-users-response.dto';
 import { CreateUsefulRoomsDto } from '../../useful-rooms/application/dto/create-useful-rooms.dto';
 import { UpdateUsefulRoomDto } from '../../useful-rooms/application/dto/update-useful-room.dto';
 import { UsefulRoomResponseDto } from '../../useful-rooms/application/dto/useful-room-response.dto';
@@ -57,6 +63,10 @@ import { GetApartmentVehiclesResponseDto } from '../application/dto/get-apartmen
 export class ApartmentsController {
   constructor(
     private readonly findParkingLotsByApartmentUseCase: FindParkingLotsByApartmentUseCase,
+    // User apartments
+    private readonly findUserApartmentsByApartmentUseCase: FindUserApartmentsByApartmentUseCase,
+    private readonly assignUserToApartmentUseCase: AssignUserToApartmentUseCase,
+    private readonly deleteUserApartmentUseCase: DeleteUserApartmentUseCase,
     // Pets
     private readonly findPetsByApartmentUseCase: FindPetsByApartmentUseCase,
     private readonly findPetUseCase: FindPetUseCase,
@@ -76,6 +86,72 @@ export class ApartmentsController {
     private readonly updateUsefulRoomUseCase: UpdateUsefulRoomUseCase,
     private readonly deleteUsefulRoomUseCase: DeleteUsefulRoomUseCase,
   ) {}
+
+  // ─── Users ────────────────────────────────────────────────────────────────
+
+  @Get('/:id/users')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator('Apartment users retrieved successfully')
+  @EndpointSwaggerDecorator({
+    summary: "Get apartment's users",
+    responseType: GetApartmentUsersResponseDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
+    requireAuth: true,
+  })
+  async getApartmentUsers(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<UserApartmentResponseDto[]> {
+    return this.findUserApartmentsByApartmentUseCase.execute(id);
+  }
+
+  @Post('/:id/users')
+  @UseGuards(AuthGuard(), ApartmentComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.CREATED)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('User assigned to apartment successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Assign a user to an apartment',
+    bodyType: CreateUserApartmentDto,
+    successStatus: HttpStatus.CREATED,
+    extraResponses: [
+      { status: HttpStatus.NOT_FOUND, description: 'Apartment or user not found' },
+      { status: HttpStatus.CONFLICT, description: 'User already assigned with this category' },
+    ],
+    requireAuth: true,
+  })
+  async assignUserToApartment(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() createUserApartmentDto: CreateUserApartmentDto,
+  ): Promise<UserApartmentResponseDto> {
+    const { userId, categoryUserName } = createUserApartmentDto;
+    return this.assignUserToApartmentUseCase.execute(id, userId, categoryUserName);
+  }
+
+  @Delete('/:id/users/:userApartmentId')
+  @UseGuards(AuthGuard(), ApartmentComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('User removed from apartment successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Remove a user from an apartment',
+    successStatus: HttpStatus.NO_CONTENT,
+    extraResponses: [{ status: HttpStatus.NOT_FOUND, description: 'Assignment not found' }],
+    requireAuth: true,
+  })
+  async removeUserFromApartment(
+    @Param('id', new ParseUUIDPipe()) _id: string,
+    @Param('userApartmentId', new ParseUUIDPipe()) userApartmentId: string,
+  ): Promise<void> {
+    return this.deleteUserApartmentUseCase.delete(userApartmentId);
+  }
 
   // ─── Parking Lots ─────────────────────────────────────────────────────────
 
