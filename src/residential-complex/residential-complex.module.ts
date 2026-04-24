@@ -41,6 +41,8 @@ import { FindVehiclesByResidentialComplexUseCase } from '../vehicles/application
 import { VehiclePrismaRepository } from '../vehicles/infrastructure/persistence/vehicle.repository.prisma';
 import { FindPetsByResidentialComplexUseCase } from '../pets/application/services/find-pets-by-residential-complex.use-case';
 import { PetPrismaRepository } from '../pets/infrastructure/persistence/pet.repository.prisma';
+import { FindUsersByResidentialComplexUseCase } from '../user-apartment/application/services/find-users-by-residential-complex.use-case';
+import { UserApartmentPrismaRepository } from '../user-apartment/infrastructure/persistence/user-apartment.repository.prisma';
 import { AssignUserToComplexUseCase } from './application/services/assign-user-to-complex.use-case';
 import { CreateResidentialComplexUseCase } from './application/services/create-residential-complex.use-case';
 import { DeleteResidentialComplexUseCase } from './application/services/delete-residential-complex.use-case';
@@ -103,6 +105,8 @@ import { ResidentialComplexController } from './presentation/residential-complex
     FindVehiclesByResidentialComplexUseCase,
     // Pets
     FindPetsByResidentialComplexUseCase,
+    // Users
+    FindUsersByResidentialComplexUseCase,
     {
       provide: 'ResidentialComplexInterface',
       useClass: ResidentialComplexPrismaRepository,
@@ -146,6 +150,10 @@ import { ResidentialComplexController } from './presentation/residential-complex
     {
       provide: 'PetRepositoryInterface',
       useClass: PetPrismaRepository,
+    },
+    {
+      provide: 'UserApartmentRepositoryInterface',
+      useClass: UserApartmentPrismaRepository,
     },
   ],
   exports: [

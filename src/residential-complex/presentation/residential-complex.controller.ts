@@ -17,8 +17,8 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
-import { ApartmentResponseDto } from '../../apartments/application/dto/apartment-response.dto';
 import { ApartmentFilterQueryDto } from '../../apartments/application/dto/apartment-filter-query.dto';
+import { ApartmentResponseDto } from '../../apartments/application/dto/apartment-response.dto';
 import { CreateApartmentsDto } from '../../apartments/application/dto/create-apartments.dto';
 import { UpdateApartmentDto } from '../../apartments/application/dto/update-apartment.dto';
 import { CreateApartmentsUseCase } from '../../apartments/application/services/create-apartments.use-case';
@@ -50,6 +50,9 @@ import { DeleteParkingLotUseCase } from '../../parking-lots/application/services
 import { FindParkingLotUseCase } from '../../parking-lots/application/services/find-parking-lot.use-case';
 import { FindParkingLotsByResidentialComplexUseCase } from '../../parking-lots/application/services/find-parking-lots-by-residential-complex.use-case';
 import { UpdateParkingLotUseCase } from '../../parking-lots/application/services/update-parking-lot.use-case';
+import { PetFilterQueryDto } from '../../pets/application/dto/pet-filter-query.dto';
+import { PetResponseDto } from '../../pets/application/dto/pet-response.dto';
+import { FindPetsByResidentialComplexUseCase } from '../../pets/application/services/find-pets-by-residential-complex.use-case';
 import { userRoleTypes } from '../../role/domain/enums/user-role-types.enum';
 import { CreateTowersDto } from '../../towers/application/dto/create-towers.dto';
 import { TowerResponseDto } from '../../towers/application/dto/tower-response.dto';
@@ -59,30 +62,31 @@ import { DeleteTowerUseCase } from '../../towers/application/services/delete-tow
 import { FindTowersByResidentialComplexUseCase } from '../../towers/application/services/find-towers-by-residential-complex.use-case';
 import { FindTowersUseCase } from '../../towers/application/services/find-towers.use-case';
 import { UpdateTowerUseCase } from '../../towers/application/services/update-tower.use-case';
+import { UsefulRoomFilterQueryDto } from '../../useful-rooms/application/dto/useful-room-filter-query.dto';
+import { UsefulRoomResponseDto } from '../../useful-rooms/application/dto/useful-room-response.dto';
+import { FindUsefulRoomsByResidentialComplexUseCase } from '../../useful-rooms/application/services/find-useful-rooms-by-residential-complex.use-case';
+import { FindUsersByResidentialComplexUseCase } from '../../user-apartment/application/services/find-users-by-residential-complex.use-case';
 import { CreateUserDto } from '../../users/application/dto/create-user.dto';
 import { UserResponseDto } from '../../users/application/dto/user-response.dto';
 import { UserProps } from '../../users/domain/entities/user.entity';
 import { userTypes } from '../../users/domain/enums/user-types.enum';
+import { VehicleFilterQueryDto } from '../../vehicles/application/dto/vehicle-filter-query.dto';
+import { VehicleResponseDto } from '../../vehicles/application/dto/vehicle-response.dto';
+import { FindVehiclesByResidentialComplexUseCase } from '../../vehicles/application/services/find-vehicles-by-residential-complex.use-case';
 import { AssignUserToComplexDto } from '../application/dto/assign-user-to-complex.dto';
 import { CreateResidentialComplexDto } from '../application/dto/create-residential-complex.dto';
 import { GetMyResidentialComplexesResponseDto } from '../application/dto/get-my-residential-complexes-response.dto';
 import { GetResidentialComplexApartmentsResponseDto } from '../application/dto/get-residential-complex-apartments-response.dto';
 import { GetResidentialComplexCommonAreasResponseDto } from '../application/dto/get-residential-complex-common-areas-response.dto';
 import { GetResidentialComplexParkingLotsResponseDto } from '../application/dto/get-residential-complex-parking-lots-response.dto';
+import { GetResidentialComplexPetsResponseDto } from '../application/dto/get-residential-complex-pets-response.dto';
 import { GetResidentialComplexTowersResponseDto } from '../application/dto/get-residential-complex-towers-response.dto';
 import { GetResidentialComplexUsefulRoomsResponseDto } from '../application/dto/get-residential-complex-useful-rooms-response.dto';
+import { GetResidentialComplexUsersResponseDto } from '../application/dto/get-residential-complex-users-response.dto';
 import { GetResidentialComplexVehiclesResponseDto } from '../application/dto/get-residential-complex-vehicles-response.dto';
-import { GetResidentialComplexPetsResponseDto } from '../application/dto/get-residential-complex-pets-response.dto';
-import { UsefulRoomFilterQueryDto } from '../../useful-rooms/application/dto/useful-room-filter-query.dto';
-import { UsefulRoomResponseDto } from '../../useful-rooms/application/dto/useful-room-response.dto';
-import { FindUsefulRoomsByResidentialComplexUseCase } from '../../useful-rooms/application/services/find-useful-rooms-by-residential-complex.use-case';
-import { VehicleFilterQueryDto } from '../../vehicles/application/dto/vehicle-filter-query.dto';
-import { VehicleResponseDto } from '../../vehicles/application/dto/vehicle-response.dto';
-import { FindVehiclesByResidentialComplexUseCase } from '../../vehicles/application/services/find-vehicles-by-residential-complex.use-case';
-import { PetFilterQueryDto } from '../../pets/application/dto/pet-filter-query.dto';
-import { PetResponseDto } from '../../pets/application/dto/pet-response.dto';
-import { FindPetsByResidentialComplexUseCase } from '../../pets/application/services/find-pets-by-residential-complex.use-case';
 import { ResidentialComplexResponseDto } from '../application/dto/residential-complex-response.dto';
+import { ResidentialComplexUserResponseDto } from '../application/dto/residential-complex-user-response.dto';
+import { ResidentialComplexUsersFilterQueryDto } from '../application/dto/residential-complex-users-filter-query.dto';
 import { UpdateResidentialComplexDto } from '../application/dto/update-residential-complex.dto';
 import { AssignUserToComplexUseCase } from '../application/services/assign-user-to-complex.use-case';
 import { CreateResidentialComplexUseCase } from '../application/services/create-residential-complex.use-case';
@@ -133,6 +137,8 @@ export class ResidentialComplexController {
     private readonly findVehiclesByResidentialComplexUseCase: FindVehiclesByResidentialComplexUseCase,
     // Pets
     private readonly findPetsByResidentialComplexUseCase: FindPetsByResidentialComplexUseCase,
+    // Users
+    private readonly findUsersByResidentialComplexUseCase: FindUsersByResidentialComplexUseCase,
   ) {}
 
   // ─── Residential Complex ──────────────────────────────────────────────────
@@ -263,6 +269,7 @@ export class ResidentialComplexController {
       { status: HttpStatus.FORBIDDEN, description: 'Insufficient permissions' },
     ],
     requireAuth: true,
+    tags: ['ResidentialComplex / Users'],
   })
   async registerUserToComplex(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -290,6 +297,7 @@ export class ResidentialComplexController {
       { status: HttpStatus.FORBIDDEN, description: 'Insufficient permissions' },
     ],
     requireAuth: true,
+    tags: ['ResidentialComplex / Users'],
   })
   async assignUserToComplex(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -318,6 +326,7 @@ export class ResidentialComplexController {
       { status: HttpStatus.FORBIDDEN, description: 'Insufficient permissions' },
     ],
     requireAuth: true,
+    tags: ['ResidentialComplex / Admins'],
   })
   async registerAdminToComplex(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -345,6 +354,7 @@ export class ResidentialComplexController {
       { status: HttpStatus.FORBIDDEN, description: 'Insufficient permissions' },
     ],
     requireAuth: true,
+    tags: ['ResidentialComplex / Admins'],
   })
   async assignAdminToComplex(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -373,6 +383,7 @@ export class ResidentialComplexController {
       { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
     ],
     requireAuth: true,
+    tags: ['ResidentialComplex / Common Areas'],
   })
   async getResidentialComplexCommonAreas(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -392,6 +403,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Common area not found' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Common Areas'],
   })
   async getCommonAreaById(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -415,6 +427,7 @@ export class ResidentialComplexController {
       { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
     ],
     requireAuth: true,
+    tags: ['ResidentialComplex / Common Areas'],
   })
   async createCommonArea(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -436,6 +449,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Common area not found' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Common Areas'],
   })
   async updateCommonArea(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -457,6 +471,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.NO_CONTENT,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Common area not found' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Common Areas'],
   })
   async deleteCommonArea(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -481,6 +496,7 @@ export class ResidentialComplexController {
       { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
     ],
     requireAuth: true,
+    tags: ['ResidentialComplex / Towers'],
   })
   async getResidentialComplexTowers(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -500,6 +516,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Tower not found' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Towers'],
   })
   async getTowerById(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -523,6 +540,7 @@ export class ResidentialComplexController {
       { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
     ],
     requireAuth: true,
+    tags: ['ResidentialComplex / Towers'],
   })
   async createTowers(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -544,6 +562,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Tower not found' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Towers'],
   })
   async updateTower(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -565,6 +584,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.NO_CONTENT,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Tower not found' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Towers'],
   })
   async deleteTower(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -589,6 +609,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Page is out of the range' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Parking Lots'],
   })
   async getResidentialComplexParkingLots(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -609,6 +630,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Parking lot not found' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Parking Lots'],
   })
   async getParkingLotById(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -632,6 +654,7 @@ export class ResidentialComplexController {
       { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
     ],
     requireAuth: true,
+    tags: ['ResidentialComplex / Parking Lots'],
   })
   async createParkingLots(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -653,6 +676,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Parking lot not found' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Parking Lots'],
   })
   async updateParkingLot(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -674,6 +698,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.NO_CONTENT,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Parking lot not found' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Parking Lots'],
   })
   async deleteParkingLot(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -698,6 +723,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Page is out of the range' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Apartments'],
   })
   async getResidentialComplexApartments(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -718,6 +744,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Apartments'],
   })
   async getApartmentById(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -741,6 +768,7 @@ export class ResidentialComplexController {
       { status: HttpStatus.BAD_REQUEST, description: 'Residential complex not found' },
     ],
     requireAuth: true,
+    tags: ['ResidentialComplex / Apartments'],
   })
   async createApartments(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -762,6 +790,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Apartments'],
   })
   async updateApartment(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -783,6 +812,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.NO_CONTENT,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Apartments'],
   })
   async deleteApartment(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -807,6 +837,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Page is out of the range' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Useful Rooms'],
   })
   async getResidentialComplexUsefulRooms(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -831,6 +862,7 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Page is out of the range' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Vehicles'],
   })
   async getResidentialComplexVehicles(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -855,11 +887,38 @@ export class ResidentialComplexController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Page is out of the range' }],
     requireAuth: true,
+    tags: ['ResidentialComplex / Pets'],
   })
   async getResidentialComplexPets(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Query() query: PetFilterQueryDto,
   ): Promise<PaginatedResponseDto<PetResponseDto>> {
     return this.findPetsByResidentialComplexUseCase.execute(id, query);
+  }
+
+  // ─── Users ────────────────────────────────────────────────────────────────
+
+  @Get('/:id/users')
+  @UseGuards(AuthGuard(), ComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator("Residential complex's users retrieved successfully")
+  @EndpointSwaggerDecorator({
+    summary: "Get residential complex's users with their apartments and roles (paginated)",
+    responseType: GetResidentialComplexUsersResponseDto,
+    queryType: ResidentialComplexUsersFilterQueryDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Page is out of the range' }],
+    requireAuth: true,
+    tags: ['ResidentialComplex / Users'],
+  })
+  async getResidentialComplexUsers(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Query() query: ResidentialComplexUsersFilterQueryDto,
+  ): Promise<PaginatedResponseDto<ResidentialComplexUserResponseDto>> {
+    const { page, perPage, ...filters } = query;
+    return this.findUsersByResidentialComplexUseCase.execute(id, page, perPage, filters);
   }
 }

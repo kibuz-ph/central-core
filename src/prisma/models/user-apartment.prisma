@@ -1,0 +1,13 @@
+model UserApartment {
+  id             String @id @default(uuid())
+  userId         String
+  categoryUserId String
+  apartmentId    String
+
+  user         User         @relation(fields: [userId], references: [id])
+  categoryUser CategoryUser @relation(fields: [categoryUserId], references: [id])
+  apartment    Apartment    @relation(fields: [apartmentId], references: [id])
+
+  @@unique([userId, apartmentId, categoryUserId])
+  @@map("users_apartments")
+}

@@ -1,0 +1,14 @@
+model CategoryUser {
+  id   String            @id @default(uuid())
+  name UserApartmentType @unique
+
+  userApartments UserApartment[]
+
+  @@map("category_users")
+}
+
+enum UserApartmentType {
+  OWNER
+  TENANT
+  RESIDENT
+}

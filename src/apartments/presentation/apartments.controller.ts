@@ -39,6 +39,11 @@ import { DeleteUsefulRoomUseCase } from '../../useful-rooms/application/services
 import { FindUsefulRoomUseCase } from '../../useful-rooms/application/services/find-useful-room.use-case';
 import { FindUsefulRoomsByApartmentUseCase } from '../../useful-rooms/application/services/find-useful-rooms-by-apartment.use-case';
 import { UpdateUsefulRoomUseCase } from '../../useful-rooms/application/services/update-useful-room.use-case';
+import { CreateUserApartmentDto } from '../../user-apartment/application/dto/create-user-apartment.dto';
+import { UserApartmentResponseDto } from '../../user-apartment/application/dto/user-apartment-response.dto';
+import { AssignUserToApartmentUseCase } from '../../user-apartment/application/services/assign-user-to-apartment.use-case';
+import { DeleteUserApartmentUseCase } from '../../user-apartment/application/services/delete-user-apartment.use-case';
+import { FindUserApartmentsByApartmentUseCase } from '../../user-apartment/application/services/find-user-apartments-by-apartment.use-case';
 import { CreateVehiclesDto } from '../../vehicles/application/dto/create-vehicles.dto';
 import { UpdateVehicleDto } from '../../vehicles/application/dto/update-vehicle.dto';
 import { VehicleResponseDto } from '../../vehicles/application/dto/vehicle-response.dto';
@@ -50,6 +55,7 @@ import { UpdateVehicleUseCase } from '../../vehicles/application/services/update
 import { GetApartmentParkingLotsResponseDto } from '../application/dto/get-apartment-parking-lots-response.dto';
 import { GetApartmentPetsResponseDto } from '../application/dto/get-apartment-pets-response.dto';
 import { GetApartmentUsefulRoomsResponseDto } from '../application/dto/get-apartment-useful-rooms-response.dto';
+import { GetApartmentUsersResponseDto } from '../application/dto/get-apartment-users-response.dto';
 import { GetApartmentVehiclesResponseDto } from '../application/dto/get-apartment-vehicles-response.dto';
 
 @Controller('apartments')
@@ -57,6 +63,10 @@ import { GetApartmentVehiclesResponseDto } from '../application/dto/get-apartmen
 export class ApartmentsController {
   constructor(
     private readonly findParkingLotsByApartmentUseCase: FindParkingLotsByApartmentUseCase,
+    // User apartments
+    private readonly findUserApartmentsByApartmentUseCase: FindUserApartmentsByApartmentUseCase,
+    private readonly assignUserToApartmentUseCase: AssignUserToApartmentUseCase,
+    private readonly deleteUserApartmentUseCase: DeleteUserApartmentUseCase,
     // Pets
     private readonly findPetsByApartmentUseCase: FindPetsByApartmentUseCase,
     private readonly findPetUseCase: FindPetUseCase,
@@ -77,6 +87,75 @@ export class ApartmentsController {
     private readonly deleteUsefulRoomUseCase: DeleteUsefulRoomUseCase,
   ) {}
 
+  // ─── Users ────────────────────────────────────────────────────────────────
+
+  @Get('/:id/users')
+  @UseGuards(AuthGuard())
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.OK)
+  @WrapResponse(true)
+  @SetResponseMessageDecorator('Apartment users retrieved successfully')
+  @EndpointSwaggerDecorator({
+    summary: "Get apartment's users",
+    responseType: GetApartmentUsersResponseDto,
+    successStatus: HttpStatus.OK,
+    extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
+    requireAuth: true,
+    tags: ['Apartments / Users'],
+  })
+  async getApartmentUsers(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<UserApartmentResponseDto[]> {
+    return this.findUserApartmentsByApartmentUseCase.execute(id);
+  }
+
+  @Post('/:id/users')
+  @UseGuards(AuthGuard(), ApartmentComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.CREATED)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('User assigned to apartment successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Assign a user to an apartment',
+    bodyType: CreateUserApartmentDto,
+    successStatus: HttpStatus.CREATED,
+    extraResponses: [
+      { status: HttpStatus.NOT_FOUND, description: 'Apartment or user not found' },
+      { status: HttpStatus.CONFLICT, description: 'User already assigned with this category' },
+    ],
+    requireAuth: true,
+    tags: ['Apartments / Users'],
+  })
+  async assignUserToApartment(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() createUserApartmentDto: CreateUserApartmentDto,
+  ): Promise<UserApartmentResponseDto> {
+    const { userId, categoryUserName } = createUserApartmentDto;
+    return this.assignUserToApartmentUseCase.execute(id, userId, categoryUserName);
+  }
+
+  @Delete('/:id/users/:userApartmentId')
+  @UseGuards(AuthGuard(), ApartmentComplexRoleGuard)
+  @RequiredComplexRoles(userRoleTypes.ADMIN, userRoleTypes.MASTER)
+  @Throttle({ default: { limit: 5, ttl: 60 } })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @WrapResponse(false)
+  @SetResponseMessageDecorator('User removed from apartment successfully')
+  @EndpointSwaggerDecorator({
+    summary: 'Remove a user from an apartment',
+    successStatus: HttpStatus.NO_CONTENT,
+    extraResponses: [{ status: HttpStatus.NOT_FOUND, description: 'Assignment not found' }],
+    requireAuth: true,
+    tags: ['Apartments / Users'],
+  })
+  async removeUserFromApartment(
+    @Param('id', new ParseUUIDPipe()) _id: string,
+    @Param('userApartmentId', new ParseUUIDPipe()) userApartmentId: string,
+  ): Promise<void> {
+    return this.deleteUserApartmentUseCase.delete(userApartmentId);
+  }
+
   // ─── Parking Lots ─────────────────────────────────────────────────────────
 
   @Get('/:id/parking-lots')
@@ -91,6 +170,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
     requireAuth: true,
+    tags: ['Apartments / Parking Lots'],
   })
   async getApartmentParkingLots(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -112,6 +192,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
     requireAuth: true,
+    tags: ['Apartments / Pets'],
   })
   async getApartmentPets(@Param('id', new ParseUUIDPipe()) id: string): Promise<PetResponseDto[]> {
     return this.findPetsByApartmentUseCase.execute(id);
@@ -129,6 +210,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Pet not found' }],
     requireAuth: true,
+    tags: ['Apartments / Pets'],
   })
   async getPetById(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -150,6 +232,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.CREATED,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
     requireAuth: true,
+    tags: ['Apartments / Pets'],
   })
   async createPets(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -171,6 +254,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Pet not found' }],
     requireAuth: true,
+    tags: ['Apartments / Pets'],
   })
   async updatePet(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -192,6 +276,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.NO_CONTENT,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Pet not found' }],
     requireAuth: true,
+    tags: ['Apartments / Pets'],
   })
   async deletePet(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -214,6 +299,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
     requireAuth: true,
+    tags: ['Apartments / Vehicles'],
   })
   async getApartmentVehicles(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -233,6 +319,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Vehicle not found' }],
     requireAuth: true,
+    tags: ['Apartments / Vehicles'],
   })
   async getVehicleById(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -254,6 +341,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.CREATED,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
     requireAuth: true,
+    tags: ['Apartments / Vehicles'],
   })
   async createVehicles(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -275,6 +363,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Vehicle not found' }],
     requireAuth: true,
+    tags: ['Apartments / Vehicles'],
   })
   async updateVehicle(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -296,6 +385,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.NO_CONTENT,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Vehicle not found' }],
     requireAuth: true,
+    tags: ['Apartments / Vehicles'],
   })
   async deleteVehicle(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -318,6 +408,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
     requireAuth: true,
+    tags: ['Apartments / Useful Rooms'],
   })
   async getApartmentUsefulRooms(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -337,6 +428,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Useful room not found' }],
     requireAuth: true,
+    tags: ['Apartments / Useful Rooms'],
   })
   async getUsefulRoomById(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -358,6 +450,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.CREATED,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Apartment not found' }],
     requireAuth: true,
+    tags: ['Apartments / Useful Rooms'],
   })
   async createUsefulRooms(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -379,6 +472,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.OK,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Useful room not found' }],
     requireAuth: true,
+    tags: ['Apartments / Useful Rooms'],
   })
   async updateUsefulRoom(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -400,6 +494,7 @@ export class ApartmentsController {
     successStatus: HttpStatus.NO_CONTENT,
     extraResponses: [{ status: HttpStatus.BAD_REQUEST, description: 'Useful room not found' }],
     requireAuth: true,
+    tags: ['Apartments / Useful Rooms'],
   })
   async deleteUsefulRoom(
     @Param('id', new ParseUUIDPipe()) id: string,
